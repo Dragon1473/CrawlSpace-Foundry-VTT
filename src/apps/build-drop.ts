@@ -6,6 +6,9 @@
 import { damageResponsesFromText } from '../rules/build-text'
 import { effectPropertiesToActiveEffects } from '../effects/mapping'
 import { findCompendiumEntry } from '../import/fill-damage'
+import { databaseRows } from '../loot/database'
+import { builderBackgroundOptions } from '../crawlspace-shared/shared/characterBuilder'
+import type { BuilderStage } from '../crawlspace-shared/shared/characterBuilderCatalog'
 
 const { DialogV2 } = foundry.applications.api
 
@@ -131,12 +134,121 @@ export async function applyBuildItem(actor: any, item: any) {
   return created
 }
 
-/** A background fills its stage's field, replacing the crawler's background for that stage. */
+/** The rank a background's skills start at, by stage (Childhood/Youth 1, Adolescence/Training 1, Hobby/Quirk 2, Career/Adult 3). */
+const STAGE_RANKS: Record<string, number> = { childhood: 1, adolescence: 1, career: 3, hobby: 2 }
+
+const escape = (text: unknown) => foundry.utils.escapeHTML(String(text ?? ''))
+
+/** Ask which two of a background's skills the crawler takes. Skills they already know can't be picked. Null when cancelled. */
+async function chooseBackgroundSkills(actor: any, name: string, skills: string[], rank: number): Promise<string[] | null> {
+  const known = new Set(actor.items.filter((owned: any) => owned.type === 'skill').map((owned: any) => owned.name.toLowerCase()))
+  const need = Math.min(2, skills.filter((skill) => !known.has(skill.toLowerCase())).length)
+  if (!need) return []
+  const boxes = skills
+    .map((skill, index) => {
+      const has = known.has(skill.toLowerCase())
+      return `<label class="checkbox"><input type="checkbox" name="skill${index}" value="${escape(skill)}" ${has ? 'disabled' : ''}> ${escape(skill)}${has ? ` <small>(${game.i18n.localize('CRAWLSPACE.Build.AlreadyKnown')})</small>` : ''}</label>`
+    })
+    .join('')
+  const picked = await DialogV2.prompt({
+    window: { title: game.i18n.format('CRAWLSPACE.Build.BackgroundSkillsTitle', { name }) },
+    content: `<p>${game.i18n.format('CRAWLSPACE.Build.ChooseBackgroundSkills', { count: need, rank })}</p><div class="background-skill-choices">${boxes}</div>`,
+    ok: {
+      label: game.i18n.localize('CRAWLSPACE.Build.TakeSkills'),
+      callback: (_event: Event, button: any) => [...button.form.querySelectorAll('input[type=checkbox]:checked')].map((input: any) => input.value),
+    },
+    // Exactly the needed number of skills: the rest lock once they're picked, and OK waits for them.
+    render: (_event: Event, dialog: any) => {
+      const root = dialog.element as HTMLElement
+      const inputs = [...root.querySelectorAll<HTMLInputElement>('input[type=checkbox]')]
+      const ok = root.querySelector<HTMLButtonElement>('button[data-action="ok"]')
+      const sync = () => {
+        const count = inputs.filter((input) => input.checked).length
+        for (const input of inputs) if (!input.checked) input.disabled = count >= need || known.has(input.value.toLowerCase())
+        if (ok) ok.disabled = count !== need
+      }
+      for (const input of inputs) input.addEventListener('change', sync)
+      sync()
+    },
+    rejectClose: false,
+  })
+  return Array.isArray(picked) ? picked : null
+}
+
+/**
+ * A background dropped on the crawler (or picked from the search button): choose two of its three skills, which
+ * start at the stage's rank. It replaces the crawler's background for that stage, and the skills that one gave
+ * which were never ranked up.
+ */
 export async function applyBackground(actor: any, item: any) {
-  const stage = item.system.stage ?? 'childhood'
+  const stage = item.system?.stage ?? 'childhood'
+  const rank = STAGE_RANKS[stage] ?? 1
+  const skills = [...new Set<string>((item.system?.skills ?? []).map((skill: unknown) => String(skill ?? '').trim()).filter(Boolean))]
+  const picked = await chooseBackgroundSkills(actor, item.name, skills, rank)
+  if (!picked) return null
   const old = actor.items.filter((owned: any) => owned.type === 'background' && owned.system.stage === stage)
-  if (old.length) await actor.deleteEmbeddedDocuments('Item', old.map((owned: any) => owned.id))
-  const created = await actor.createEmbeddedDocuments('Item', [game.items.fromCompendium(item)])
+  const oldSkills = actor.items.filter(
+    (owned: any) =>
+      owned.type === 'skill' &&
+      owned.flags?.crawlspace?.backgroundStage === stage &&
+      Number(owned._source.system?.rank?.value) === Number(owned.flags?.crawlspace?.backgroundRank),
+  )
+  if (old.length || oldSkills.length) await actor.deleteEmbeddedDocuments('Item', [...old, ...oldSkills].map((owned: any) => owned.id))
+  const granted: any[] = []
+  for (const name of picked) {
+    const source = await findCompendiumEntry('skill', name)
+    const data: any = source ? game.items.fromCompendium(source) : { name, type: 'skill', system: {} }
+    foundry.utils.setProperty(data, 'system.rank.value', rank)
+    foundry.utils.mergeObject(data, { flags: { crawlspace: { grantedBy: item.name, backgroundStage: stage, backgroundRank: rank } } })
+    granted.push(data)
+  }
+  const data = item instanceof foundry.abstract.Document ? game.items.fromCompendium(item) : foundry.utils.deepClone(item)
+  const created = await actor.createEmbeddedDocuments('Item', [data, ...granted])
   await actor.update({ [`system.background.${stage}`]: item.name })
+  if (granted.length) ui.notifications.info(game.i18n.format('CRAWLSPACE.Build.BackgroundAdded', { name: item.name, skills: picked.join(', '), rank }))
   return created
+}
+
+/**
+ * The search button beside a background field: every background for that stage, the book's built-in ones plus
+ * any in the world or a compendium (custom ones included), human and animal. Picking one applies it.
+ */
+export async function pickBackground(actor: any, stage: string) {
+  const rows = (await databaseRows()) as any[]
+  const groups = (['human', 'animal'] as const).map((species) => ({
+    species,
+    options: builderBackgroundOptions(rows, species, stage as BuilderStage),
+  }))
+  const choices = groups.flatMap(({ species, options }) => options.map((option) => ({ ...option, species })))
+  if (!choices.length) return ui.notifications.warn(game.i18n.format('CRAWLSPACE.Warn.NoBuildContent', { kind: game.i18n.localize('CRAWLSPACE.Build.Kindbackground') }))
+  const label = (species: string) => game.i18n.localize(`CRAWLSPACE.Builder.${species === 'animal' ? 'Animal' : 'Human'}`)
+  const select = groups
+    .filter(({ options }) => options.length)
+    .map(({ species, options }) => {
+      const items = options
+        .map((option) => {
+          const index = choices.findIndex((choice) => choice.species === species && choice.name === option.name)
+          const tag = option.homebrew ? ` (${game.i18n.localize('CRAWLSPACE.Builder.Homebrew')})` : ''
+          return `<option value="${index}">${escape(option.name)}${escape(tag)} — ${escape(option.skills.join(', '))}</option>`
+        })
+        .join('')
+      return `<optgroup label="${escape(label(species))}">${items}</optgroup>`
+    })
+    .join('')
+  const index = await DialogV2.prompt({
+    window: { title: game.i18n.localize('CRAWLSPACE.Builder.ChooseBackground') },
+    content: `<select name="background" style="width: 100%">${select}</select>`,
+    ok: { label: game.i18n.localize('CRAWLSPACE.Build.UseBackground'), callback: (_event: Event, button: any) => Number(button.form.elements.background.value) },
+    rejectClose: false,
+  })
+  const choice = typeof index === 'number' ? choices[index] : null
+  if (!choice) return null
+  // A world or compendium background is used as it is; a built-in one becomes a new background item.
+  const row = rows.find((entry) => entry.content_type === `background_${stage}` && entry.name === choice.name && entry.data?.species === choice.species)
+  const item = (row?.uuid ? await fromUuid(row.uuid) : null) ?? {
+    name: choice.name,
+    type: 'background',
+    system: { stage, species: choice.species, skills: [...choice.skills] },
+  }
+  return applyBackground(actor, item)
 }

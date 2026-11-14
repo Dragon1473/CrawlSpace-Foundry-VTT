@@ -132,7 +132,11 @@ export class CrawlItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
       usageChoices: { learned: 'CRAWLSPACE.Usage.learned', inherent: 'CRAWLSPACE.Usage.inherent', scroll: 'CRAWLSPACE.Usage.scroll', tome: 'CRAWLSPACE.Usage.tome' },
       weaponTypeChoices: Object.fromEntries(['melee', 'ranged', 'thrown', 'ammunition', 'other'].map((t) => [t, `CRAWLSPACE.WeaponType.${t}`])),
       abilityCategories: Object.fromEntries(['racial', 'class', 'other'].map((c) => [c, `CRAWLSPACE.Ability.${c}`])),
-      stageChoices: Object.fromEntries(['childhood', 'adolescence', 'career', 'hobby'].map((s) => [s, `CRAWLSPACE.Crawler.${s[0].toUpperCase()}${s.slice(1)}`])),
+      // Animals name the stages Youth, Training, Quirk and Adult Skills (same order as the book lists them).
+      stageChoices:
+        item._source.system.species === 'animal'
+          ? Object.fromEntries(['childhood', 'adolescence', 'hobby', 'career'].map((s) => [s, `CRAWLSPACE.Build.AnimalStage.${s}`]))
+          : Object.fromEntries(['childhood', 'adolescence', 'career', 'hobby'].map((s) => [s, `CRAWLSPACE.Crawler.${s[0].toUpperCase()}${s.slice(1)}`])),
       // Weapon Skill / Ammunition: free text, with the owner's skills and items offered as suggestions.
       skillSuggestions: actorItems.filter((i: any) => i.type === 'skill').map((i: any) => i.name),
       ammoSuggestions: actorItems.filter((i: any) => i.type === 'consumable' || (i.type === 'weapon' && i.system.weaponType === 'ammunition')).map((i: any) => i.name),

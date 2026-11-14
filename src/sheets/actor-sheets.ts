@@ -17,7 +17,7 @@ import { fillActorDamage } from '../import/fill-damage'
 import { PaperDollApp } from '../apps/paper-doll-app'
 import { TokenMakerApp } from '../apps/token-maker'
 import { moveInOrder } from '../rules/row-order'
-import { applyBackground, applyBuildItem, openBuildPacks } from '../apps/build-drop'
+import { applyBackground, applyBuildItem, openBuildPacks, pickBackground } from '../apps/build-drop'
 import { ActionsConfig, actionRowsOf, addActionRow, addToHotlist, HotlistConfig, hotlistOf, openActionPack, postAction, runAction } from '../apps/actions-config'
 
 const { HandlebarsApplicationMixin } = foundry.applications.api
@@ -1038,6 +1038,7 @@ export class CrawlerSheet extends CrawlActorSheet {
   }
 
   static #onOpenBuildPack(this: CrawlerSheet, _event: PointerEvent, target: HTMLElement) {
+    if (target.dataset.kind === 'background') return pickBackground(this.actor, target.dataset.stage ?? 'childhood')
     return openBuildPacks(target.dataset.kind as any, target.dataset.stage)
   }
 

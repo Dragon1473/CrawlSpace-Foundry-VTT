@@ -90,8 +90,8 @@
   {{/if}}
 
   {{#if (eq type "background")}}
-    <label>{{localize "CRAWLSPACE.Item.Stage"}}<select name="system.stage">{{selectOptions stageChoices selected=systemSource.stage localize=true}}</select></label>
     <label>{{localize "CRAWLSPACE.Builder.Species"}}<select name="system.species">{{selectOptions speciesChoices selected=systemSource.species localize=true}}</select></label>
+    <label>{{localize "CRAWLSPACE.Item.Stage"}}<select name="system.stage">{{selectOptions stageChoices selected=systemSource.stage localize=true}}</select></label>
     <fieldset class="wide background-skills">
       <legend>{{localize "CRAWLSPACE.Build.BackgroundSkills"}}</legend>
       <p class="hint">{{localize "CRAWLSPACE.Build.BackgroundSkillsHint"}}</p>
