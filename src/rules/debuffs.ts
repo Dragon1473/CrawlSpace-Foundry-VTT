@@ -78,3 +78,7 @@ export const debuffById = (id: string) => DEBUFFS.find((debuff) => debuff.id ===
 export const debuffByName = (name: string) =>
   DEBUFFS.find((debuff) => debuff.name.toLowerCase() === String(name ?? '').trim().toLowerCase())
 export const debuffSlug = slug
+
+/** The standard debuff a condition is, by its name, allowing a Rank suffix ("Poisoned (Rank 5)"). */
+export const standardDebuffNamed = (name: string) =>
+  debuffByName(name) ?? debuffByName(String(name ?? '').replace(/\s*\(ranks?\b[^)]*\)\s*$/i, ''))

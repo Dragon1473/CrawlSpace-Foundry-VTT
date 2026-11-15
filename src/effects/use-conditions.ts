@@ -6,6 +6,7 @@
  * who cast them.
  */
 import { effectDuration } from '../import/convert'
+import { standardDebuffNamed } from '../rules/debuffs'
 import { conditionAction } from '../socket'
 import { areaButton } from './areas'
 
@@ -69,6 +70,9 @@ export function conditionData(effect: any, options: { origin?: any } = {}) {
   delete data.start
   const timed = effectDuration(data.system?.durationText)
   data.duration = { ...data.duration, ...(timed ? { expiry: null, ...timed } : {}), expired: false }
+  // A standard debuff ("Poisoned") works through its status: Clean Up damage, check penalties, stacking.
+  const standard = standardDebuffNamed(data.name)
+  if (standard && !data.statuses?.includes(standard.id)) data.statuses = [...(data.statuses ?? []), standard.id]
   const item = options.origin ?? effect.parent
   return { ...data, transfer: true, disabled: false, origin: item?.documentName === 'Item' ? item.uuid : effect.origin }
 }

@@ -107,6 +107,9 @@ function prepareRanked(model: any, kind: 'skill' | 'spell') {
   const healing = (rank >= 15 && heal.rank15) || (rank >= 10 && heal.rank10) || (rank >= 5 && heal.rank5) || heal.formula || ''
   model.healing.atRank = withRank(String(healing).trim(), rank)
   model.checkBonus = rank + model.rank.mod
+  // An Attack check is an attack, flagged or not (compendium attack spells and skills often aren't), so its rolls
+  // carry damage and hotlisted attack spells join the Attacks table.
+  if (String(model.checkType ?? '').trim().toLowerCase() === 'attack') model.isAttack = true
 }
 
 export class SkillData extends foundry.abstract.TypeDataModel {

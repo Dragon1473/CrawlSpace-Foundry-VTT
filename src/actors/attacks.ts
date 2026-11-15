@@ -1,4 +1,4 @@
-import { applyCastEffects } from '../effects/use-conditions'
+import { applyCastEffects, itemCardDetails } from '../effects/use-conditions'
 import { orderRows } from '../rules/row-order'
 import { markAttackAdvancement } from '../documents/item'
 import { spellKillBonus } from '../effects/killing-blows'
@@ -236,8 +236,11 @@ export async function attackWithRow(actor: any, row: AttackRow, options: { fast?
   if (source?.system?.broken) return ui.notifications.warn(game.i18n.format('CRAWLSPACE.Warn.Broken', { name: source.name }))
   const skill = actor.items.get(row.skillId) ?? (['weapon', 'consumable'].includes(source?.type) ? source.weaponSkill() : null)
   const uses = [source, skill].filter((item) => item && ['skill', 'spell'].includes(item.type)).map(itemCooldown)
+  // The card offers what the weapon and its skill give at their Rank (a Rank 5 poison), as using the skill does.
+  const givers = [...new Set([source, skill].filter(Boolean))]
+  const details = (await Promise.all(givers.map((item: any) => itemCardDetails(item, { attack: true })))).filter(Boolean).join('')
   return withCooldowns(actor, uses, async () => {
-    const result = await rollAttack(actor, resolveAttack(actor, row), options)
+    const result = await rollAttack(actor, { ...resolveAttack(actor, row), details }, options)
     // The skill or spell behind the attack counts as rolled, for advancement.
     if (result) await markAttackAdvancement(actor, [source, skill], result.effectSkills)
     if (result && source?.type === 'spell') await applyCastEffects(source)

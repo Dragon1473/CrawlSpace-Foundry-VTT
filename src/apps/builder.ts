@@ -53,6 +53,35 @@ function checkRolls(draft: Draft, user: any) {
   })
 }
 
+const RANGED = /\b(bow|crossbow|handgun|shotgun|slingshot|pistol|gun|catapult)\b/i
+const THROWN = /\b(javelin|shuriken|throwing)\b/i
+
+/**
+ * The starting weapon (book weapons arrive as plain gear) becomes a weapon: equipped and linked to its skill, so it
+ * shows on the Attacks table straight away.
+ */
+export function armStartingWeapon(items: any[], combat: { name: string; skill: string; kind: string } | undefined) {
+  if (combat?.kind !== 'weapon') return
+  const item = items.find((entry) => entry.name === combat.name && ['weapon', 'loot'].includes(entry.type))
+  if (!item) return
+  const system = item.system ?? {}
+  if (item.type !== 'weapon') {
+    item.type = 'weapon'
+    item.img = item.img && !/\/(bag|loot|chest)/i.test(item.img) ? item.img : 'icons/svg/sword.svg'
+    item.system = {
+      description: system.description ?? '',
+      notes: system.notes ?? '',
+      quantity: 1,
+      tags: system.tags ?? [],
+      weaponType: RANGED.test(combat.name) ? 'ranged' : THROWN.test(combat.name) ? 'thrown' : 'melee',
+      skill: combat.skill,
+      equipped: true,
+    }
+    return
+  }
+  item.system = { ...system, equipped: true, skill: system.skill || combat.skill }
+}
+
 /** Build and create the crawler. Runs on the GM's client for players. */
 export async function createBuiltCrawler(draft: Draft, userId: string) {
   const user = game.users.get(userId)
@@ -61,6 +90,7 @@ export async function createBuiltCrawler(draft: Draft, userId: string) {
   const sheet = buildCrawler(draft, rows)
   if (!user.isGM) checkRolls(draft, user)
   const data: any = characterToActor({ data: sheet, name: sheet.character.name })
+  armStartingWeapon(data.items ?? [], builderCombatOptions(rows).find((combat) => combat.name === draft.combat))
   await fillDamageData(data.items ?? [])
   data.ownership = { default: CONST.DOCUMENT_OWNERSHIP_LEVELS.NONE, [user.id]: CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER }
   foundry.utils.setProperty(data, 'flags.crawlspace.builder', { userId: user.id, statMode: draft.statMode, rollMessages: draft.statMode === 'roll' ? draft.rollMessages : [] })

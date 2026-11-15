@@ -94,3 +94,11 @@ test('an effect with nothing for the dice is still offered, and curly apostrophe
   const skills = [{ name: 'Choke Out', rank: 2, effect: { enabled: true, skills: ["Wrasslin'"] }, damage: { base: '', dice: '' } }]
   assert.deepEqual(linkedDamageEffects(skills, 'Wrasslin’'), [{ label: 'Choke Out', value: 0, enabled: false, rollMode: undefined, damage: '', undoubled: '', skillRank: 2 }])
 })
+
+test('an equipped weapon with no skill named still attacks when its name matches a skill', () => {
+  const axeSkill = skill('s1', 'Axe')
+  const axe = weapon('w1', 'Axe')
+  const skillOf = (item) => (item.name === 'Axe' ? axeSkill : null)
+  assert.deepEqual(automaticAttackItems([axeSkill, axe], skillOf).map((item) => item.id), ['w1'])
+  assert.deepEqual(automaticAttackItems([axeSkill, { ...axe, system: { ...axe.system, equipped: false } }], skillOf).map((item) => item.id), [])
+})

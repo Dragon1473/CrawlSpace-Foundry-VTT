@@ -35,8 +35,8 @@ export function usableAlone(item: { type: string; name: string; system: any }) {
 }
 
 /**
- * Items that get an automatic attack row. A weapon needs to be equipped, unbroken and to name its skill in its
- * details; it then stands in for that skill. A weapon skill never has a row of its own, only unarmed skills and
+ * Items that get an automatic attack row. A weapon needs to be equipped, unbroken and linked to a skill (named in its
+ * details, or matched by its own name); it then stands in for that skill. A weapon skill never has a row of its own, only unarmed skills and
  * attack spells do (spells once they are on the hotlist). Broken items never attack.
  */
 export function automaticAttackItems<T extends { id: string; type: string; name: string; system: any }>(
@@ -45,7 +45,10 @@ export function automaticAttackItems<T extends { id: string; type: string; name:
   /** Hotlisted item ids: an attack spell needs to be on the hotlist (when given). */
   hotlisted?: Set<string>,
 ) {
-  const weapons = items.filter((item) => item.type === 'weapon' && item.system.equipped && !item.system.broken && String(item.system.skill ?? '').trim())
+  // Linked by name in its details, or to the skill its own name matches (weaponSkill: an "Axe" with the Axe skill).
+  const weapons = items.filter(
+    (item) => item.type === 'weapon' && item.system.equipped && !item.system.broken && (String(item.system.skill ?? '').trim() || skillOf(item)),
+  )
   const replaced = new Set(weapons.map((weapon) => skillOf(weapon)?.id).filter(Boolean))
   return items.filter((item) => {
     if (item.system.broken) return false
