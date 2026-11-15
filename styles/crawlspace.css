@@ -484,6 +484,18 @@
   .crawlspace .tab.biography prose-mirror {
     margin-bottom: 0.5rem;
   }
+  /* The description fills its tab, and pictures in it (a Neighborhood Map) fit its width. */
+  .crawlspace .tab.description.active {
+    display: flex;
+    flex-direction: column;
+  }
+  .crawlspace .tab.description.active > prose-mirror {
+    flex: 1 1 auto;
+  }
+  .crawlspace .tab.description img {
+    max-width: 100%;
+    height: auto;
+  }
 
   /* ---------- Dialogs ---------- */
   .crawl-dialog .modifiers {
@@ -3625,3 +3637,69 @@
 }
 #crawl-minimap.dragging { cursor: grabbing; }
 #crawl-minimap canvas { display: block; width: 100%; height: 100%; }
+
+/* Neighborhood and borough journals (src/journals). */
+@layer system {
+  .crawl-journal-buttons { display: flex; flex-wrap: wrap; gap: 4px; margin: 6px 0 0; }
+  .crawl-journal-buttons button { flex: 1 1 30%; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: var(--font-size-12); }
+  .crawl-journal-content .journal-tabs { display: flex; flex-wrap: wrap; gap: 4px; margin: 0 0 10px; padding: 0 0 6px; border-bottom: 1px solid var(--crawl-border); }
+  .crawl-journal-content .journal-tabs a, .journal-quarter-dialog .journal-tabs a { padding: 3px 8px; border: 1px solid var(--crawl-border); border-radius: 4px; cursor: pointer; font-size: var(--font-size-12); }
+  .journal-quarter-dialog .journal-tabs { display: flex; flex-wrap: wrap; gap: 4px; margin: 0 0 10px; }
+  .crawl-journal-content .journal-tabs a.active, .journal-quarter-dialog .journal-tabs a.active { background: var(--crawl-accent-soft); border-color: var(--crawl-accent); }
+  .journal-edit .journal-field { display: flex; flex-direction: column; gap: 3px; margin: 0 0 10px; font-weight: 600; }
+  .journal-edit .journal-field input, .journal-edit .journal-field textarea, .journal-edit .journal-field select { font-weight: 400; width: 100%; }
+  .journal-edit .journal-field textarea { min-height: 70px; resize: vertical; }
+  .journal-edit .journal-list, .journal-edit .journal-slot { margin: 0 0 12px; padding: 6px 8px; border: 1px dashed var(--crawl-border); border-radius: 6px; }
+  .journal-edit .journal-list.drop-hover, .journal-edit .journal-slot.drop-hover { border-color: var(--crawl-accent); background: var(--crawl-accent-soft); }
+  .journal-edit .journal-list h4, .journal-edit .journal-slot h4 { margin: 0 0 6px; border: none; font-size: var(--font-size-14); }
+  .journal-edit .journal-list ol { margin: 0; padding: 0; list-style: none; }
+  .journal-edit .journal-row { display: flex; flex-direction: column; gap: 3px; margin: 0 0 6px; padding: 0 0 6px; border-bottom: 1px solid var(--crawl-border); }
+  .journal-edit .journal-row-main { display: flex; align-items: center; gap: 6px; }
+  .journal-edit .journal-row-main > input[type='text'] { flex: 1; }
+  .journal-edit .journal-row-main .journal-link { flex: 1; }
+  .journal-edit .journal-roll { flex: 0 0 70px !important; }
+  .journal-edit .journal-number { display: flex; align-items: center; gap: 2px; flex: 0 0 auto; }
+  .journal-edit .journal-number input { width: 48px; }
+  .journal-edit .journal-row-buttons { display: flex; gap: 6px; flex: 0 0 auto; }
+  .journal-edit .journal-row-buttons a { cursor: pointer; opacity: 0.75; }
+  .journal-edit .journal-row-buttons a:hover { opacity: 1; color: var(--crawl-accent); }
+  .journal-edit .journal-row-notes { font-size: var(--font-size-12); }
+  .journal-edit .journal-list-add, .journal-edit .journal-slot-body { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+  .journal-edit .journal-list-add button, .journal-edit .journal-slot-body button { flex: 0 0 auto; width: auto; }
+  .journal-edit .journal-slot-body a[data-slot-action] { cursor: pointer; }
+  .journal-edit .hint, .crawl-journal-content .hint, .journal-picker .hint { color: var(--crawl-muted); font-size: var(--font-size-12); font-weight: 400; }
+  .journal-edit .journal-quarters { margin: 0 0 10px; padding: 0; list-style: none; }
+  .journal-edit .journal-quarter-card { margin: 0 0 8px; padding: 8px; border: 1px solid var(--crawl-border); border-radius: 6px; }
+  .journal-edit .journal-quarter-card .journal-row-main strong { flex: 1; }
+  .journal-edit .journal-quarter-summary p { margin: 4px 0; }
+  .journal-edit .journal-steps { display: flex; gap: 12px; margin: 0 0 12px; padding: 0; list-style: none; color: var(--crawl-muted); }
+  .journal-edit .journal-steps li.active { color: inherit; font-weight: 700; }
+  .journal-edit .journal-footer { display: flex; gap: 8px; margin-top: 12px; }
+  .journal-quarter-dialog .window-content, .journal-builder .window-content { overflow-y: auto; }
+  .journal-quarter-dialog .journal-edit { display: flex; flex-direction: column; min-height: 100%; }
+  .journal-quarter-dialog .journal-tab-body { flex: 1; }
+  .journal-quarter-dialog .journal-footer { position: sticky; bottom: 0; padding: 8px 0 0; background: var(--color-cool-5, inherit); }
+  .crawl-journal-content .journal-view-section { margin: 0 0 14px; }
+  .crawl-journal-content .journal-view-list { margin: 4px 0 8px; padding-left: 18px; }
+  .crawl-journal-content .journal-view-list li { margin: 0 0 6px; }
+  .crawl-journal-content .journal-extra { color: var(--crawl-muted); font-size: var(--font-size-12); }
+  .crawl-journal-content .journal-entry-notes p { margin: 2px 0; }
+  .crawl-journal-content .journal-quarter { margin: 10px 0; padding: 8px 10px; border-left: 3px solid var(--crawl-accent); background: var(--crawl-accent-soft); border-radius: 0 6px 6px 0; }
+  .crawl-journal-content .journal-roll-mobs { cursor: pointer; font-weight: 600; }
+  .journal-picker .journal-picker-list { margin: 6px 0 0; padding: 0; list-style: none; max-height: 420px; overflow-y: auto; }
+  .journal-picker .journal-picker-list li { display: flex; align-items: center; gap: 8px; padding: 4px; border-radius: 4px; cursor: pointer; }
+  .journal-picker .journal-picker-list li:hover { background: var(--crawl-accent-soft); }
+  .journal-picker .journal-picker-list img { width: 28px; height: 28px; object-fit: cover; border: none; }
+  .journal-picker .journal-picker-list span { flex: 1; }
+  .journal-picker .journal-picker-list small { color: var(--crawl-muted); }
+  .crawl-journal-content .journal-map-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 0 0.5rem;
+  }
+  .crawl-journal-content .journal-map-item button {
+    flex: none;
+    width: auto;
+  }
+}

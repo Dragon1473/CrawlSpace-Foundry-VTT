@@ -48,6 +48,7 @@ import { registerFlavorTooltip } from './canvas/flavor-tooltip'
 import { registerMinimap } from './canvas/minimap'
 import { readImportFile } from './import/account-import'
 import { openAccountImport } from './apps/account-import'
+import { NeighborhoodBuilder, compileFieldGuide, createBlank, registerJournals } from './journals/register'
 
 const TEMPLATES = [
   'chat/card-footer',
@@ -219,8 +220,9 @@ Hooks.once('init', () => {
   registerHandRules()
   registerFlavorTooltip()
   registerMinimap()
+  registerJournals()
 
-  game.crawlspace = { config, openGrinding, openAwards, openBuilder, performUpkeep, openTime, advanceTime, settleTime, rest, importCharacter, importFile, openUpkeep, fillActorDamage, calibrateGrid, useAttack: useAttackRow, useAction: useActionRow, declareAttack: () => game.combat && promptDeclaration(game.combat), openTokenMaker: (actor: any, options?: { source?: string; foreground?: string; pixelArt?: boolean }) => TokenMakerApp.open(actor, options) }
+  game.crawlspace = { config, openGrinding, openAwards, openBuilder, performUpkeep, openTime, advanceTime, settleTime, rest, importCharacter, importFile, openUpkeep, fillActorDamage, calibrateGrid, useAttack: useAttackRow, useAction: useActionRow, declareAttack: () => game.combat && promptDeclaration(game.combat), openTokenMaker: (actor: any, options?: { source?: string; foreground?: string; pixelArt?: boolean }) => TokenMakerApp.open(actor, options), openNeighborhoodBuilder: () => new NeighborhoodBuilder().render({ force: true }), createBlankJournal: createBlank, compileFieldGuide }
 })
 
 /** A new crawler's tokens are linked to it unless the creator said otherwise. */

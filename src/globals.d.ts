@@ -15,6 +15,10 @@ declare const ActiveEffect: any
 declare const Combat: any
 declare const Combatant: any
 declare const TokenDocument: any
+declare const JournalEntry: any
+declare const JournalEntryPage: any
+declare const RollTable: any
+declare const Folder: any
 declare const Handlebars: any
 declare const fromUuid: (uuid: string) => Promise<any>
 declare const fromUuidSync: (uuid: string) => any
