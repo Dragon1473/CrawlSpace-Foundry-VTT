@@ -1,7 +1,8 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { crawlerMarks } from '../src/rules/crawler-marks.ts'
-import { bossBattleEnemies, cleanBattle, soundSource } from '../src/rules/boss-battle.ts'
+import { battleSides, cleanBattle, groupFighters, soundSource } from '../src/rules/boss-battle.ts'
+import { cleanParties, partyNameOf } from '../src/rules/party.ts'
 
 test('a crawler shows skulls for crawlers killed, golden skulls for leaderboard kills and stars for bosses', () => {
   const marks = crawlerMarks({ crawlers: 2, leaderboard: 1, bosses: 3 })
@@ -27,31 +28,80 @@ test('many marks collapse to one icon with a count', () => {
 })
 
 const token = (id, disposition, extra = {}) => ({ id, actorUuid: `Actor.${id}`, name: id, img: `${id}.webp`, disposition, ...extra })
+const names = (list) => list.map((entry) => entry.name)
 
-test('the GM\'s selected tokens are the enemies, leaving out the party', () => {
-  const enemies = bossBattleEnemies({
-    selected: [token('Boss', -1), token('Carl', 1), token('Gnoll', 0)],
+test("the GM's selected tokens are the enemies, leaving out the party and friendly tokens", () => {
+  const { enemies } = battleSides({
+    party: [token('Carl', 1, { crawler: true })],
+    selected: [token('Boss', -1), token('Carl', 1), token('Gnoll', 0), token('Ally', 1)],
     combatants: [token('Rat', -1)],
-    party: ['Actor.Carl'],
   })
-  assert.deepEqual(enemies.map((enemy) => enemy.name), ['Boss', 'Gnoll'])
+  assert.deepEqual(names(enemies), ['Boss', 'Gnoll'])
 })
 
-test('with nothing selected, the combat\'s hostile combatants are the enemies', () => {
-  const enemies = bossBattleEnemies({
-    selected: [token('Carl', 1)],
+test("with nothing selected, the combat's hostile combatants are the enemies", () => {
+  const { enemies } = battleSides({
+    party: [token('Carl', 1, { crawler: true })],
+    selected: [],
     combatants: [token('Boss', -1), token('Donut', 1), token('Shopkeeper', 0), token('Boss', -1), token('Minion', -1, { actorUuid: 'Actor.Carl' })],
-    party: ['Actor.Carl'],
   })
-  assert.deepEqual(enemies.map((enemy) => enemy.name), ['Boss'])
+  assert.deepEqual(names(enemies), ['Boss'])
 })
 
-test('a battle sent over the socket is trimmed to names and pictures', () => {
-  const battle = cleanBattle({ crawlers: [{ name: 'Carl', img: 'carl.webp', secret: 1 }, 'junk'], enemies: Array.from({ length: 30 }, (_, i) => ({ name: `E${i}`, img: 7 })) })
-  assert.deepEqual(battle.crawlers, [{ name: 'Carl', img: 'carl.webp' }])
-  assert.equal(battle.enemies.length, 12)
-  assert.deepEqual(battle.enemies[0], { name: 'E0', img: '' })
+test("the party's pets and minions are never enemies", () => {
+  const { allies, enemies } = battleSides({ party: [], selected: [token('Mongo', -1), token('Boss', -1)], combatants: [], friends: ['Actor.Mongo'] })
+  assert.deepEqual(names(enemies), ['Boss'])
+  assert.deepEqual(names(allies), [])
+})
+
+test('the crawler side is the party, then other crawlers in the fight who are not hostile', () => {
+  const { allies, enemies } = battleSides({
+    party: [token('Carl', 1, { crawler: true }), token('Donut', 1, { crawler: true })],
+    selected: [],
+    combatants: [token('Carl', 1, { crawler: true }), token('Imani', 1, { crawler: true }), token('Imani', 1, { crawler: true, id: 'Imani2' }), token('Rival', -1, { crawler: true }), token('Shopkeeper', 0), token('Boss', -1)],
+  })
+  assert.deepEqual(names(allies), ['Carl', 'Donut', 'Imani'])
+  assert.deepEqual(names(enemies), ['Rival', 'Boss'])
+})
+
+test('crawlers are grouped under their party, Solo last; monsters get no banner', () => {
+  const groups = groupFighters(
+    [
+      token('Carl', 1, { crawler: true, party: 'The Royal Court', level: 9 }),
+      token('Loner', 1, { crawler: true, level: 3 }),
+      token('Imani', 1, { crawler: true, party: 'Meadow Lark', level: 10.6 }),
+      token('Donut', 1, { crawler: true, party: 'The Royal Court', level: 9 }),
+      token('Boss', -1, { level: 12 }),
+    ],
+    'Solo',
+  )
+  assert.deepEqual(groups.map((group) => [group.name, names(group.fighters)]), [
+    ['The Royal Court', ['Carl', 'Donut']],
+    ['Meadow Lark', ['Imani']],
+    ['', ['Boss']],
+    ['Solo', ['Loner']],
+  ])
+  assert.equal(groups[1].fighters[0].level, 10)
+})
+
+test('a battle sent over the socket is trimmed to group names, names, pictures and levels', () => {
+  const many = Array.from({ length: 30 }, (_, i) => ({ name: `E${i}`, img: 7, level: '4' }))
+  const battle = cleanBattle({ crawlers: [{ name: 'Court', fighters: [{ name: 'Carl', img: 'carl.webp', level: 9, secret: 1 }, 'junk'] }, { name: 'Empty', fighters: [] }], enemies: [{ name: 5, fighters: many }] })
+  assert.deepEqual(battle.crawlers, [{ name: 'Court', fighters: [{ name: 'Carl', img: 'carl.webp', level: 9 }] }])
+  assert.equal(battle.enemies[0].name, '')
+  assert.equal(battle.enemies[0].fighters.length, 12)
+  assert.deepEqual(battle.enemies[0].fighters[0], { name: 'E0', img: '', level: 4 })
   assert.deepEqual(cleanBattle(null), { crawlers: [], enemies: [] })
+})
+
+test("other parties come from the setting cleaned up, and a crawler's party name follows its membership", () => {
+  const parties = cleanParties([{ id: 'a', name: ' Meadow Lark ' }, { id: 'a', name: 'dupe' }, { name: 'no id' }, null, { id: 'b' }])
+  assert.deepEqual(parties, [{ id: 'a', name: 'Meadow Lark' }, { id: 'b', name: '' }])
+  const context = { members: new Set(['carl']), playerName: '', fallback: 'Crawlers', parties }
+  assert.equal(partyNameOf({ id: 'carl', flags: { crawlspace: { partyId: 'a' } } }, context), 'Crawlers')
+  assert.equal(partyNameOf({ id: 'carl' }, { ...context, playerName: 'The Royal Court' }), 'The Royal Court')
+  assert.equal(partyNameOf({ id: 'imani', flags: { crawlspace: { partyId: 'a' } } }, context), 'Meadow Lark')
+  assert.equal(partyNameOf({ id: 'loner', flags: { crawlspace: { partyId: 'gone' } } }, context), '')
 })
 
 test('a blank sound setting plays nothing', () => {

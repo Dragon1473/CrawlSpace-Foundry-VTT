@@ -7,7 +7,7 @@
  */
 import { followerKind, followersOf } from '../actors/companions'
 import { clickCondition, isStackable } from '../effects/stacks'
-import { partyCrawlers } from '../actors/party'
+import { openParties, partyCrawlers, playerPartyLabel } from '../actors/party'
 import { crawlerMarks } from '../rules/crawler-marks'
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api
@@ -70,6 +70,7 @@ class CrawlerFrames extends HandlebarsApplicationMixin(ApplicationV2) {
     actions: {
       toggle: CrawlerFrames.#onToggle,
       openSheet: CrawlerFrames.#onOpenSheet,
+      parties: () => openParties(),
     },
   }
 
@@ -116,7 +117,7 @@ class CrawlerFrames extends HandlebarsApplicationMixin(ApplicationV2) {
         }),
       }
     })
-    return { frames, gm, collapsed }
+    return { frames, gm, collapsed, partyName: playerPartyLabel() }
   }
 
   _onRender(context: any, options: any) {
@@ -258,5 +259,5 @@ export function registerFrames() {
   for (const hook of ['createActiveEffect', 'updateActiveEffect', 'deleteActiveEffect']) Hooks.on(hook, (effect: any) => changed(effect.parent))
   // Item changes (equipping armor, raising INT) move Evade, DR and Mana.
   for (const hook of ['createItem', 'updateItem', 'deleteItem']) Hooks.on(hook, (item: any) => changed(item.parent))
-  for (const hook of ['updateUser', 'canvasReady', 'createToken', 'deleteToken']) Hooks.on(hook, refresh)
+  for (const hook of ['updateUser', 'canvasReady', 'createToken', 'deleteToken', 'crawlspacePartiesChanged']) Hooks.on(hook, refresh)
 }

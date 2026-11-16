@@ -2971,9 +2971,10 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: safe center;
     gap: 24px;
     padding: 16px;
+    overflow-y: auto;
     background: radial-gradient(ellipse at center, rgb(40 0 0 / 82%), rgb(0 0 0 / 94%));
     color: #fff;
     cursor: pointer;
@@ -2990,41 +2991,100 @@
     animation: crawl-boss-title 0.6s ease-out both;
   }
   #crawl-boss-battle .boss-stage { display: flex; align-items: center; justify-content: center; gap: clamp(12px, 4vw, 56px); width: 100%; max-width: 1400px; }
-  #crawl-boss-battle .boss-side { display: flex; flex: 1; flex-wrap: wrap; align-content: center; gap: 14px; }
+  #crawl-boss-battle .boss-side { display: flex; flex: 1; flex-wrap: wrap; align-items: flex-end; align-content: center; gap: 28px clamp(16px, 3vw, 40px); }
   #crawl-boss-battle .boss-side.crawlers { justify-content: flex-end; }
   #crawl-boss-battle .boss-side.enemies { justify-content: flex-start; }
+  #crawl-boss-battle .boss-group { display: flex; flex-direction: column; align-items: center; gap: 22px; }
+  /* The party banner: a glowing blue panel with a tab on top, as in the HUD. */
+  #crawl-boss-battle .boss-banner {
+    position: relative;
+    max-width: clamp(160px, 22vw, 300px);
+    padding: 4px;
+    border: 2px solid #3d8bff;
+    border-radius: 6px;
+    background: rgb(20 60 160 / 55%);
+    box-shadow: 0 0 14px rgb(61 139 255 / 70%);
+    animation: crawl-boss-title 0.5s ease-out both;
+  }
+  #crawl-boss-battle .boss-banner::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 14px;
+    width: 38%;
+    height: 8px;
+    border: 2px solid #3d8bff;
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+    background: rgb(20 60 160 / 55%);
+  }
+  #crawl-boss-battle .boss-banner span {
+    display: block;
+    padding: 8px 14px;
+    border: 1px solid #8fc1ff;
+    border-radius: 4px;
+    background: linear-gradient(180deg, #2f7dff, #1b4fd1);
+    color: #fff;
+    font-size: clamp(12px, 1.4vw, 18px);
+    font-weight: 800;
+    line-height: 1.15;
+    text-align: center;
+    text-transform: uppercase;
+    text-shadow: 0 1px 2px rgb(0 0 0 / 60%);
+    overflow-wrap: anywhere;
+  }
+  #crawl-boss-battle .enemies .boss-banner,
+  #crawl-boss-battle .enemies .boss-banner::before { border-color: #ff4d3d; background: rgb(140 20 20 / 55%); box-shadow: 0 0 14px rgb(255 77 61 / 60%); }
+  #crawl-boss-battle .enemies .boss-banner span { border-color: #ffb0a8; background: linear-gradient(180deg, #e2402f, #a3201a); }
+  #crawl-boss-battle .enemies .boss-banner::before { box-shadow: none; }
+  #crawl-boss-battle .boss-fighters { display: grid; grid-template-columns: repeat(var(--cols, 2), auto); justify-content: center; gap: 22px 14px; }
   #crawl-boss-battle figure {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    width: clamp(80px, 11vw, 150px);
+    position: relative;
+    width: clamp(84px, 10vw, 140px);
     margin: 0;
+    padding-top: 22px;
     animation: crawl-boss-in-left 0.5s ease-out both;
     animation-delay: calc(0.15s + var(--i) * 0.08s);
   }
   #crawl-boss-battle .enemies figure { animation-name: crawl-boss-in-right; }
   #crawl-boss-battle figure img {
+    display: block;
     width: 100%;
     aspect-ratio: 1;
     object-fit: cover;
     object-position: top;
-    border: 3px solid #66dfff;
+    border: 3px solid #fff;
     border-radius: 50%;
-    background: #111;
-    box-shadow: 0 0 16px rgb(102 223 255 / 60%);
+    background: #f4f4f4;
+    box-shadow: 0 0 16px rgb(102 223 255 / 45%);
   }
-  #crawl-boss-battle .enemies figure img { border-color: #ff4d3d; box-shadow: 0 0 16px rgb(255 77 61 / 70%); }
+  #crawl-boss-battle .enemies figure img { border-color: #ffd0cb; box-shadow: 0 0 16px rgb(255 77 61 / 60%); }
+  /* The name tag sits over the top of the circle. */
   #crawl-boss-battle figcaption {
-    max-width: 100%;
-    overflow: hidden;
-    font-size: clamp(11px, 1.2vw, 16px);
-    font-weight: 700;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 120%;
+    padding: 3px 8px;
+    border: 1px solid #8fc1ff;
+    border-radius: 2px;
+    background: linear-gradient(180deg, #3b86ff, #1d55d6);
+    color: #fff;
+    font-style: normal;
+    line-height: 1.1;
     text-align: center;
-    text-overflow: ellipsis;
+    text-transform: uppercase;
+    text-shadow: 0 1px 2px rgb(0 0 0 / 60%);
+    transform: translateX(-50%);
     white-space: nowrap;
-    text-shadow: 0 2px 4px #000;
   }
+  #crawl-boss-battle .enemies figcaption { border-color: #ffb0a8; background: linear-gradient(180deg, #e2402f, #a3201a); }
+  #crawl-boss-battle figcaption b { max-width: 100%; overflow: hidden; font-size: clamp(10px, 1vw, 14px); font-weight: 800; text-overflow: ellipsis; }
+  #crawl-boss-battle figcaption small { font-size: clamp(8px, 0.75vw, 10px); font-weight: 700; opacity: 0.9; }
   #crawl-boss-battle .boss-vs {
     flex: none;
     font-size: clamp(40px, 8vw, 110px);
@@ -3727,6 +3787,16 @@
   font-size: 0.75em;
   opacity: 0.7;
 }
+.crawl-party-mark.other { color: #f0c27a; }
+.crawlspace.crawl-parties .crawl-parties-body { display: flex; flex-direction: column; gap: 8px; }
+.crawlspace.crawl-parties fieldset { display: flex; flex-direction: column; gap: 6px; }
+.crawlspace.crawl-parties .crawl-party-name { display: flex; align-items: center; gap: 8px; }
+.crawlspace.crawl-parties .crawl-party-name input,
+.crawlspace.crawl-parties .crawl-party-row input { flex: 1; }
+.crawlspace.crawl-parties .crawl-party-row { display: flex; align-items: center; gap: 6px; }
+.crawlspace.crawl-parties .crawl-party-row button.icon { flex: none; width: 28px; }
+.crawlspace.crawl-parties .crawl-party-members { margin: 0; font-size: 0.9em; }
+.crawlspace.crawl-parties .crawl-other-party + .crawl-other-party { padding-top: 6px; border-top: 1px solid rgb(255 255 255 / 15%); }
 
 /* Minimap: the app's round blue radar. */
 #crawl-minimap {

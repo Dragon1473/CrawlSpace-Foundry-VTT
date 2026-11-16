@@ -7,7 +7,7 @@ import { registerImmunity } from './effects/immunity'
 import { openTime, registerClock, registerTimePickers } from './apps/time'
 import { registerFrames } from './apps/frames'
 import { registerBossBattle, startBossBattle } from './apps/boss-battle'
-import { markPartyInDirectory, registerParty } from './actors/party'
+import { markPartyInDirectory, openParties, registerParty } from './actors/party'
 import { calibrateGrid, registerGridCalibration } from './apps/grid-calibration'
 import { registerCooldownIcons } from './effects/cooldowns'
 import { registerConditionDrops } from './effects/use-conditions'
@@ -225,7 +225,7 @@ Hooks.once('init', () => {
   registerMinimap()
   registerJournals()
 
-  game.crawlspace = { config, startBossBattle, openHeadshotMaker: (actor: any) => HeadshotMakerApp.open(actor), openGrinding, openAwards, openBuilder, performUpkeep, openTime, advanceTime, settleTime, rest, importCharacter, importFile, openUpkeep, fillActorDamage, calibrateGrid, useAttack: useAttackRow, useAction: useActionRow, declareAttack: () => game.combat && promptDeclaration(game.combat), openTokenMaker: (actor: any, options?: { source?: string; foreground?: string; pixelArt?: boolean }) => TokenMakerApp.open(actor, options), openNeighborhoodBuilder: () => new NeighborhoodBuilder().render({ force: true }), createBlankJournal: createBlank, compileFieldGuide }
+  game.crawlspace = { config, startBossBattle, openParties, openHeadshotMaker: (actor: any) => HeadshotMakerApp.open(actor), openGrinding, openAwards, openBuilder, performUpkeep, openTime, advanceTime, settleTime, rest, importCharacter, importFile, openUpkeep, fillActorDamage, calibrateGrid, useAttack: useAttackRow, useAction: useActionRow, declareAttack: () => game.combat && promptDeclaration(game.combat), openTokenMaker: (actor: any, options?: { source?: string; foreground?: string; pixelArt?: boolean }) => TokenMakerApp.open(actor, options), openNeighborhoodBuilder: () => new NeighborhoodBuilder().render({ force: true }), createBlankJournal: createBlank, compileFieldGuide }
 })
 
 /** A new crawler's tokens are linked to it unless the creator said otherwise. */

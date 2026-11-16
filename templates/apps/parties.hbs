@@ -1,0 +1,29 @@
+{{!-- The GM's Parties window (actors/party.ts). --}}
+<section class="crawl-parties-body">
+  <fieldset>
+    <legend>{{localize "CRAWLSPACE.Party.PlayersParty"}}</legend>
+    <label class="crawl-party-name"><span>{{localize "CRAWLSPACE.Party.Name"}}</span><input type="text" name="partyName" value="{{partyName}}" placeholder="{{fallback}}"></label>
+    <p class="crawl-party-members">{{#if players}}{{players}}{{else}}<span class="hint">{{localize "CRAWLSPACE.Party.NoMembers"}}</span>{{/if}}</p>
+    <p class="hint">{{localize "CRAWLSPACE.Party.PlayersHint"}}</p>
+  </fieldset>
+  <fieldset>
+    <legend>{{localize "CRAWLSPACE.Party.Others"}}</legend>
+    {{#each parties as |party|}}
+    <div class="crawl-other-party" data-party-id="{{party.id}}">
+      <div class="crawl-party-row">
+        <input type="text" name="parties.{{party.id}}" value="{{party.name}}" placeholder="{{localize 'CRAWLSPACE.Party.Unnamed'}}" aria-label="{{localize 'CRAWLSPACE.Party.Name'}}">
+        <button type="button" class="icon" data-action="removeParty" data-tooltip="{{localize 'CRAWLSPACE.Party.RemoveTitle'}}" aria-label="{{localize 'CRAWLSPACE.Party.RemoveTitle'}}"><i class="fa-solid fa-trash"></i></button>
+      </div>
+      <p class="crawl-party-members">{{#if party.members}}{{party.members}}{{else}}<span class="hint">{{localize "CRAWLSPACE.Party.NoMembers"}}</span>{{/if}}</p>
+    </div>
+    {{else}}
+    <p class="hint">{{localize "CRAWLSPACE.Party.NoOthers"}}</p>
+    {{/each}}
+    <button type="button" data-action="addParty"><i class="fa-solid fa-plus"></i> {{localize "CRAWLSPACE.Party.AddParty"}}</button>
+  </fieldset>
+  <fieldset>
+    <legend>{{localize "CRAWLSPACE.Party.Solo"}}</legend>
+    <p class="crawl-party-members">{{#if solo}}{{solo}}{{else}}<span class="hint">{{localize "CRAWLSPACE.Party.NoMembers"}}</span>{{/if}}</p>
+  </fieldset>
+  <p class="hint">{{localize "CRAWLSPACE.Party.MembershipHint"}}</p>
+</section>
