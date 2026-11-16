@@ -92,3 +92,10 @@ export function boroughView(system: any, fieldGuide?: { journal: string; item: s
   const guide = fieldGuide?.journal ? `<section class="journal-view-section"><h2>Field Guide</h2><p>${uuidLink(fieldGuide.journal, 'Borough Field Guide')}${fieldGuide.item ? ` · ${uuidLink(fieldGuide.item, 'Field Guide item')}` : ''}</p></section>` : ''
   return `${paragraphs(system.summary)}${boss}${list}${guide}` || '<p class="hint">This borough is empty. Edit the page to fill it in.</p>'
 }
+
+/** A city, province, country or floor: its description and the regions it holds. */
+export function regionView(system: any, heading: string, empty: string) {
+  const members = (system.members ?? []) as LinkEntry[]
+  const list = members.length ? `<section class="journal-view-section"><h2>${escapeHtml(heading)}</h2><ul class="journal-view-list">${members.map((entry) => `<li>${uuidLink(entry.uuid, entry.name)}${entry.notes ? paragraphs(entry.notes) : ''}</li>`).join('')}</ul></section>` : ''
+  return `${paragraphs(system.summary)}${list}` || `<p class="hint">${escapeHtml(empty)}</p>`
+}

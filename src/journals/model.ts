@@ -10,7 +10,19 @@ export type LinkEntry = { id: string; uuid: string; name: string; notes: string;
 export type NoteEntry = { id: string; name: string; description: string; roll: string }
 
 /** What a list links to; it decides what can be dropped or picked there. */
-export type LinkKind = 'mob' | 'boss' | 'npc' | 'trap' | 'item' | 'achievement' | 'reward' | 'quest' | 'neighborhood' | 'scene'
+export type LinkKind = 'mob' | 'boss' | 'npc' | 'trap' | 'item' | 'achievement' | 'reward' | 'quest' | 'neighborhood' | 'scene' | `${HigherTier}Part`
+
+/**
+ * The map tiers above a neighborhood, smallest first. A borough holds neighborhoods; each tier above holds any of the
+ * tiers below it (a floor can hold countries, or go straight to cities or boroughs).
+ */
+export const REGION_TIERS = ['borough', 'city', 'province', 'country', 'floor'] as const
+export type RegionTier = (typeof REGION_TIERS)[number]
+export const HIGHER_TIERS = ['city', 'province', 'country', 'floor'] as const
+export type HigherTier = (typeof HIGHER_TIERS)[number]
+export const isRegionTier = (type: unknown): type is RegionTier => REGION_TIERS.includes(type as RegionTier)
+/** The tiers a tier may hold: every region tier below it. */
+export const partsOf = (tier: RegionTier): RegionTier[] => REGION_TIERS.slice(0, REGION_TIERS.indexOf(tier))
 
 export type Field =
   | { type: 'text'; key: string; label: string }
@@ -75,6 +87,8 @@ export const NEIGHBORHOOD_SECTIONS: Section[] = [
 ]
 
 export const BOROUGH_SECTIONS: Section[] = [{ id: 'about', label: 'About', fields: [note('summary', 'Description')] }]
+/** A city, province, country or floor: a description, and the regions it holds (`members`). */
+export const REGION_SECTIONS: Section[] = BOROUGH_SECTIONS
 
 const randomId = () => Math.random().toString(36).slice(2, 12).padEnd(10, '0')
 

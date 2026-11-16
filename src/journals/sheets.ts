@@ -1,13 +1,14 @@
 /**
- * The neighborhood and borough page sheets, the Add Quarter window and the neighborhood builder.
+ * The neighborhood, borough and higher region (city, province, country, floor) page sheets, the Add Quarter window and
+ * the neighborhood builder.
  *
  * In a journal, a page reads like the app's adventure preview (view.ts). Editing it opens tabs of fields like the app's
  * adventure editor; quarters are edited one at a time in the Add Quarter window. The builder walks through a new
  * neighborhood: name and summary, its quarters, then its boss and the quarter the boss is in.
  */
-import { BOROUGH_SECTIONS, NEIGHBORHOOD_SECTIONS, QUARTER_SECTIONS, moveEntry, newQuarter, paragraphs, setPath, type Quarter } from './model'
+import { BOROUGH_SECTIONS, NEIGHBORHOOD_SECTIONS, QUARTER_SECTIONS, REGION_SECTIONS, isRegionTier, moveEntry, newQuarter, paragraphs, setPath, type HigherTier, type Quarter, type RegionTier } from './model'
 import { bindFields, bindTabs, esc, renderSection, renderSlot, renderTabs, t } from './fields'
-import { boroughView, neighborhoodView, uuidLink } from './view'
+import { boroughView, neighborhoodView, regionView, uuidLink } from './view'
 import { compileFieldGuide } from './field-guide'
 
 const { ApplicationV2 } = foundry.applications.api
@@ -344,6 +345,32 @@ export class BoroughPageSheet extends CrawlPageSheet {
   }
 }
 
+/** A city, province, country or floor: About, and the regions it holds. */
+export class RegionPageSheet extends CrawlPageSheet {
+  get tier() {
+    return this.page.type as HigherTier
+  }
+
+  get tabs() {
+    return [...REGION_SECTIONS, { id: 'members', label: t(`Members.${this.tier}`), fields: [] }]
+  }
+
+  async viewHTML() {
+    return regionView(this.page.system, t(`Members.${this.tier}`), t('RegionEmpty', { tier: t(`Tier.${this.tier}`).toLowerCase() }))
+  }
+
+  editHTML() {
+    const tabs = this.tabs
+    const active = tabs.find((tab) => tab.id === this.tab) ?? tabs[0]
+    const data = this.data
+    const body =
+      active.id === 'members'
+        ? renderSection(data, { id: 'members', label: '', fields: [{ type: 'links', key: 'members', label: t(`Members.${this.tier}`), kind: `${this.tier}Part` }] }) + `<p class="hint">${esc(t('MembersHint', { kinds: t(`Kind.${this.tier}Part`) }))}</p>`
+        : renderSection(data, active)
+    return `<div class="crawl-journal-body journal-edit">${renderTabs(tabs, active.id)}<div class="journal-tab-body">${body}</div></div>`
+  }
+}
+
 /* The neighborhood builder */
 
 type Draft = { name: string; summary: string; quarters: Quarter[]; boss: { uuid: string; name: string; notes: string; quarter: string } }
@@ -426,12 +453,17 @@ export async function createNeighborhoodJournal(name: string, system: Record<str
 }
 
 export async function createBoroughJournal(name: string, folder: string | null = null) {
-  return JournalEntry.create({ name, folder, pages: [{ name, type: 'borough', system: {} }] })
+  return createRegionJournal('borough', name, folder)
 }
 
-/** A blank neighborhood or borough, opened on its page for editing. */
-export async function createBlank(type: 'neighborhood' | 'borough', folder: string | null = null) {
-  const journal = type === 'neighborhood' ? await createNeighborhoodJournal(t('NewNeighborhood'), {}, folder) : await createBoroughJournal(t('NewBorough'), folder)
+/** A new journal holding one borough, city, province, country or floor page. */
+export async function createRegionJournal(tier: RegionTier, name: string, folder: string | null = null) {
+  return JournalEntry.create({ name, folder, pages: [{ name, type: tier, system: {} }] })
+}
+
+/** A blank neighborhood, borough, city, province, country or floor, opened on its page for editing. */
+export async function createBlank(type: 'neighborhood' | RegionTier, folder: string | null = null) {
+  const journal = type === 'neighborhood' ? await createNeighborhoodJournal(t('NewNeighborhood'), {}, folder) : isRegionTier(type) ? await createRegionJournal(type, t(`New.${type}`), folder) : null
   const page = journal?.pages.contents[0]
   if (page) page.sheet.render(true)
   return journal

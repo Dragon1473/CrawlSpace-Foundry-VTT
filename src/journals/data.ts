@@ -1,5 +1,5 @@
-/** The neighborhood and borough journal page types' data, built from the field lists in model.ts. */
-import { BOROUGH_SECTIONS, NEIGHBORHOOD_SECTIONS, QUARTER_SECTIONS, type Section } from './model'
+/** The neighborhood, borough and higher region (city, province, country, floor) journal page types' data, built from the field lists in model.ts. */
+import { BOROUGH_SECTIONS, NEIGHBORHOOD_SECTIONS, QUARTER_SECTIONS, REGION_SECTIONS, type Section } from './model'
 
 const f = () => foundry.data.fields
 const text = () => new (f().StringField)({ required: true, blank: true, initial: '' })
@@ -46,6 +46,17 @@ export class BoroughPageData extends foundry.abstract.TypeDataModel {
       /** The compiled Borough Field Guide journal and the item that gives it out. */
       fieldGuide: text(),
       fieldGuideItem: text(),
+    }
+  }
+}
+
+/** A city, province, country or floor: the regions it holds, in order (CrawlSpace Atlas lays out their maps). */
+export class RegionPageData extends foundry.abstract.TypeDataModel {
+  [key: string]: any
+  static defineSchema() {
+    return {
+      ...fieldsOf(REGION_SECTIONS),
+      members: new (f().ArrayField)(linkSchema()),
     }
   }
 }

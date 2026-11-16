@@ -1,15 +1,21 @@
-/** Neighborhood and borough journals: page types, sheets, mob tables, field guide access, and the Journal tab's buttons. */
-import { BoroughPageData, NeighborhoodPageData } from './data'
-import { BoroughPageSheet, NeighborhoodBuilder, NeighborhoodPageSheet, createBlank } from './sheets'
+/**
+ * Neighborhood, borough and higher region journals: page types, sheets, mob tables, field guide access, and the Journal
+ * tab's Atlas Maps button.
+ */
+import { BoroughPageData, NeighborhoodPageData, RegionPageData } from './data'
+import { HIGHER_TIERS } from './model'
+import { BoroughPageSheet, NeighborhoodPageSheet, RegionPageSheet } from './sheets'
+import { AtlasMapsMenu } from './menu'
 import { registerMobTables } from './tables'
 import { registerGrants } from './grants'
 import { esc, t } from './fields'
 
 export function registerJournals() {
-  Object.assign(CONFIG.JournalEntryPage.dataModels, { neighborhood: NeighborhoodPageData, borough: BoroughPageData })
+  Object.assign(CONFIG.JournalEntryPage.dataModels, { neighborhood: NeighborhoodPageData, borough: BoroughPageData }, Object.fromEntries(HIGHER_TIERS.map((tier) => [tier, RegionPageData])))
   const sheets = foundry.applications.apps.DocumentSheetConfig
   sheets.registerSheet(JournalEntryPage, 'crawlspace', NeighborhoodPageSheet, { types: ['neighborhood'], makeDefault: true, label: 'CRAWLSPACE.Journal.NeighborhoodSheet' })
   sheets.registerSheet(JournalEntryPage, 'crawlspace', BoroughPageSheet, { types: ['borough'], makeDefault: true, label: 'CRAWLSPACE.Journal.BoroughSheet' })
+  sheets.registerSheet(JournalEntryPage, 'crawlspace', RegionPageSheet, { types: [...HIGHER_TIERS], makeDefault: true, label: 'CRAWLSPACE.Journal.RegionSheet' })
   registerMobTables()
   registerGrants()
 
@@ -19,29 +25,24 @@ export function registerJournals() {
     for (const table of game.tables.filter((table: any) => String(table.getFlag('crawlspace', 'page') ?? '').startsWith(`${journal.uuid}.`))) await table.delete()
   })
 
-  // The Journal tab: New Neighborhood (the builder), a blank neighborhood, and a new borough.
+  // The Journal tab: one Atlas Maps button, opening the menu of new neighborhoods, boroughs and the tiers above.
   Hooks.on('renderJournalDirectory', (app: any, html: HTMLElement) => {
     if (!game.user.isGM) return
     const root = html instanceof HTMLElement ? html : app.element
     if (!root || root.querySelector('.crawl-journal-buttons')) return
     const bar = document.createElement('div')
     bar.className = 'crawl-journal-buttons'
-    bar.innerHTML = `<button type="button" data-crawl-journal="builder"><i class="fa-solid fa-city"></i> ${esc(t('NewNeighborhood'))}</button>
-      <button type="button" data-crawl-journal="blank"><i class="fa-regular fa-file"></i> ${esc(t('BlankNeighborhood'))}</button>
-      <button type="button" data-crawl-journal="borough"><i class="fa-solid fa-landmark"></i> ${esc(t('NewBorough'))}</button>`
-    bar.querySelectorAll<HTMLElement>('[data-crawl-journal]').forEach((button) =>
-      button.addEventListener('click', (event) => {
-        event.preventDefault()
-        const kind = button.dataset.crawlJournal
-        if (kind === 'builder') new NeighborhoodBuilder().render({ force: true })
-        else createBlank(kind === 'blank' ? 'neighborhood' : 'borough')
-      }),
-    )
+    bar.innerHTML = `<button type="button" data-crawl-journal="menu"><i class="fa-solid fa-map-location-dot"></i> ${esc(t('AtlasMaps'))}</button>`
+    bar.querySelector('button')!.addEventListener('click', (event) => {
+      event.preventDefault()
+      AtlasMapsMenu.open()
+    })
     const header = root.querySelector('.directory-header') ?? root
     header.append(bar)
   })
 }
 
-export { NeighborhoodBuilder, createBlank } from './sheets'
+export { NeighborhoodBuilder, createBlank, createRegionJournal } from './sheets'
+export { AtlasMapsMenu } from './menu'
 export { compileFieldGuide } from './field-guide'
 export { syncMobTables } from './tables'

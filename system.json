@@ -59,7 +59,11 @@
     },
     "JournalEntryPage": {
       "neighborhood": {},
-      "borough": {}
+      "borough": {},
+      "city": {},
+      "province": {},
+      "country": {},
+      "floor": {}
     }
   },
   "packs": [

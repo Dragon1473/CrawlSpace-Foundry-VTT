@@ -26,7 +26,11 @@
     },
     "JournalEntryPage": {
       "neighborhood": "Neighborhood",
-      "borough": "Borough"
+      "borough": "Borough",
+      "city": "City",
+      "province": "Province",
+      "country": "Country",
+      "floor": "Floor"
     }
   },
   "CRAWLSPACE": {
@@ -1509,6 +1513,41 @@
     "Journal": {
       "NeighborhoodSheet": "Neighborhood",
       "BoroughSheet": "Borough",
+      "RegionSheet": "City, Province, Country or Floor",
+      "AtlasMaps": "Atlas Maps",
+      "MapTiers": "Map tiers",
+      "Tier": {
+        "neighborhood": "Neighborhood",
+        "borough": "Borough",
+        "city": "City",
+        "province": "Province",
+        "country": "Country",
+        "floor": "Floor"
+      },
+      "New": {
+        "borough": "New Borough",
+        "city": "New City",
+        "province": "New Province",
+        "country": "New Country",
+        "floor": "New Floor"
+      },
+      "MenuHint": {
+        "builder": "Step by step: name, quarters, boss.",
+        "blank": "An empty neighborhood page to fill in.",
+        "borough": "Holds neighborhoods; has a Field Guide.",
+        "city": "Holds boroughs.",
+        "province": "Holds cities (or boroughs).",
+        "country": "Holds provinces (or anything smaller).",
+        "floor": "Holds countries (or anything smaller)."
+      },
+      "Members": {
+        "city": "Boroughs",
+        "province": "Cities",
+        "country": "Provinces",
+        "floor": "Countries"
+      },
+      "MembersHint": "Drag journals here from the Journal tab, or browse for them: any {kinds}.",
+      "RegionEmpty": "This {tier} is empty. Edit the page to fill it in.",
       "NewNeighborhood": "New Neighborhood",
       "BlankNeighborhood": "Blank Neighborhood",
       "NewBorough": "New Borough",
@@ -1584,6 +1623,10 @@
       "WrongKind": "That isn't a {kind}.",
       "PickTitle": "Choose a {kind}",
       "Kind": {
+        "cityPart": "borough",
+        "provincePart": "city or borough",
+        "countryPart": "province, city or borough",
+        "floorPart": "country, province, city or borough",
         "mob": "mob",
         "boss": "boss",
         "npc": "NPC",

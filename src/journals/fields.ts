@@ -3,12 +3,15 @@
  * fields, linked lists (drop a document, browse the world and compendiums, or add a custom name) and note rows. They
  * edit a plain data object by path and hand the new object back; whoever owns it saves it.
  */
-import { getPath, linkEntry, moveEntry, noteEntry, setPath, type Field, type LinkEntry, type LinkKind, type Section } from './model'
+import { HIGHER_TIERS, getPath, linkEntry, moveEntry, noteEntry, partsOf, setPath, type Field, type HigherTier, type LinkEntry, type LinkKind, type Section } from './model'
 
 export const t = (key: string, data?: Record<string, unknown>) => (data ? game.i18n.format(`CRAWLSPACE.Journal.${key}`, data) : game.i18n.localize(`CRAWLSPACE.Journal.${key}`))
 export const esc = (value: unknown) => foundry.utils.escapeHTML(String(value ?? ''))
 
 const ITEM_TYPES = ['weapon', 'equipment', 'consumable', 'tattoo', 'loot']
+
+/** Each map tier's icon. */
+export const TIER_ICONS: Record<string, string> = { neighborhood: 'fa-solid fa-city', borough: 'fa-solid fa-landmark', city: 'fa-solid fa-tree-city', province: 'fa-solid fa-mountain-city', country: 'fa-solid fa-flag', floor: 'fa-solid fa-layer-group' }
 
 /** What each kind of list takes: a document name and a test on its type (and a mob's kind). */
 const KINDS: Record<LinkKind, { document: string; accepts: (entry: { type?: string; system?: any; pages?: any }) => boolean; icon: string }> = {
@@ -22,13 +25,16 @@ const KINDS: Record<LinkKind, { document: string; accepts: (entry: { type?: stri
   quest: { document: 'JournalEntry', accepts: () => true, icon: 'fa-solid fa-scroll' },
   scene: { document: 'Scene', accepts: () => true, icon: 'fa-solid fa-map' },
   neighborhood: { document: 'JournalEntry', accepts: (e) => !e.pages || [...(e.pages ?? [])].some((page: any) => page.type === 'neighborhood'), icon: 'fa-solid fa-city' },
+  ...(Object.fromEntries(
+    HIGHER_TIERS.map((tier) => [`${tier}Part`, { document: 'JournalEntry', accepts: (e: any) => !e.pages || [...(e.pages ?? [])].some((page: any) => partsOf(tier).includes(page.type)), icon: TIER_ICONS[partsOf(tier).at(-1)!] }]),
+  ) as Record<`${HigherTier}Part`, any>),
 }
 export const kindIcon = (kind: LinkKind) => KINDS[kind].icon
 
 /** Whether a document fits a list: quests also take single pages, neighborhoods a neighborhood page. */
 export function accepts(kind: LinkKind, document: any) {
   if (!document) return false
-  if (document.documentName === 'JournalEntryPage') return kind === 'quest' || (kind === 'neighborhood' && document.type === 'neighborhood')
+  if (document.documentName === 'JournalEntryPage') return kind === 'quest' || (kind === 'neighborhood' && document.type === 'neighborhood') || (kind.endsWith('Part') && partsOf(kind.slice(0, -4) as HigherTier).includes(document.type))
   return document.documentName === KINDS[kind].document && KINDS[kind].accepts(document)
 }
 
@@ -213,7 +219,7 @@ async function choicesFor(kind: LinkKind): Promise<Choice[]> {
   const collection = game.collections.get(document)
   for (const entry of collection?.contents ?? []) if (accepts(kind, entry)) out.push({ uuid: entry.uuid, name: entry.name, img: entry.img ?? '', source: t('World') })
   for (const pack of game.packs.filter((pack: any) => pack.documentName === document && pack.visible)) {
-    if (document === 'JournalEntry' && kind === 'neighborhood') continue
+    if (document === 'JournalEntry' && (kind === 'neighborhood' || kind.endsWith('Part'))) continue
     const index = await pack.getIndex({ fields: ['type', 'system.kind'] })
     for (const entry of index) {
       if (document !== 'JournalEntry' && !KINDS[kind].accepts(entry)) continue
