@@ -134,9 +134,9 @@ function closeBossBattle(fade = true) {
   window.setTimeout(() => overlay.remove(), 400)
 }
 
-/** The sound bite plays on each client at its interface volume; a blank or broken path just stays silent. */
+/** The sound bite plays on each client at its interface volume, unless that user turned sound bites off; a broken path stays silent. */
 function playSound() {
-  const src = soundSource(game.settings.get('crawlspace', 'bossBattleSound'))
+  const src = soundSource(game.settings.get('crawlspace', 'bossBattleSound'), !!game.settings.get('crawlspace', 'soundBites'))
   if (!src) return
   try {
     sound?.stop?.()
@@ -156,6 +156,15 @@ export function registerBossBattle() {
     scope: 'world',
     config: true,
     type: new foundry.data.fields.FilePathField({ categories: ['AUDIO'], blank: true, initial: '' }),
+  })
+  game.settings.register('crawlspace', 'soundBites', {
+    name: 'CRAWLSPACE.BossBattle.SoundBites',
+    hint: 'CRAWLSPACE.BossBattle.SoundBitesHint',
+    scope: 'client',
+    config: true,
+    type: Boolean,
+    default: true,
+    onChange: (on: boolean) => !on && sound?.stop?.(),
   })
   Hooks.on('getSceneControlButtons', (controls: any) => {
     const tokens = controls.tokens

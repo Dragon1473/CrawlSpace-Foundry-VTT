@@ -80,5 +80,8 @@ export function cleanBattle(payload: any): { crawlers: BattleSide; enemies: Batt
   return { crawlers: side(payload?.crawlers), enemies: side(payload?.enemies) }
 }
 
-/** The sound bite's path, or null when none is set. */
-export const soundSource = (path: unknown) => (typeof path === 'string' && path.trim() ? path.trim() : null)
+/** The boss battle sound bite that ships with the system. */
+export const BOSS_BATTLE_SOUND = 'systems/crawlspace/assets/sounds/boss-battle.mp3'
+
+/** The sound bite to play: the one set in the settings, else the bundled one; null when sound bites are off. */
+export const soundSource = (path: unknown, enabled: boolean) => (!enabled ? null : typeof path === 'string' && path.trim() ? path.trim() : BOSS_BATTLE_SOUND)

@@ -1,7 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { crawlerMarks } from '../src/rules/crawler-marks.ts'
-import { battleSides, cleanBattle, groupFighters, soundSource } from '../src/rules/boss-battle.ts'
+import { BOSS_BATTLE_SOUND, battleSides, cleanBattle, groupFighters, soundSource } from '../src/rules/boss-battle.ts'
 import { cleanParties, partyNameOf } from '../src/rules/party.ts'
 
 test('a crawler shows skulls for crawlers killed, golden skulls for leaderboard kills and stars for bosses', () => {
@@ -104,11 +104,14 @@ test("other parties come from the setting cleaned up, and a crawler's party name
   assert.equal(partyNameOf({ id: 'loner', flags: { crawlspace: { partyId: 'gone' } } }, context), '')
 })
 
-test('a blank sound setting plays nothing', () => {
-  assert.equal(soundSource(''), null)
-  assert.equal(soundSource('   '), null)
-  assert.equal(soundSource(undefined), null)
-  assert.equal(soundSource(' sounds/boss.ogg '), 'sounds/boss.ogg')
+test('the boss battle plays the bundled sound bite unless another is set, and nothing when sound bites are off', () => {
+  assert.equal(soundSource('', true), BOSS_BATTLE_SOUND)
+  assert.equal(soundSource('   ', true), BOSS_BATTLE_SOUND)
+  assert.equal(soundSource(undefined, true), BOSS_BATTLE_SOUND)
+  assert.equal(soundSource(' sounds/boss.ogg ', true), 'sounds/boss.ogg')
+  assert.equal(soundSource(' sounds/boss.ogg ', false), null)
+  assert.equal(soundSource('', false), null)
+  assert.equal(BOSS_BATTLE_SOUND, 'systems/crawlspace/assets/sounds/boss-battle.mp3')
 })
 
 test('the VS. overlay uses the headshot, then the portrait, then the token art', async () => {
