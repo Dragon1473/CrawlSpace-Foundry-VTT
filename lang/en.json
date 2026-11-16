@@ -491,6 +491,25 @@
       "Award": "Award",
       "Effects": "Effects"
     },
+    "Marks": {
+      "Title": "Kills",
+      "skull": "Crawlers killed",
+      "goldenSkull": "Leaderboard crawlers killed",
+      "star": "Bosses killed",
+      "Setting": "Skulls and stars in crawler frames",
+      "SettingHint": "Show the skulls (crawlers killed), golden skulls (leaderboard crawlers killed) and stars (bosses killed) beside each crawler's name in the crawler frames. Set the counts on the crawler sheet."
+    },
+    "BossBattle": {
+      "Button": "Start a boss battle",
+      "Title": "Boss Battle",
+      "Versus": "VS.",
+      "Dismiss": "Click or press Escape to close",
+      "DismissAll": "Click or press Escape to close it for everyone",
+      "NoEnemies": "No enemies: select the boss's tokens, or start a combat with hostile combatants.",
+      "NoCrawlers": "There are no crawlers in the party.",
+      "Sound": "Boss battle sound",
+      "SoundHint": "A sound bite every client plays when the GM starts a boss battle. Leave blank for silence."
+    },
     "Upkeep": {
       "Button": "Upkeep",
       "Title": "Upkeep: {name}",
@@ -1435,6 +1454,19 @@
     "Advance": {
       "ChooseTitle": "Mark for Advancement",
       "ChooseHint": "A damage effect was used, so only one of these skills is marked for advancement. Pick one."
+    },
+    "Headshot": {
+      "Title": "Make headshot",
+      "Open": "Make headshot",
+      "PreviewLabel": "Headshot preview. Drag or use the arrow keys to move the crop.",
+      "Hint": "Drag or use the arrow keys to frame the face. Scroll to zoom. The boss battle shows this inside a circle.",
+      "Reset": "Reset crop",
+      "Save": "Use as headshot",
+      "Current": "Current headshot",
+      "Remove": "Remove",
+      "Saved": "Saved a headshot for {name}.",
+      "SaveFailed": "The headshot could not be saved.",
+      "CantRead": "This image can't be read. Choose an image stored in Foundry."
     },
     "TokenMaker": {
       "Title": "Make token",

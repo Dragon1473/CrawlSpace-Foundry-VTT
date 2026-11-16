@@ -16,6 +16,7 @@ import { CrawlRowConfig, type RowKind } from '../apps/row-config'
 import { fillActorDamage } from '../import/fill-damage'
 import { PaperDollApp } from '../apps/paper-doll-app'
 import { TokenMakerApp } from '../apps/token-maker'
+import { HeadshotMakerApp } from '../apps/headshot-maker'
 import { moveInOrder } from '../rules/row-order'
 import { applyBackground, applyBuildItem, openBuildPacks, pickBackground } from '../apps/build-drop'
 import { ActionsConfig, actionRowsOf, addActionRow, addToHotlist, HotlistConfig, hotlistOf, openActionPack, postAction, runAction } from '../apps/actions-config'
@@ -67,6 +68,7 @@ class CrawlActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     window: { resizable: true },
     actions: {
       makeToken: CrawlActorSheet.#onMakeToken,
+      makeHeadshot: CrawlActorSheet.#onMakeHeadshot,
       rollStat: CrawlActorSheet.#onRollStat,
       useItem: CrawlActorSheet.#onUseItem,
       editItem: CrawlActorSheet.#onEditItem,
@@ -96,12 +98,16 @@ class CrawlActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   /** Every actor sheet's menu offers the token maker (sheets that set their own controls keep this one too). */
   _getHeaderControls() {
     const controls = super._getHeaderControls()
-    if (this.actor.isOwner) controls.push({ icon: 'fa-solid fa-circle-user', label: 'CRAWLSPACE.TokenMaker.Open', action: 'makeToken' })
+    if (this.actor.isOwner) controls.push({ icon: 'fa-solid fa-circle-user', label: 'CRAWLSPACE.TokenMaker.Open', action: 'makeToken' }, { icon: 'fa-solid fa-id-badge', label: 'CRAWLSPACE.Headshot.Open', action: 'makeHeadshot' })
     return controls
   }
 
   static #onMakeToken(this: CrawlActorSheet) {
     return TokenMakerApp.open(this.actor)
+  }
+
+  static #onMakeHeadshot(this: CrawlActorSheet) {
+    return HeadshotMakerApp.open(this.actor)
   }
 
   static async #onEditTraits(this: CrawlActorSheet, _event: PointerEvent, target: HTMLElement) {

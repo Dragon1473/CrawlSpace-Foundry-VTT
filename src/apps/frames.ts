@@ -8,6 +8,7 @@
 import { followerKind, followersOf } from '../actors/companions'
 import { clickCondition, isStackable } from '../effects/stacks'
 import { partyCrawlers } from '../actors/party'
+import { crawlerMarks } from '../rules/crawler-marks'
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api
 
@@ -42,6 +43,14 @@ function badge(effect: any, shields: any[] = []) {
     stacks: isStackable(effect) && stacks > 1 ? stacks : 0,
     tooltip: [effect.name, remaining, shieldText(shields.find((shield) => shield.id === effect.id))].filter(Boolean).join(' · '),
   }
+}
+
+/** Skulls and stars by the name, unless this user hid them. */
+function marksOf(actor: any) {
+  if (!game.settings.get('crawlspace', 'crawlerMarks')) return { marks: [], marksTooltip: '' }
+  const marks = crawlerMarks(actor.system.kills).map((mark) => ({ ...mark, list: Array(mark.icons).fill(mark.kind === 'star' ? 'fa-star' : 'fa-skull') }))
+  const marksTooltip = marks.map((mark) => `${game.i18n.localize(`CRAWLSPACE.Marks.${mark.kind}`)}: ${mark.count}`).join(' · ')
+  return { marks, marksTooltip }
 }
 
 const shieldText = (shield: any) => (shield ? game.i18n.format('CRAWLSPACE.Effect.ShieldCount', { remaining: shield.remaining, perSlot: shield.perSlot }) : '')
@@ -84,6 +93,7 @@ class CrawlerFrames extends HandlebarsApplicationMixin(ApplicationV2) {
         uuid: actor.uuid,
         name: actor.name,
         players: players.join(', '),
+        ...marksOf(actor),
         pct,
         color: healthColor(pct),
         mana: { value: system.mana.value, max: system.mana.max, pct: Math.floor(system.mana.pct ?? 0) },
@@ -220,6 +230,15 @@ let frames: CrawlerFrames | null = null
 
 export function registerFrames() {
   game.settings.register('crawlspace', 'crawlerFrames', { scope: 'client', config: false, type: Boolean, default: true })
+  game.settings.register('crawlspace', 'crawlerMarks', {
+    name: 'CRAWLSPACE.Marks.Setting',
+    hint: 'CRAWLSPACE.Marks.SettingHint',
+    scope: 'client',
+    config: true,
+    type: Boolean,
+    default: true,
+    onChange: () => frames?.rendered && frames.render(),
+  })
   game.settings.register('crawlspace', 'crawlerFramesPosition', { scope: 'client', config: false, type: Object, default: null })
   Hooks.once('ready', () => {
     frames = new CrawlerFrames()

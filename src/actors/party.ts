@@ -3,6 +3,7 @@
  * small party mark in the list. The crawler frames and the auto-loot timer use this party.
  */
 import { TokenMakerApp } from '../apps/token-maker'
+import { HeadshotMakerApp } from '../apps/headshot-maker'
 import { partyFlag, pickParty } from '../rules/party'
 
 /** The party's crawlers, by name. Every user gets the whole party, including crawlers they can't open. */
@@ -37,6 +38,12 @@ export function registerParty() {
         icon: 'fa-solid fa-circle-user',
         visible: (li: HTMLElement) => !!actorOf(li)?.isOwner,
         onClick: (_event: Event, li: HTMLElement) => TokenMakerApp.open(actorOf(li)),
+      },
+      {
+        label: 'CRAWLSPACE.Headshot.Open',
+        icon: 'fa-solid fa-id-badge',
+        visible: (li: HTMLElement) => !!actorOf(li)?.isOwner,
+        onClick: (_event: Event, li: HTMLElement) => HeadshotMakerApp.open(actorOf(li)),
       },
     )
   })

@@ -201,6 +201,8 @@ export class CrawlerData extends CrawlActorData {
         regrets: html(),
       }),
       importantKills: new fields.ArrayField(new fields.StringField({ blank: true })),
+      /** The marks by the crawler's name: crawlers, leaderboard crawlers and bosses killed (rules/crawler-marks.ts). */
+      kills: new fields.SchemaField({ crawlers: integer(0, { min: 0 }), leaderboard: integer(0, { min: 0 }), bosses: integer(0, { min: 0 }) }),
       amenities: new fields.ArrayField(new fields.StringField({ blank: true })),
       clubs: new fields.ArrayField(new fields.StringField({ blank: true })),
       personalSpace: new fields.SchemaField({ tier: text(), size: text() }),

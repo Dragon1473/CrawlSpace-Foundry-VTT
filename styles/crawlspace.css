@@ -2951,6 +2951,102 @@
   }
   #crawl-frames .crawl-frame h3 a:hover { color: #8cfff6; }
   #crawl-frames .crawl-frame h3 small { font-weight: 400; color: #b7d4e8; }
+  #crawl-frames .crawl-frame h3 { display: flex; align-items: center; gap: 4px; }
+  #crawl-frames .crawl-frame h3 > a,
+  #crawl-frames .crawl-frame h3 > small { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  #crawl-frames .frame-marks { display: inline-flex; flex: none; align-items: center; gap: 3px; font-size: 10px; }
+  #crawl-frames .frame-mark { display: inline-flex; align-items: center; gap: 1px; }
+  #crawl-frames .frame-mark b { margin-left: 1px; font-size: 10px; }
+  .mark-skull { color: #e8e8e8; }
+  .mark-goldenSkull { color: #ffcc33; text-shadow: 0 0 3px rgb(255 190 40 / 60%); }
+  .mark-star { color: #ffe066; text-shadow: 0 0 3px rgb(255 224 102 / 60%); }
+  .crawlspace .crawler-kills { display: flex; gap: 6px; }
+  .crawlspace .crawler-kills label { display: flex; flex: 1; align-items: center; gap: 4px; }
+  .crawlspace .crawler-kills input { width: 100%; min-width: 0; }
+
+  #crawl-boss-battle {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    padding: 16px;
+    background: radial-gradient(ellipse at center, rgb(40 0 0 / 82%), rgb(0 0 0 / 94%));
+    color: #fff;
+    cursor: pointer;
+    animation: crawl-boss-fade 0.4s ease-out;
+  }
+  #crawl-boss-battle.closing { opacity: 0; transition: opacity 0.4s; }
+  #crawl-boss-battle .boss-title {
+    font-size: clamp(24px, 5vw, 56px);
+    font-weight: 900;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #ff4d3d;
+    text-shadow: 0 0 18px rgb(255 40 20 / 80%), 0 3px 0 #000;
+    animation: crawl-boss-title 0.6s ease-out both;
+  }
+  #crawl-boss-battle .boss-stage { display: flex; align-items: center; justify-content: center; gap: clamp(12px, 4vw, 56px); width: 100%; max-width: 1400px; }
+  #crawl-boss-battle .boss-side { display: flex; flex: 1; flex-wrap: wrap; align-content: center; gap: 14px; }
+  #crawl-boss-battle .boss-side.crawlers { justify-content: flex-end; }
+  #crawl-boss-battle .boss-side.enemies { justify-content: flex-start; }
+  #crawl-boss-battle figure {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    width: clamp(80px, 11vw, 150px);
+    margin: 0;
+    animation: crawl-boss-in-left 0.5s ease-out both;
+    animation-delay: calc(0.15s + var(--i) * 0.08s);
+  }
+  #crawl-boss-battle .enemies figure { animation-name: crawl-boss-in-right; }
+  #crawl-boss-battle figure img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    object-position: top;
+    border: 3px solid #66dfff;
+    border-radius: 50%;
+    background: #111;
+    box-shadow: 0 0 16px rgb(102 223 255 / 60%);
+  }
+  #crawl-boss-battle .enemies figure img { border-color: #ff4d3d; box-shadow: 0 0 16px rgb(255 77 61 / 70%); }
+  #crawl-boss-battle figcaption {
+    max-width: 100%;
+    overflow: hidden;
+    font-size: clamp(11px, 1.2vw, 16px);
+    font-weight: 700;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-shadow: 0 2px 4px #000;
+  }
+  #crawl-boss-battle .boss-vs {
+    flex: none;
+    font-size: clamp(40px, 8vw, 110px);
+    font-style: italic;
+    font-weight: 900;
+    color: #ffd23f;
+    text-shadow: 0 0 24px rgb(255 160 0 / 80%), 0 4px 0 #7a1d00;
+    animation: crawl-boss-vs 0.7s cubic-bezier(0.2, 1.6, 0.4, 1) 0.3s both;
+  }
+  #crawl-boss-battle .boss-hint { font-size: 12px; opacity: 0.7; }
+  @keyframes crawl-boss-fade { from { opacity: 0; } }
+  @keyframes crawl-boss-title { from { opacity: 0; transform: translateY(-20px); letter-spacing: 0.6em; } }
+  @keyframes crawl-boss-in-left { from { opacity: 0; transform: translateX(-60px); } }
+  @keyframes crawl-boss-in-right { from { opacity: 0; transform: translateX(60px); } }
+  @keyframes crawl-boss-vs { from { opacity: 0; transform: scale(3) rotate(-12deg); } }
+  @media (max-width: 700px) {
+    #crawl-boss-battle .boss-stage { flex-direction: column; }
+    #crawl-boss-battle .boss-side { justify-content: center !important; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #crawl-boss-battle, #crawl-boss-battle * { animation: none !important; }
+  }
   #crawl-frames .frame-health,
   #crawl-frames .frame-mana {
     position: relative;
@@ -3266,6 +3362,27 @@
   .crawlspace .crawl-paper-doll .doll-acc-row .empty-accessory { border-style: dashed; }
   /* ---------- Token maker ---------- */
   .crawlspace.token-maker .token-maker-body { display: flex; flex-direction: column; gap: 6px; }
+  .crawlspace.headshot-maker .headshot-maker-body { display: flex; flex-direction: column; gap: 8px; }
+  .crawlspace.headshot-maker .headshot-preview {
+    align-self: center;
+    width: 256px;
+    max-width: 100%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: #111;
+    box-shadow: 0 0 0 3px #66dfff;
+    cursor: grab;
+    touch-action: none;
+  }
+  .crawlspace.headshot-maker .headshot-preview:active { cursor: grabbing; }
+  .crawlspace.headshot-maker .headshot-zoom { display: flex; align-items: center; gap: 8px; }
+  .crawlspace.headshot-maker .headshot-zoom input { flex: 1; }
+  .crawlspace.headshot-maker .headshot-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
+  .crawlspace.headshot-maker .headshot-buttons.end { justify-content: flex-end; }
+  .crawlspace.headshot-maker .headshot-current { display: flex; align-items: center; gap: 8px; }
+  .crawlspace.headshot-maker .headshot-current img { width: 40px; height: 40px; border: none; border-radius: 50%; object-fit: cover; }
+  .crawlspace.headshot-maker .headshot-current span { flex: 1; }
+  .crawlspace.headshot-maker .headshot-error { color: #ff8a80; }
   .crawlspace.token-maker .token-maker-preview {
     display: block; width: min(100%, 42vh); height: auto; margin: 4px auto; touch-action: none; cursor: grab;
     border: 1px solid var(--crawl-border); border-radius: 6px;

@@ -1,0 +1,26 @@
+{{!-- The headshot maker (headshot-maker.ts): a square crop of the portrait for the boss battle overlay. --}}
+<section class="headshot-maker-body">
+  {{#if error}}<p class="headshot-error" role="alert">{{error}}</p>{{/if}}
+  {{#if ready}}
+  <canvas class="headshot-preview" width="256" height="256" tabindex="0" aria-label="{{localize 'CRAWLSPACE.Headshot.PreviewLabel'}}"></canvas>
+  <p class="hint">{{localize "CRAWLSPACE.Headshot.Hint"}}</p>
+  <label class="headshot-zoom">{{localize "CRAWLSPACE.TokenMaker.Zoom"}} <input type="range" data-field="zoom" min="1" max="{{zoomMax}}" step="0.01" value="{{zoom}}"></label>
+  {{/if}}
+  <div class="headshot-buttons">
+    <button type="button" data-action="chooseImage"><i class="fa-solid fa-image"></i> {{localize "CRAWLSPACE.TokenMaker.ChooseImage"}}</button>
+    {{#if ready}}<button type="button" data-action="reset"><i class="fa-solid fa-expand"></i> {{localize "CRAWLSPACE.Headshot.Reset"}}</button>{{/if}}
+  </div>
+  {{#if current}}
+  <div class="headshot-current">
+    <img src="{{current}}" alt="">
+    <span>{{localize "CRAWLSPACE.Headshot.Current"}}</span>
+    {{#if editable}}<button type="button" data-action="remove"><i class="fa-solid fa-trash"></i> {{localize "CRAWLSPACE.Headshot.Remove"}}</button>{{/if}}
+  </div>
+  {{/if}}
+  {{#if ready}}
+  <div class="headshot-buttons end">
+    {{#if canUpload}}<button type="button" class="primary" data-action="save"><i class="fa-solid fa-check"></i> {{localize "CRAWLSPACE.Headshot.Save"}}</button>
+    {{else if editable}}<span class="hint">{{localize "CRAWLSPACE.TokenMaker.NoUpload"}}</span>{{/if}}
+  </div>
+  {{/if}}
+</section>

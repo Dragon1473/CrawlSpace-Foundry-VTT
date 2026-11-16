@@ -6,6 +6,7 @@ import { openAwards } from './apps/awards'
 import { registerImmunity } from './effects/immunity'
 import { openTime, registerClock, registerTimePickers } from './apps/time'
 import { registerFrames } from './apps/frames'
+import { registerBossBattle, startBossBattle } from './apps/boss-battle'
 import { markPartyInDirectory, registerParty } from './actors/party'
 import { calibrateGrid, registerGridCalibration } from './apps/grid-calibration'
 import { registerCooldownIcons } from './effects/cooldowns'
@@ -30,6 +31,7 @@ import { CrawlCombat, promptDeclaration } from './combat/combat'
 import { createCombatTracker } from './combat/tracker'
 import { CrawlerSheet, MobSheet, NpcSheet } from './sheets/actor-sheets'
 import { TokenMakerApp } from './apps/token-maker'
+import { HeadshotMakerApp } from './apps/headshot-maker'
 import { CrawlItemSheet } from './sheets/item-sheet'
 import { CrawlEffectSheet } from './sheets/effect-sheet'
 import { DEBUFFS } from './rules/debuffs'
@@ -207,6 +209,7 @@ Hooks.once('init', () => {
   registerClock()
   registerTimePickers()
   registerFrames()
+  registerBossBattle()
   registerParty()
   registerTokenSize()
   registerCooldownIcons()
@@ -222,7 +225,7 @@ Hooks.once('init', () => {
   registerMinimap()
   registerJournals()
 
-  game.crawlspace = { config, openGrinding, openAwards, openBuilder, performUpkeep, openTime, advanceTime, settleTime, rest, importCharacter, importFile, openUpkeep, fillActorDamage, calibrateGrid, useAttack: useAttackRow, useAction: useActionRow, declareAttack: () => game.combat && promptDeclaration(game.combat), openTokenMaker: (actor: any, options?: { source?: string; foreground?: string; pixelArt?: boolean }) => TokenMakerApp.open(actor, options), openNeighborhoodBuilder: () => new NeighborhoodBuilder().render({ force: true }), createBlankJournal: createBlank, compileFieldGuide }
+  game.crawlspace = { config, startBossBattle, openHeadshotMaker: (actor: any) => HeadshotMakerApp.open(actor), openGrinding, openAwards, openBuilder, performUpkeep, openTime, advanceTime, settleTime, rest, importCharacter, importFile, openUpkeep, fillActorDamage, calibrateGrid, useAttack: useAttackRow, useAction: useActionRow, declareAttack: () => game.combat && promptDeclaration(game.combat), openTokenMaker: (actor: any, options?: { source?: string; foreground?: string; pixelArt?: boolean }) => TokenMakerApp.open(actor, options), openNeighborhoodBuilder: () => new NeighborhoodBuilder().render({ force: true }), createBlankJournal: createBlank, compileFieldGuide }
 })
 
 /** A new crawler's tokens are linked to it unless the creator said otherwise. */

@@ -30,7 +30,7 @@ const slug = (text: string) => text.toLowerCase().replace(/[^a-z0-9]+/g, '-').re
 type Point = { x: number; y: number }
 
 /** Loads an image whose pixels can be read (same-origin, or a site that allows it). Waits on load, not decode(). */
-function loadImage(src: string) {
+export function loadImage(src: string) {
   return new Promise<HTMLImageElement>((resolve, reject) => {
     const image = new Image()
     image.crossOrigin = 'anonymous'
