@@ -40,3 +40,17 @@ test('the bar starts across 60% of the top, centred, and stays on screen at a se
   assert.equal(bossBarBox(null, { width: 1000, height: 800 }, 80.6).top, 80)
   assert.equal(bossBarBox({ top: 5 }, { width: 1000, height: 800 }, 80).top, 5)
 })
+
+test('starting a combat with a visible boss starts the boss battle; other combat changes do not', async () => {
+  const { autoBossBattle } = await import('../src/rules/boss-bar.ts')
+  const boss = { kind: 'boss', hidden: false }
+  const mob = { kind: 'mob', hidden: false }
+  assert.equal(autoBossBattle({ round: 1, turn: 0 }, [mob, boss]), true)
+  assert.equal(autoBossBattle({ round: 1, turn: 0 }, [mob]), false)
+  assert.equal(autoBossBattle({ round: 1, turn: 0 }, [{ kind: 'boss', hidden: true }]), false)
+  assert.equal(autoBossBattle({ round: 2, turn: 0 }, [boss]), false)
+  assert.equal(autoBossBattle({ turn: 1 }, [boss]), false)
+  // Going back from round 2 to round 1 is not a new encounter.
+  assert.equal(autoBossBattle({ round: 1, turn: 0 }, [boss], 2), false)
+  assert.equal(autoBossBattle({ round: 1, turn: 0 }, [boss], 0), true)
+})

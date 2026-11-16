@@ -40,3 +40,12 @@ export function bossBarBox(saved: Partial<BarBox> | null | undefined, view: { wi
   const top = Math.floor(Math.min(view.height - height - LABEL_ROOM, Math.max(0, saved?.top ?? defaultTop)))
   return { left, top, width, height }
 }
+
+/**
+ * Whether a combat update starts an encounter that gets the boss battle splash: the combat moved to round 1 from
+ * round 0 (or from not having started), and a boss the players can see is in it.
+ */
+export function autoBossBattle(changes: { round?: unknown }, combatants: { kind?: string; hidden?: boolean }[], previousRound: unknown = 0) {
+  if (Number(changes?.round) !== 1 || (Number(previousRound) || 0) > 0) return false
+  return combatants.some((entry) => entry.kind === 'boss' && !entry.hidden)
+}

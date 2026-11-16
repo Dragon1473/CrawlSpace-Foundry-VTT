@@ -516,6 +516,8 @@
       "NoCrawlers": "There are no crawlers in the party.",
       "Sound": "Boss battle sound",
       "SoundHint": "The sound bite every client plays when the GM starts a boss battle. Leave blank for the one that comes with CrawlSpace.",
+      "Auto": "Boss battle when a boss encounter starts",
+      "AutoHint": "Show the boss battle splash to everyone when the GM starts a combat with a visible boss in it. The Start a boss battle button works either way.",
       "SoundBites": "Play sound bites",
       "SoundBitesHint": "Play CrawlSpace sound bites, such as the boss battle's, on this computer."
     },

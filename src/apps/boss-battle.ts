@@ -7,11 +7,16 @@
  * the current combat's visible hostile combatants. The crawler side is the players' party plus other crawlers in
  * the fight who aren't hostile, each under its party's name (Solo without one). Anyone can close the overlay for
  * themselves (click or Escape); when the GM closes it, it closes for everyone. It also fades out after a while.
+ *
+ * It also starts by itself when the GM begins a combat (round 0 to 1) with a visible boss in it, unless the
+ * "Boss battle when a boss encounter starts" setting is off; then the enemies are the combat's hostiles, never the
+ * GM's selection.
  */
 import { partyCrawlers, partyNameFor } from '../actors/party'
 import { followersOf } from '../actors/companions'
 import { battleSides, cleanBattle, groupFighters, soundSource, type BattleSide, type BattleToken, type FighterGroup } from '../rules/boss-battle'
 import { headshotOf } from '../rules/headshot'
+import { autoBossBattle } from '../rules/boss-bar'
 
 const CHANNEL = 'system.crawlspace'
 const OVERLAY_ID = 'crawl-boss-battle'
@@ -30,7 +35,7 @@ const headshot = (actor: any, tokenImg: unknown) => headshotOf({ headshot: actor
 /** A crawler's level is in its details; a mob's sits on the system. */
 const levelOf = (actor: any) => (actor?.type === 'crawler' ? actor.system?.details?.level : actor?.system?.level) ?? null
 
-function gatherBattle() {
+function gatherBattle({ useSelection }: { useSelection: boolean }) {
   const members = partyCrawlers()
   const memberIds = new Set(members.map((actor: any) => actor.id))
   const fighter = (id: string, actor: any, name: string, tokenImg: unknown, disposition: number): BattleToken => ({
@@ -45,7 +50,7 @@ function gatherBattle() {
   })
   const party = members.map((actor: any) => fighter(actor.id, actor, actor.name, actor.prototypeToken?.texture?.src, 1))
   const friends = members.flatMap((actor: any) => followersOf(actor).map((follower: any) => follower.uuid))
-  const selected = (canvas?.tokens?.controlled ?? []).map((token: any) => fighter(token.document.id, token.actor, token.document.name, token.document.texture?.src, token.document.disposition))
+  const selected = (useSelection ? (canvas?.tokens?.controlled ?? []) : []).map((token: any) => fighter(token.document.id, token.actor, token.document.name, token.document.texture?.src, token.document.disposition))
   const combatants = (game.combat?.combatants?.contents ?? [])
     .filter((combatant: any) => !combatant.hidden && !combatant.token?.hidden)
     .map((combatant: any) => fighter(combatant.tokenId ?? combatant.id, combatant.actor, combatant.token?.name ?? combatant.name, combatant.token?.texture?.src ?? combatant.img, combatant.token?.disposition ?? 0))
@@ -55,11 +60,12 @@ function gatherBattle() {
 }
 
 /** GM only: start the boss battle on every client. */
-export function startBossBattle() {
+export function startBossBattle({ auto = false }: { auto?: boolean } = {}) {
   if (!game.user.isGM) return
-  const battle = cleanBattle(gatherBattle())
-  if (!battle.enemies.length) return ui.notifications.warn(t('NoEnemies'))
-  if (!battle.crawlers.length) return ui.notifications.warn(t('NoCrawlers'))
+  // A combat starting on its own uses its combatants, whatever the GM happens to have selected.
+  const battle = cleanBattle(gatherBattle({ useSelection: !auto }))
+  if (!battle.enemies.length) return auto ? undefined : ui.notifications.warn(t('NoEnemies'))
+  if (!battle.crawlers.length) return auto ? undefined : ui.notifications.warn(t('NoCrawlers'))
   game.socket.emit(CHANNEL, { type: 'bossBattle', battle })
   showBossBattle(battle)
 }
@@ -165,6 +171,26 @@ export function registerBossBattle() {
     type: Boolean,
     default: true,
     onChange: (on: boolean) => !on && sound?.stop?.(),
+  })
+  game.settings.register('crawlspace', 'autoBossBattle', {
+    name: 'CRAWLSPACE.BossBattle.Auto',
+    hint: 'CRAWLSPACE.BossBattle.AutoHint',
+    scope: 'world',
+    config: true,
+    type: Boolean,
+    default: true,
+  })
+  // The GM who starts an encounter with a boss in it starts the boss battle for everyone.
+  Hooks.on('preUpdateCombat', (combat: any, _changes: any, options: any) => {
+    options.crawlspacePreviousRound = combat.round
+  })
+  Hooks.on('updateCombat', (combat: any, changes: any, options: any, userId: string) => {
+    if (userId !== game.user.id || !game.user.isGM || !game.settings.get('crawlspace', 'autoBossBattle')) return
+    const combatants = combat.combatants.contents.map((combatant: any) => ({
+      kind: combatant.actor?.type === 'mob' ? combatant.actor.system?.kind : undefined,
+      hidden: combatant.hidden || combatant.token?.hidden,
+    }))
+    if (autoBossBattle(changes, combatants, options.crawlspacePreviousRound)) startBossBattle({ auto: true })
   })
   Hooks.on('getSceneControlButtons', (controls: any) => {
     const tokens = controls.tokens
