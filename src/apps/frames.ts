@@ -9,6 +9,7 @@ import { followerKind, followersOf } from '../actors/companions'
 import { clickCondition, isStackable } from '../effects/stacks'
 import { openParties, partyCrawlers, playerPartyLabel } from '../actors/party'
 import { crawlerMarks } from '../rules/crawler-marks'
+import { healthColor } from '../rules/boss-bar'
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api
 
@@ -19,7 +20,6 @@ const healthAt = (clientX: number, track: HTMLElement) => {
   return Math.floor(ratio * 10 + 1e-6) * 10
 }
 
-const healthColor = (pct: number) => `hsl(${Math.floor((pct / 100) * 120)} 68% 42%)`
 
 /** Under the scene navigation, beside the scene controls. */
 function defaultPosition() {

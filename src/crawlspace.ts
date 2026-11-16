@@ -7,6 +7,7 @@ import { registerImmunity } from './effects/immunity'
 import { openTime, registerClock, registerTimePickers } from './apps/time'
 import { registerFrames } from './apps/frames'
 import { registerBossBattle, startBossBattle } from './apps/boss-battle'
+import { registerBossBar } from './apps/boss-bar'
 import { markPartyInDirectory, openParties, registerParty } from './actors/party'
 import { calibrateGrid, registerGridCalibration } from './apps/grid-calibration'
 import { registerCooldownIcons } from './effects/cooldowns'
@@ -210,6 +211,7 @@ Hooks.once('init', () => {
   registerTimePickers()
   registerFrames()
   registerBossBattle()
+  registerBossBar()
   registerParty()
   registerTokenSize()
   registerCooldownIcons()

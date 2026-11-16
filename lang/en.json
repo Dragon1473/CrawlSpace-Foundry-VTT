@@ -499,6 +499,12 @@
       "Setting": "Skulls and stars in crawler frames",
       "SettingHint": "Show the skulls (crawlers killed), golden skulls (leaderboard crawlers killed) and stars (bosses killed) beside each crawler's name in the crawler frames. Set the counts on the crawler sheet."
     },
+    "BossBar": {
+      "Boss": "Boss health",
+      "Setting": "Boss health bar",
+      "SettingHint": "Show a health bar across the top of the screen for each boss in the combat.",
+      "DragHint": "Drag to move, drag the corner to resize; double-click to put it back"
+    },
     "BossBattle": {
       "Button": "Start a boss battle",
       "Title": "Boss Battle",
