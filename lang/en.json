@@ -493,11 +493,21 @@
     },
     "Marks": {
       "Title": "Kills",
-      "skull": "Crawlers killed",
-      "goldenSkull": "Leaderboard crawlers killed",
-      "star": "Bosses killed",
+      "WindowTitle": "Kills: {name}",
+      "Less": "One fewer {kind}",
+      "More": "One more {kind}",
+      "Kind": {
+        "floor": "Floor bosses",
+        "country": "Country bosses",
+        "province": "Province bosses",
+        "city": "City bosses",
+        "borough": "Borough bosses",
+        "neighborhood": "Neighborhood bosses",
+        "leaderboard": "Leaderboard crawlers",
+        "crawlers": "Crawlers"
+      },
       "Setting": "Skulls and stars in crawler frames",
-      "SettingHint": "Show the skulls (crawlers killed), golden skulls (leaderboard crawlers killed) and stars (bosses killed) beside each crawler's name in the crawler frames. Set the counts on the crawler sheet."
+      "SettingHint": "Show the skulls (crawlers and leaderboard crawlers killed) and stars (bosses killed, coloured by tier) beside each crawler's name in the crawler frames. Count them in the Kills window on the crawler sheet."
     },
     "BossBar": {
       "Boss": "Boss health",

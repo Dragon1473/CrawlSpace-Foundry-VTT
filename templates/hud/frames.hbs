@@ -10,7 +10,7 @@
   {{#unless collapsed}}
   {{#each frames as |frame|}}
   <section class="crawl-frame" data-uuid="{{frame.uuid}}">
-    <h3><a data-action="openSheet">{{frame.name}}</a>{{#if frame.marks.length}}<span class="frame-marks" data-tooltip="{{frame.marksTooltip}}" aria-label="{{frame.marksTooltip}}">{{#each frame.marks as |mark|}}<span class="frame-mark mark-{{mark.kind}}">{{#each mark.list}}<i class="fa-solid {{this}}"></i>{{/each}}{{#if mark.many}}<b>{{mark.count}}</b>{{/if}}</span>{{/each}}</span>{{/if}}{{#if frame.players}} <small>({{frame.players}})</small>{{/if}}</h3>
+    <h3><a data-action="openSheet">{{frame.name}}</a>{{#if frame.marks.length}}<span class="frame-marks" data-tooltip="{{frame.marksTooltip}}" aria-label="{{frame.marksLabel}}">{{#each frame.marks as |mark|}}<span class="frame-mark mark-{{mark.tier}}"><i class="fa-solid fa-{{mark.icon}}"></i><b>x{{mark.count}}</b></span>{{/each}}</span>{{/if}}{{#if frame.players}} <small>({{frame.players}})</small>{{/if}}</h3>
     <div class="frame-health" data-pct="{{frame.pct}}" {{#if @root.gm}}data-health-track tabindex="0" role="slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{frame.pct}}" data-tooltip="{{localize 'CRAWLSPACE.Frames.DragHealth'}}"{{else}}data-tooltip="{{localize 'CRAWLSPACE.Stat.Health'}}: {{frame.pct}}%"{{/if}} aria-label="{{frame.name}} {{localize 'CRAWLSPACE.Stat.Health'}}">
       <div class="fill" style="width: {{frame.pct}}%; background-color: {{frame.color}}"></div>
       <span>{{frame.pct}}%</span>

@@ -47,10 +47,10 @@ function badge(effect: any, shields: any[] = []) {
 
 /** Skulls and stars by the name, unless this user hid them. */
 function marksOf(actor: any) {
-  if (!game.settings.get('crawlspace', 'crawlerMarks')) return { marks: [], marksTooltip: '' }
-  const marks = crawlerMarks(actor.system.kills).map((mark) => ({ ...mark, list: Array(mark.icons).fill(mark.kind === 'star' ? 'fa-star' : 'fa-skull') }))
-  const marksTooltip = marks.map((mark) => `${game.i18n.localize(`CRAWLSPACE.Marks.${mark.kind}`)}: ${mark.count}`).join(' · ')
-  return { marks, marksTooltip }
+  if (!game.settings.get('crawlspace', 'crawlerMarks')) return { marks: [], marksTooltip: '', marksLabel: '' }
+  const marks = crawlerMarks(actor.system.kills)
+  const lines = marks.map((mark) => `${game.i18n.localize(`CRAWLSPACE.Marks.Kind.${mark.key}`)}: ${mark.count}`)
+  return { marks, marksTooltip: lines.join('<br>'), marksLabel: lines.join(', ') }
 }
 
 const shieldText = (shield: any) => (shield ? game.i18n.format('CRAWLSPACE.Effect.ShieldCount', { remaining: shield.remaining, perSlot: shield.perSlot }) : '')

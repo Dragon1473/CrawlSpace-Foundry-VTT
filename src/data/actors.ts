@@ -1,3 +1,4 @@
+import { KILL_KINDS, migrateKills } from '../rules/crawler-marks'
 import { BOSS_TIERS, DAMAGE_TYPES, HEALTH_MAX, HEALTH_SLOTS, STAT_KEYS, statKeyFromCode, type StatKey } from '../config'
 import { abilityScoreModifier, mobDerived, mobToHit, resolveFormulaTokens, safeArithmetic, type DamageResponse } from '../rules/core'
 import { debuffById } from '../rules/debuffs'
@@ -151,6 +152,11 @@ const sheetActionSchema = () => {
 }
 
 export class CrawlerData extends CrawlActorData {
+  /** One boss count before boss tiers became neighborhood bosses (rules/crawler-marks.ts). */
+  static migrateData(source: any) {
+    if (source.kills) source.kills = migrateKills(source.kills)
+    return super.migrateData(source)
+  }
   
 
   static defineSchema() {
@@ -202,7 +208,7 @@ export class CrawlerData extends CrawlActorData {
       }),
       importantKills: new fields.ArrayField(new fields.StringField({ blank: true })),
       /** The marks by the crawler's name: crawlers, leaderboard crawlers and bosses killed (rules/crawler-marks.ts). */
-      kills: new fields.SchemaField({ crawlers: integer(0, { min: 0 }), leaderboard: integer(0, { min: 0 }), bosses: integer(0, { min: 0 }) }),
+      kills: new fields.SchemaField(Object.fromEntries(KILL_KINDS.map((kind) => [kind.key, integer(0, { min: 0 })]))),
       amenities: new fields.ArrayField(new fields.StringField({ blank: true })),
       clubs: new fields.ArrayField(new fields.StringField({ blank: true })),
       personalSpace: new fields.SchemaField({ tier: text(), size: text() }),

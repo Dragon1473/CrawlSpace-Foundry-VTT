@@ -2951,18 +2951,29 @@
   }
   #crawl-frames .crawl-frame h3 a:hover { color: #8cfff6; }
   #crawl-frames .crawl-frame h3 small { font-weight: 400; color: #b7d4e8; }
-  #crawl-frames .crawl-frame h3 { display: flex; align-items: center; gap: 4px; }
-  #crawl-frames .crawl-frame h3 > a,
-  #crawl-frames .crawl-frame h3 > small { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-  #crawl-frames .frame-marks { display: inline-flex; flex: none; align-items: center; gap: 3px; font-size: 10px; }
+  /* Name first; the marks and player names wrap to the next line rather than squeeze it. */
+  #crawl-frames .crawl-frame h3 { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 4px; }
+  #crawl-frames .crawl-frame h3 > a { flex: none; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+  #crawl-frames .crawl-frame h3 > small { flex: 1 1 4em; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  #crawl-frames .frame-marks { display: inline-flex; flex: none; flex-wrap: wrap; align-items: center; gap: 0 5px; max-width: 100%; font-size: 10px; }
   #crawl-frames .frame-mark { display: inline-flex; align-items: center; gap: 1px; }
-  #crawl-frames .frame-mark b { margin-left: 1px; font-size: 10px; }
-  .mark-skull { color: #e8e8e8; }
-  .mark-goldenSkull { color: #ffcc33; text-shadow: 0 0 3px rgb(255 190 40 / 60%); }
-  .mark-star { color: #ffe066; text-shadow: 0 0 3px rgb(255 224 102 / 60%); }
-  .crawlspace .crawler-kills { display: flex; gap: 6px; }
-  .crawlspace .crawler-kills label { display: flex; flex: 1; align-items: center; gap: 4px; }
-  .crawlspace .crawler-kills input { width: 100%; min-width: 0; }
+  #crawl-frames .frame-mark b { font-size: 9px; font-weight: 700; }
+  .mark-white { color: #ececec; }
+  .mark-bronze { color: #d08a4e; }
+  .mark-silver { color: #c9d1da; }
+  .mark-gold { color: #ffcc33; text-shadow: 0 0 3px rgb(255 190 40 / 55%); }
+  .mark-platinum { color: #9eeef3; text-shadow: 0 0 3px rgb(143 224 230 / 55%); }
+  .mark-legendary { color: #d08cff; text-shadow: 0 0 4px rgb(194 124 240 / 70%); }
+  .mark-celestial { color: #fff6c2; text-shadow: 0 0 4px #fff2a8, 0 0 8px rgb(255 214 120 / 80%); }
+  #crawl-frames .frame-mark b { color: #fff; text-shadow: none; }
+  .crawlspace .crawler-kills-button { width: 100%; }
+  .crawlspace.crawl-kills .crawl-kills-body { display: flex; flex-direction: column; gap: 4px; }
+  .crawlspace.crawl-kills .crawl-kill-row { display: flex; align-items: center; gap: 8px; padding: 3px 4px; border-radius: 4px; }
+  .crawlspace.crawl-kills .crawl-kill-row:nth-child(odd) { background: rgb(255 255 255 / 5%); }
+  .crawlspace.crawl-kills .crawl-kill-row > i { width: 18px; font-size: 15px; text-align: center; }
+  .crawlspace.crawl-kills .crawl-kill-label { flex: 1; }
+  .crawlspace.crawl-kills .crawl-kill-count { min-width: 2.2em; text-align: center; font-size: 1.1em; }
+  .crawlspace.crawl-kills .crawl-kill-row button.icon { flex: none; width: 26px; height: 26px; padding: 0; }
 
   #crawl-boss-bar {
     --bar-height: 18px;

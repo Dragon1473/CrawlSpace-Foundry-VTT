@@ -73,11 +73,7 @@
   </section>
   <label><span>{{localize "CRAWLSPACE.Crawler.AiFavor"}}</span><input type="number" name="system.details.aiFavor" value="{{systemSource.details.aiFavor}}"></label>
   <label><span>{{localize "CRAWLSPACE.Crawler.Popularity"}}</span><input type="number" name="system.details.popularity" value="{{systemSource.details.popularity}}"></label>
-  <div class="crawler-kills" role="group" aria-label="{{localize 'CRAWLSPACE.Marks.Title'}}">
-    <label data-tooltip="{{localize 'CRAWLSPACE.Marks.skull'}}"><i class="fa-solid fa-skull mark-skull"></i><input type="number" name="system.kills.crawlers" value="{{systemSource.kills.crawlers}}" min="0" step="1" aria-label="{{localize 'CRAWLSPACE.Marks.skull'}}"></label>
-    <label data-tooltip="{{localize 'CRAWLSPACE.Marks.goldenSkull'}}"><i class="fa-solid fa-skull mark-goldenSkull"></i><input type="number" name="system.kills.leaderboard" value="{{systemSource.kills.leaderboard}}" min="0" step="1" aria-label="{{localize 'CRAWLSPACE.Marks.goldenSkull'}}"></label>
-    <label data-tooltip="{{localize 'CRAWLSPACE.Marks.star'}}"><i class="fa-solid fa-star mark-star"></i><input type="number" name="system.kills.bosses" value="{{systemSource.kills.bosses}}" min="0" step="1" aria-label="{{localize 'CRAWLSPACE.Marks.star'}}"></label>
-  </div>
+  <button type="button" class="crawler-kills-button" data-action="openKills"><i class="fa-solid fa-skull"></i> {{localize "CRAWLSPACE.Marks.Title"}}</button>
   <hr>
   <label><span>{{localize "CRAWLSPACE.Stat.Move"}}</span><input type="text" value="{{system.move.total}}" readonly tabindex="-1"></label>
   <label><span>{{localize "CRAWLSPACE.Stat.Step"}}</span><input type="text" value="{{system.step.total}}" readonly tabindex="-1"></label>

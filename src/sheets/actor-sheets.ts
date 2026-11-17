@@ -17,6 +17,7 @@ import { fillActorDamage } from '../import/fill-damage'
 import { PaperDollApp } from '../apps/paper-doll-app'
 import { TokenMakerApp } from '../apps/token-maker'
 import { HeadshotMakerApp } from '../apps/headshot-maker'
+import { KillsApp } from '../apps/kills'
 import { moveInOrder } from '../rules/row-order'
 import { applyBackground, applyBuildItem, openBuildPacks, pickBackground } from '../apps/build-drop'
 import { ActionsConfig, actionRowsOf, addActionRow, addToHotlist, HotlistConfig, hotlistOf, openActionPack, postAction, runAction } from '../apps/actions-config'
@@ -489,6 +490,7 @@ export class CrawlerSheet extends CrawlActorSheet {
       shieldPrompt: CrawlerSheet.#onShieldPrompt,
       repairShield: CrawlerSheet.#onRepairShield,
       upkeep: CrawlerSheet.#onUpkeep,
+      openKills: CrawlerSheet.#onOpenKills,
       levelUp: CrawlerSheet.#onLevelUp,
       openEffects: CrawlerSheet.#onOpenEffects,
       addClub: CrawlerSheet.#onAddClub,
@@ -1016,6 +1018,10 @@ export class CrawlerSheet extends CrawlActorSheet {
 
   static async #onUpkeep(this: CrawlerSheet) {
     return openUpkeep(this.actor)
+  }
+
+  static #onOpenKills(this: CrawlerSheet) {
+    return KillsApp.open(this.actor)
   }
 
 

@@ -1,0 +1,16 @@
+{{!-- A crawler's Kills window (apps/kills.ts): − count + for each kind, most important first. --}}
+<section class="crawl-kills-body">
+  {{#each kinds as |kind|}}
+  <div class="crawl-kill-row" data-kill="{{kind.key}}">
+    <i class="fa-solid fa-{{kind.icon}} mark-{{kind.tier}}" aria-hidden="true"></i>
+    <span class="crawl-kill-label">{{kind.label}}</span>
+    {{#if @root.editable}}
+    <button type="button" class="icon" data-action="step" data-delta="-1" {{disabled (eq kind.count 0)}} aria-label="{{localize 'CRAWLSPACE.Marks.Less' kind=kind.label}}"><i class="fa-solid fa-minus"></i></button>
+    {{/if}}
+    <b class="crawl-kill-count" aria-live="polite">{{kind.count}}</b>
+    {{#if @root.editable}}
+    <button type="button" class="icon" data-action="step" data-delta="1" aria-label="{{localize 'CRAWLSPACE.Marks.More' kind=kind.label}}"><i class="fa-solid fa-plus"></i></button>
+    {{/if}}
+  </div>
+  {{/each}}
+</section>

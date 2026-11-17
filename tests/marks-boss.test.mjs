@@ -1,30 +1,52 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { crawlerMarks } from '../src/rules/crawler-marks.ts'
+import { KILL_KINDS, crawlerMarks, migrateKills, stepKill } from '../src/rules/crawler-marks.ts'
 import { BOSS_BATTLE_SOUND, battleSides, cleanBattle, groupFighters, soundSource } from '../src/rules/boss-battle.ts'
 import { cleanParties, partyNameOf } from '../src/rules/party.ts'
 
-test('a crawler shows skulls for crawlers killed, golden skulls for leaderboard kills and stars for bosses', () => {
-  const marks = crawlerMarks({ crawlers: 2, leaderboard: 1, bosses: 3 })
-  assert.deepEqual(marks.map((mark) => [mark.kind, mark.count, mark.icons]), [
-    ['skull', 2, 2],
-    ['goldenSkull', 1, 1],
-    ['star', 3, 3],
+test('kills are listed from the most important: floor boss down to crawlers', () => {
+  assert.deepEqual(
+    KILL_KINDS.map((kind) => [kind.key, kind.icon, kind.tier]),
+    [
+      ['floor', 'star', 'celestial'],
+      ['country', 'star', 'legendary'],
+      ['province', 'star', 'platinum'],
+      ['city', 'star', 'gold'],
+      ['borough', 'star', 'silver'],
+      ['neighborhood', 'star', 'bronze'],
+      ['leaderboard', 'skull', 'gold'],
+      ['crawlers', 'skull', 'white'],
+    ],
+  )
+})
+
+test('a crawler shows one mark per kind earned, with its count, most important first', () => {
+  const marks = crawlerMarks({ crawlers: 2, leaderboard: 1, neighborhood: 3, floor: 1, city: 0 })
+  assert.deepEqual(marks.map((mark) => [mark.key, mark.count]), [
+    ['floor', 1],
+    ['neighborhood', 3],
+    ['leaderboard', 1],
+    ['crawlers', 2],
   ])
 })
 
 test('no kills shows no marks, and odd values round down and never go negative', () => {
   assert.deepEqual(crawlerMarks(undefined), [])
-  assert.deepEqual(crawlerMarks({ crawlers: 0, leaderboard: -2, bosses: 0.9 }), [])
-  assert.equal(crawlerMarks({ bosses: 2.7 })[0].count, 2)
+  assert.deepEqual(crawlerMarks({ crawlers: 0, leaderboard: -2, borough: 0.9 }), [])
+  assert.equal(crawlerMarks({ borough: 2.7 })[0].count, 2)
 })
 
-test('many marks collapse to one icon with a count', () => {
-  const [stars] = crawlerMarks({ bosses: 9 })
-  assert.equal(stars.icons, 1)
-  assert.equal(stars.count, 9)
-  assert.equal(stars.many, true)
-  assert.equal(crawlerMarks({ bosses: 5 })[0].many, false)
+test('the + and - buttons change a count by one and never go below zero', () => {
+  assert.equal(stepKill(2, 1), 3)
+  assert.equal(stepKill(2, -1), 1)
+  assert.equal(stepKill(0, -1), 0)
+  assert.equal(stepKill(undefined, 1), 1)
+})
+
+test('older crawlers keep their boss kills as neighborhood bosses', () => {
+  assert.deepEqual(migrateKills({ crawlers: 1, leaderboard: 0, bosses: 4 }), { crawlers: 1, leaderboard: 0, neighborhood: 4 })
+  assert.deepEqual(migrateKills({ crawlers: 1, bosses: 2, neighborhood: 5 }), { crawlers: 1, neighborhood: 5 })
+  assert.deepEqual(migrateKills({ crawlers: 1 }), { crawlers: 1 })
 })
 
 const token = (id, disposition, extra = {}) => ({ id, actorUuid: `Actor.${id}`, name: id, img: `${id}.webp`, disposition, ...extra })
