@@ -4,8 +4,17 @@
  * can drag it (anywhere on the bar), resize it from the corner handle, and double-click to put it back; the spot is
  * remembered per user. The "Boss health bar" setting turns it off. Hidden bosses only show for the GM, and players
  * see a boss's name only when its token shows names to everyone.
+ *
+ * It appears only once the combat has started, and never while the boss battle splash is up: when an encounter
+ * starts with a boss, the bar waits for the splash to come and go.
  */
-import { barPercent, bossBarBox, bossCombatants, bossNameShown, healthColor, type BarBox } from '../rules/boss-bar'
+import { barPercent, bossBarBox, bossBarVisible, bossCombatants, bossNameShown, healthColor, type BarBox } from '../rules/boss-bar'
+import { bossBattleOpen, splashExpected } from './boss-battle'
+
+/** How long to hold the bar back for a splash that should be coming; after that it shows anyway. */
+const SPLASH_WAIT_MS = 4000
+let awaitingSplash = false
+let awaitTimer: number | undefined
 
 const BAR_ID = 'crawl-boss-bar'
 const esc = (text: string) => foundry.utils.escapeHTML(text)
@@ -23,7 +32,7 @@ const boxFor = (saved: Partial<BarBox> | null) => bossBarBox(saved, view(), defa
 /** The combat's bosses with their health. */
 function bosses() {
   const combat = game.combat
-  if (!combat) return []
+  if (!combat || !bossBarVisible({ started: !!combat.started, splashOpen: bossBattleOpen(), awaitingSplash })) return []
   const entries: { id: string; tokenId: string; kind?: string; hidden: boolean; combatant: any }[] = combat.combatants.contents.map((combatant: any) => ({
     id: combatant.id,
     tokenId: combatant.tokenId,
@@ -126,6 +135,21 @@ export function registerBossBar() {
   })
   game.settings.register('crawlspace', 'bossHealthBarPosition', { scope: 'client', config: false, type: Object, default: null, onChange: () => refresh() })
   Hooks.once('ready', () => render())
+  // A boss encounter starting brings the splash first: hold the bar until it has come and gone.
+  Hooks.on('updateCombat', (combat: any, changes: any) => {
+    if (combat !== game.combat || bossBattleOpen() || !splashExpected(combat, changes)) return
+    awaitingSplash = true
+    window.clearTimeout(awaitTimer)
+    awaitTimer = window.setTimeout(() => {
+      awaitingSplash = false
+      refresh()
+    }, SPLASH_WAIT_MS)
+  })
+  Hooks.on('crawlspaceBossBattle', () => {
+    awaitingSplash = false
+    window.clearTimeout(awaitTimer)
+    refresh()
+  })
   for (const hook of ['createCombat', 'updateCombat', 'deleteCombat', 'createCombatant', 'updateCombatant', 'deleteCombatant', 'updateToken', 'canvasReady'])
     Hooks.on(hook, refresh)
   Hooks.on('updateActor', (actor: any) => actor?.type === 'mob' && refresh())

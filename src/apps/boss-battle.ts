@@ -114,6 +114,20 @@ function showBossBattle(battle: { crawlers: BattleSide; enemies: BattleSide }) {
   document.addEventListener('keydown', onKey)
   closeTimer = window.setTimeout(() => closeBossBattle(), SHOW_MS)
   playSound()
+  Hooks.callAll('crawlspaceBossBattle', true)
+}
+
+/** Whether the boss battle splash is on screen (fading out counts as gone). */
+export const bossBattleOpen = () => !!document.querySelector(`#${OVERLAY_ID}:not(.closing)`)
+
+/** Whether this combat update starts an encounter that gets the splash by itself (on every client). */
+export function splashExpected(combat: any, changes: any) {
+  if (!game.settings.get('crawlspace', 'autoBossBattle')) return false
+  const combatants = combat.combatants.contents.map((combatant: any) => ({
+    kind: combatant.actor?.type === 'mob' ? combatant.actor.system?.kind : undefined,
+    hidden: combatant.hidden || combatant.token?.hidden,
+  }))
+  return autoBossBattle(changes, combatants, combat.previous?.round)
 }
 
 function onKey(event: KeyboardEvent) {
@@ -135,9 +149,13 @@ function closeBossBattle(fade = true) {
   document.removeEventListener('keydown', onKey)
   const overlay = document.getElementById(OVERLAY_ID)
   if (!overlay) return
-  if (!fade) return overlay.remove()
+  const gone = () => {
+    overlay.remove()
+    Hooks.callAll('crawlspaceBossBattle', false)
+  }
+  if (!fade) return gone()
   overlay.classList.add('closing')
-  window.setTimeout(() => overlay.remove(), 400)
+  window.setTimeout(gone, 400)
 }
 
 /** The sound bite plays on each client at its interface volume, unless that user turned sound bites off; a broken path stays silent. */
@@ -181,16 +199,8 @@ export function registerBossBattle() {
     default: true,
   })
   // The GM who starts an encounter with a boss in it starts the boss battle for everyone.
-  Hooks.on('preUpdateCombat', (combat: any, _changes: any, options: any) => {
-    options.crawlspacePreviousRound = combat.round
-  })
-  Hooks.on('updateCombat', (combat: any, changes: any, options: any, userId: string) => {
-    if (userId !== game.user.id || !game.user.isGM || !game.settings.get('crawlspace', 'autoBossBattle')) return
-    const combatants = combat.combatants.contents.map((combatant: any) => ({
-      kind: combatant.actor?.type === 'mob' ? combatant.actor.system?.kind : undefined,
-      hidden: combatant.hidden || combatant.token?.hidden,
-    }))
-    if (autoBossBattle(changes, combatants, options.crawlspacePreviousRound)) startBossBattle({ auto: true })
+  Hooks.on('updateCombat', (combat: any, changes: any, _options: any, userId: string) => {
+    if (userId === game.user.id && game.user.isGM && splashExpected(combat, changes)) startBossBattle({ auto: true })
   })
   Hooks.on('getSceneControlButtons', (controls: any) => {
     const tokens = controls.tokens

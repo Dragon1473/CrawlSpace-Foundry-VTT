@@ -54,3 +54,11 @@ test('starting a combat with a visible boss starts the boss battle; other combat
   assert.equal(autoBossBattle({ round: 1, turn: 0 }, [boss], 2), false)
   assert.equal(autoBossBattle({ round: 1, turn: 0 }, [boss], 0), true)
 })
+
+test('the boss bar waits for the combat to start and for the boss battle splash to close', async () => {
+  const { bossBarVisible } = await import('../src/rules/boss-bar.ts')
+  assert.equal(bossBarVisible({ started: false, splashOpen: false, awaitingSplash: false }), false)
+  assert.equal(bossBarVisible({ started: true, splashOpen: true, awaitingSplash: false }), false)
+  assert.equal(bossBarVisible({ started: true, splashOpen: false, awaitingSplash: true }), false)
+  assert.equal(bossBarVisible({ started: true, splashOpen: false, awaitingSplash: false }), true)
+})

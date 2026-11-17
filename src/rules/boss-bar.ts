@@ -25,6 +25,10 @@ export function bossCombatants<T extends BossCombatant>(combatants: T[], gm: boo
 /** Token name display modes from HOVER (30) up show the name to everyone; the GM always sees it. */
 export const bossNameShown = (gm: boolean, displayName: number) => gm || Number(displayName) >= 30
 
+/** The bar shows once the combat has started, and not while the boss battle splash is up or about to come up. */
+export const bossBarVisible = ({ started, splashOpen, awaitingSplash }: { started: boolean; splashOpen: boolean; awaitingSplash: boolean }) =>
+  started && !splashOpen && !awaitingSplash
+
 export type BarBox = { left: number; top: number; width: number; height: number }
 const MIN_WIDTH = 160
 const MIN_HEIGHT = 8
