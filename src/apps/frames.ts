@@ -97,10 +97,10 @@ class CrawlerFrames extends HandlebarsApplicationMixin(ApplicationV2) {
         ...marksOf(actor),
         pct,
         color: healthColor(pct),
-        mana: { value: system.mana.value, max: system.mana.max, pct: Math.floor(system.mana.pct ?? 0) },
+        mana: { value: system.mana?.value ?? 0, max: system.mana?.max ?? 0, pct: Math.floor(system.mana?.pct ?? 0) },
         effects: conditionsOf(actor),
         details: gm
-          ? { evade: system.evade.total, dr: system.dr.total, level: system.details.level, race: system.details.race || '—', className: system.details.className || '—' }
+          ? { evade: system.evade.total, dr: system.dr.total, level: system.details?.level ?? system.level, race: system.details?.race || '—', className: system.details?.className || '—' }
           : null,
         followers: followersOf(actor).map((follower: any) => {
           const health = follower.system.health

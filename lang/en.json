@@ -367,6 +367,8 @@
       "Kind": "Kind",
       "KindMob": "Mob",
       "KindBoss": "Boss",
+      "Crawler": "Crawler",
+      "CrawlerHint": "A GM-run crawler on the mob sheet: it joins a party and stands with it on the boss battle splash.",
       "BossTier": "Boss tier",
       "Type": "Type",
       "PerSlot": "{value} per slot",

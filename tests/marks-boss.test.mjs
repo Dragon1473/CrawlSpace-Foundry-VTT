@@ -160,3 +160,23 @@ test('the frames list a crawler\'s players unless that is turned off', async () 
   assert.equal(framePlayers(['Ann', 'Bo'], false), '')
   assert.equal(framePlayers([], true), '')
 })
+
+test('bosses lead their side: one group of their own, first, marked to stand above and centred over the rest', () => {
+  const groups = groupFighters(
+    [
+      token('Rat', -1, { level: 2 }),
+      token('Rival', -1, { crawler: true, party: 'Daughters of Kali', level: 8 }),
+      token('Krakaren', -1, { boss: true, level: 12 }),
+      token('Rat Two', -1, { level: 2 }),
+    ],
+    'Solo',
+  )
+  assert.deepEqual(groups.map((group) => [group.name, !!group.lead, names(group.fighters)]), [
+    ['', true, ['Krakaren']],
+    ['', false, ['Rat', 'Rat Two']],
+    ['Daughters of Kali', false, ['Rival']],
+  ])
+  const sent = cleanBattle({ crawlers: [], enemies: groups })
+  assert.equal(sent.enemies[0].lead, true)
+  assert.equal('lead' in sent.enemies[1], false)
+})

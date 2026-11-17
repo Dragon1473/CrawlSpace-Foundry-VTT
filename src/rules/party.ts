@@ -3,13 +3,23 @@
  * added, the party is guessed: the crawlers a player owns, or every crawler while no player owns one.
  * A crawler the GM removed stays out either way.
  */
-type Member = { hasPlayerOwner?: boolean; flags?: { crawlspace?: { inParty?: boolean } } }
+type Member = { type?: string; system?: { crawler?: boolean }; hasPlayerOwner?: boolean; flags?: { crawlspace?: { inParty?: boolean } } }
 
 export const partyFlag = (actor: Member) => actor.flags?.crawlspace?.inParty
 
+/**
+ * A crawler: a crawler actor, or a mob the GM marked as one (system.crawler), for GM-run crawlers kept on the
+ * simpler mob sheet. Both join parties and stand with them on the boss battle splash.
+ */
+export const isCrawler = (actor: { type?: string; system?: { crawler?: boolean } } | null | undefined) =>
+  actor?.type === 'crawler' || (actor?.type === 'mob' && !!actor.system?.crawler)
+
+/** A crawler mob is in the players' party only when the GM put it there. */
+const addedOnly = (actor: Member) => actor.type === 'mob'
+
 export function pickParty<T extends Member>(crawlers: T[]): T[] {
   if (crawlers.some((actor) => partyFlag(actor) === true)) return crawlers.filter((actor) => partyFlag(actor) === true)
-  const candidates = crawlers.filter((actor) => partyFlag(actor) !== false)
+  const candidates = crawlers.filter((actor) => partyFlag(actor) !== false && !addedOnly(actor))
   const owned = candidates.filter((actor) => actor.hasPlayerOwner)
   return owned.length ? owned : candidates
 }

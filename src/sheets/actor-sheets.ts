@@ -1,3 +1,4 @@
+import { partyChoices, setCrawlerParty } from '../actors/party'
 import { actorTurnedOff, itemEffectKey } from '../data/effect'
 import { repairShields } from '../rules/repair'
 import { equippedShields } from '../rules/shield-block'
@@ -255,6 +256,11 @@ class CrawlActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
   async _onRender(context: any, options: any) {
     await super._onRender(context, options)
+    // A crawler mob's party.
+    this.element.querySelector('[data-crawl-party]')?.addEventListener('change', (event: Event) => {
+      event.stopPropagation()
+      void setCrawlerParty(this.actor, (event.currentTarget as HTMLSelectElement).value)
+    })
     // Inline edits on embedded items (rank, quantity, stat...).
     for (const input of this.element.querySelectorAll('[data-item-field]')) {
       input.addEventListener('change', async (event: Event) => {
@@ -1215,6 +1221,8 @@ export class MobSheet extends CrawlActorSheet {
           actor.type === 'companion'
             ? { pet: 'CRAWLSPACE.Companion.pet', mount: 'CRAWLSPACE.Companion.mount', vehicle: 'CRAWLSPACE.Companion.vehicle' }
             : { mob: 'CRAWLSPACE.Mob.KindMob', boss: 'CRAWLSPACE.Mob.KindBoss' }
+        // A mob can be a GM-run crawler, standing with a party.
+        if (actor.type === 'mob') context.crawlerParty = { on: !!system.crawler, choices: system.crawler ? partyChoices(actor) : [] }
         context.bossTierChoices = Object.fromEntries(Object.keys(CONFIG.CRAWLSPACE.BOSS_TIERS).map((tier) => [tier, tier]))
         {
           const master = system.master ? fromUuidSync(system.master) : null

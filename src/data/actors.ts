@@ -347,6 +347,8 @@ export class MobData extends CrawlActorData {
     const fields = f()
     return {
       kind: new fields.StringField({ required: true, initial: 'mob', choices: ['mob', 'boss'] }),
+      /** A GM-run crawler kept on the mob sheet: it joins parties like a crawler (rules/party.ts isCrawler). */
+      crawler: new fields.BooleanField({ initial: false }),
       bossTier: new fields.StringField({ required: true, initial: 'Neighborhood', choices: Object.keys(BOSS_TIERS) }),
       level: integer(1, { min: 0 }),
       floor: integer(1, { min: 0 }),

@@ -6,17 +6,20 @@
  */
 import { TokenMakerApp } from '../apps/token-maker'
 import { HeadshotMakerApp } from '../apps/headshot-maker'
-import { cleanParties, partyFlag, partyNameOf, pickParty, type OtherParty } from '../rules/party'
+import { cleanParties, isCrawler, partyFlag, partyNameOf, pickParty, type OtherParty } from '../rules/party'
 
 const { HandlebarsApplicationMixin, ApplicationV2, DialogV2 } = foundry.applications.api
 
+/** Every crawler in the world: crawler actors and mobs marked as crawlers. */
+const allCrawlers = (): any[] => game.actors.contents.filter((actor: any) => isCrawler(actor))
+
 /** The party's crawlers, by name. Every user gets the whole party, including crawlers they can't open. */
 export function partyCrawlers(): any[] {
-  const crawlers = game.actors.contents.filter((actor: any) => actor.type === 'crawler')
+  const crawlers = allCrawlers()
   return pickParty(crawlers).sort((a: any, b: any) => a.name.localeCompare(b.name))
 }
 
-export const inParty = (actor: any) => actor?.type === 'crawler' && partyCrawlers().includes(actor)
+export const inParty = (actor: any) => isCrawler(actor) && partyCrawlers().includes(actor)
 
 const t = (key: string, data?: Record<string, unknown>) => (data ? game.i18n.format(`CRAWLSPACE.Party.${key}`, data) : game.i18n.localize(`CRAWLSPACE.Party.${key}`))
 const esc = (text: string) => foundry.utils.escapeHTML(text)
@@ -43,11 +46,19 @@ export async function setCrawlerParty(actor: any, choice: string) {
   return actor.update(update)
 }
 
+/** The parties a crawler can stand with ('players', other parties' ids, '' for Solo), its own marked. */
+export function partyChoices(actor: any) {
+  const current = inParty(actor) ? 'players' : (otherParties().find((party) => party.id === actor.getFlag('crawlspace', 'partyId'))?.id ?? '')
+  return [
+    { value: 'players', label: `${playerPartyLabel()} (${t('Players')})` },
+    ...otherParties().map((party) => ({ value: party.id, label: party.name || t('Unnamed') })),
+    { value: '', label: t('Solo') },
+  ].map((choice) => ({ ...choice, selected: choice.value === current }))
+}
+
 /** Ask which party a crawler belongs to. */
 async function chooseParty(actor: any) {
-  const current = inParty(actor) ? 'players' : (otherParties().find((party) => party.id === actor.getFlag('crawlspace', 'partyId'))?.id ?? '')
-  const option = (value: string, label: string) => `<option value="${esc(value)}" ${value === current ? 'selected' : ''}>${esc(label)}</option>`
-  const options = [option('players', `${playerPartyLabel()} (${t('Players')})`), ...otherParties().map((party) => option(party.id, party.name || t('Unnamed'))), option('', t('Solo'))]
+  const options = partyChoices(actor).map((choice) => `<option value="${esc(choice.value)}" ${choice.selected ? 'selected' : ''}>${esc(choice.label)}</option>`)
   const content = `<label class="crawl-dialog-field"><span>${esc(t('Party'))}</span><select name="party">${options.join('')}</select></label>
     <p class="hint">${esc(t('ChooseHint'))}</p>`
   const choice = await DialogV2.prompt({
@@ -75,7 +86,7 @@ class PartiesApp extends HandlebarsApplicationMixin(ApplicationV2) {
   static PARTS = { main: { template: 'systems/crawlspace/templates/apps/parties.hbs' } }
 
   async _prepareContext() {
-    const crawlers = game.actors.contents.filter((actor: any) => actor.type === 'crawler')
+    const crawlers = allCrawlers()
     const members = partyCrawlers()
     const memberIds = new Set(members.map((actor) => actor.id))
     const names = (list: any[]) => list.map((actor) => actor.name).sort((a, b) => a.localeCompare(b)).join(', ')
@@ -138,7 +149,7 @@ export function registerParty() {
   game.settings.register('crawlspace', 'parties', { scope: 'world', config: false, type: Array, default: [], onChange: redrawParties })
   Hooks.on('getActorContextOptions', (_app: any, options: any[]) => {
     const actorOf = (li: HTMLElement) => game.actors.get(li.closest<HTMLElement>('[data-entry-id]')?.dataset.entryId)
-    const crawler = (li: HTMLElement) => game.user.isGM && actorOf(li)?.type === 'crawler'
+    const crawler = (li: HTMLElement) => game.user.isGM && isCrawler(actorOf(li))
     options.push(
       {
         label: 'CRAWLSPACE.Party.Add',
@@ -174,7 +185,7 @@ export function registerParty() {
   })
   // Redraw the list (and the Parties window) when membership changes, so the marks follow.
   Hooks.on('updateActor', (actor: any, changes: any) => {
-    if (actor.type === 'crawler' && (foundry.utils.hasProperty(changes, 'flags.crawlspace.inParty') || foundry.utils.hasProperty(changes, 'flags.crawlspace.partyId') || foundry.utils.hasProperty(changes, 'flags.crawlspace.-=partyId')))
+    if ((isCrawler(actor) || foundry.utils.hasProperty(changes, 'system.crawler')) && (foundry.utils.hasProperty(changes, 'system.crawler') || foundry.utils.hasProperty(changes, 'flags.crawlspace.inParty') || foundry.utils.hasProperty(changes, 'flags.crawlspace.partyId') || foundry.utils.hasProperty(changes, 'flags.crawlspace.-=partyId')))
       redrawParties()
   })
 }
@@ -186,7 +197,7 @@ export function markPartyInDirectory(root: HTMLElement) {
   for (const li of root.querySelectorAll<HTMLElement>('li.directory-item[data-entry-id]')) {
     li.querySelector('.crawl-party-mark')?.remove()
     const actor: any = game.actors.get(li.dataset.entryId)
-    const other = !members.has(li.dataset.entryId) && actor?.type === 'crawler' ? parties.find((party) => party.id === actor.getFlag('crawlspace', 'partyId')) : null
+    const other = !members.has(li.dataset.entryId) && isCrawler(actor) ? parties.find((party) => party.id === actor.getFlag('crawlspace', 'partyId')) : null
     if (!members.has(li.dataset.entryId) && !other) continue
     const mark = document.createElement('i')
     mark.className = `crawl-party-mark fa-solid ${other ? 'fa-people-group other' : 'fa-users'}`

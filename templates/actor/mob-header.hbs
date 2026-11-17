@@ -30,6 +30,14 @@
         {{#if (eq systemSource.kind "boss")}}<select name="system.bossTier" aria-label="{{localize 'CRAWLSPACE.Mob.BossTier'}}" data-tooltip="{{localize 'CRAWLSPACE.Mob.BossTier'}}">{{selectOptions bossTierChoices selected=systemSource.bossTier}}</select>{{/if}}
       </span>
     </label>
+    {{#if crawlerParty}}
+    <label><span>{{localize "CRAWLSPACE.Mob.Crawler"}}</span>
+      <span class="pf-kind">
+        <input type="checkbox" name="system.crawler" {{checked crawlerParty.on}} data-tooltip="{{localize 'CRAWLSPACE.Mob.CrawlerHint'}}">
+        {{#if crawlerParty.on}}<select data-crawl-party aria-label="{{localize 'CRAWLSPACE.Party.Party'}}">{{#each crawlerParty.choices}}<option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}</select>{{/if}}
+      </span>
+    </label>
+    {{/if}}
     {{#if companion}}
     {{#if companion.vehicle}}<label><span>{{localize "CRAWLSPACE.Companion.Occupants"}}</span><input type="text" name="system.companion.occupants" value="{{systemSource.companion.occupants}}"></label>{{else}}<span></span>{{/if}}
     {{else}}

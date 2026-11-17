@@ -1,7 +1,8 @@
 /** Boss battle intro: who stands on each side, grouped by party, and what travels to the other clients. Pure module. */
-export type BattleToken = { id: string; actorUuid?: string; name: string; img: string; disposition: number; crawler?: boolean; party?: string; level?: number | null }
+export type BattleToken = { id: string; actorUuid?: string; name: string; img: string; disposition: number; crawler?: boolean; boss?: boolean; party?: string; level?: number | null }
 export type Fighter = { name: string; img: string; level: number | null }
-export type FighterGroup = { name: string; fighters: Fighter[] }
+/** `lead`: the side's bosses, shown above the other groups and centred over them. */
+export type FighterGroup = { name: string; fighters: Fighter[]; lead?: boolean }
 export type BattleSide = FighterGroup[]
 
 /** Each side shows at most this many headshots, and this many groups. */
@@ -44,18 +45,24 @@ export function battleSides({ party, selected, combatants, friends = [] }: { par
 }
 
 /**
- * Banners for one side: crawlers under their party's name (Solo when they have none), other creatures in an
- * unnamed group. Groups keep the order their first member appears in, except that Solo comes last.
+ * Banners for one side: bosses first in a lead group of their own, crawlers under their party's name (Solo when
+ * they have none), other creatures in an unnamed group. Groups keep the order their first member appears in, except that Solo comes last.
  */
 export function groupFighters(tokens: BattleToken[], solo: string): BattleSide {
   const groups = new Map<string, FighterGroup>()
+  const lead: FighterGroup = { name: '', fighters: [], lead: true }
   for (const token of tokens) {
+    const fighter = { name: token.name, img: token.img, level: level(token.level) }
+    if (token.boss) {
+      lead.fighters.push(fighter)
+      continue
+    }
     const name = token.crawler ? token.party?.trim() || solo : ''
     if (!groups.has(name)) groups.set(name, { name, fighters: [] })
-    groups.get(name)!.fighters.push({ name: token.name, img: token.img, level: level(token.level) })
+    groups.get(name)!.fighters.push(fighter)
   }
   const list = [...groups.values()]
-  return [...list.filter((group) => group.name !== solo), ...list.filter((group) => group.name === solo)]
+  return [...(lead.fighters.length ? [lead] : []), ...list.filter((group) => group.name !== solo), ...list.filter((group) => group.name === solo)]
 }
 
 const level = (value: unknown) => (value === null || value === undefined || value === '' || !Number.isFinite(Number(value)) ? null : Math.max(0, Math.floor(Number(value))))
@@ -73,7 +80,7 @@ export function cleanBattle(payload: any): { crawlers: BattleSide; enemies: Batt
           .slice(0, Math.max(0, room))
           .map((fighter) => ({ name: text(fighter.name), img: text(fighter.img), level: level(fighter.level) }))
         room -= fighters.length
-        return { name: text(group.name), fighters }
+        return { name: text(group.name), fighters, ...(group.lead === true ? { lead: true } : {}) }
       })
       .filter((group) => group.fighters.length)
   }

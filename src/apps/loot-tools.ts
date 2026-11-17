@@ -344,7 +344,8 @@ function startAutoLootTimer() {
     const { counted, due } = autoLootTick(playtime(), STEP, settings, online)
     if (counted !== playtime()) await game.settings.set('crawlspace', 'autoLootPlaytime', counted)
     if (!due) return
-    const party = partyCrawlers()
+    // Crawler mobs carry no loot boxes: only crawler actors get auto-loot.
+    const party = partyCrawlers().filter((actor: any) => actor.type === 'crawler')
     if (party.length) await runAutoLoot(party, settings).catch((error) => console.error('CrawlSpace | auto-loot timer', error))
   }, STEP * 1000)
 }

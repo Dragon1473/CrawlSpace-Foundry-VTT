@@ -13,6 +13,7 @@
  * GM's selection.
  */
 import { partyCrawlers, partyNameFor } from '../actors/party'
+import { isCrawler } from '../rules/party'
 import { followersOf } from '../actors/companions'
 import { battleSides, cleanBattle, groupFighters, soundSource, type BattleSide, type BattleToken, type FighterGroup } from '../rules/boss-battle'
 import { headshotOf } from '../rules/headshot'
@@ -44,8 +45,9 @@ function gatherBattle({ useSelection }: { useSelection: boolean }) {
     name,
     img: headshot(actor, tokenImg),
     disposition,
-    crawler: actor?.type === 'crawler',
-    party: actor?.type === 'crawler' ? partyNameFor(actor, memberIds) : '',
+    crawler: isCrawler(actor),
+    boss: actor?.type === 'mob' && actor.system?.kind === 'boss',
+    party: isCrawler(actor) ? partyNameFor(actor, memberIds) : '',
     level: levelOf(actor),
   })
   const party = members.map((actor: any) => fighter(actor.id, actor, actor.name, actor.prototypeToken?.texture?.src, 1))
@@ -70,9 +72,9 @@ export function startBossBattle({ auto = false }: { auto?: boolean } = {}) {
   showBossBattle(battle)
 }
 
-/** One party: its banner, then its crawlers in a grid (two across up to four, three across after). */
+/** One party: its banner, then its crawlers in a grid (two across up to four, three across after). Bosses stand in one row. */
 function group(entry: FighterGroup, start: number) {
-  const columns = entry.fighters.length <= 1 ? 1 : entry.fighters.length <= 4 ? 2 : 3
+  const columns = entry.lead ? Math.max(1, entry.fighters.length) : entry.fighters.length <= 1 ? 1 : entry.fighters.length <= 4 ? 2 : 3
   const banner = entry.name ? `<div class="boss-banner"><span>${esc(entry.name)}</span></div>` : ''
   const fighters = entry.fighters
     .map(
@@ -82,17 +84,25 @@ function group(entry: FighterGroup, start: number) {
       </figure>`,
     )
     .join('')
-  return `<section class="boss-group" style="--cols: ${columns}">${banner}<div class="boss-fighters">${fighters}</div></section>`
+  return `<section class="boss-group${entry.lead ? ' boss-lead' : ''}" style="--cols: ${columns}">${banner}<div class="boss-fighters">${fighters}</div></section>`
 }
 
+/** A side's groups. Its bosses (the lead group) stand above the others, centred over them. */
 function side(groups: BattleSide, kind: string) {
   let start = 0
-  const html = groups.map((entry) => {
-    const part = group(entry, start)
-    start += entry.fighters.length
-    return part
-  })
-  return `<div class="boss-side ${kind}">${html.join('')}</div>`
+  const render = (list: BattleSide) =>
+    list
+      .map((entry) => {
+        const part = group(entry, start)
+        start += entry.fighters.length
+        return part
+      })
+      .join('')
+  const leads = groups.filter((entry) => entry.lead)
+  const rest = groups.filter((entry) => !entry.lead)
+  if (!leads.length) return `<div class="boss-side ${kind}">${render(rest)}</div>`
+  const top = render(leads)
+  return `<div class="boss-side ${kind}"><div class="boss-column">${top}${rest.length ? `<div class="boss-rest">${render(rest)}</div>` : ''}</div></div>`
 }
 
 function showBossBattle(battle: { crawlers: BattleSide; enemies: BattleSide }) {

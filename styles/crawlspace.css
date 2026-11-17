@@ -3125,6 +3125,9 @@
   #crawl-boss-battle .enemies .boss-banner::before { border-color: #ff4d3d; background: rgb(140 20 20 / 55%); box-shadow: 0 0 14px rgb(255 77 61 / 60%); }
   #crawl-boss-battle .enemies .boss-banner span { border-color: #ffb0a8; background: linear-gradient(180deg, #e2402f, #a3201a); }
   #crawl-boss-battle .enemies .boss-banner::before { box-shadow: none; }
+  #crawl-boss-battle .boss-column { display: flex; flex-direction: column; align-items: center; gap: 28px; }
+  #crawl-boss-battle .boss-rest { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-end; gap: 28px clamp(16px, 3vw, 40px); }
+  #crawl-boss-battle .boss-lead img { transform: scale(1.15); }
   #crawl-boss-battle .boss-fighters { display: grid; grid-template-columns: repeat(var(--cols, 2), auto); justify-content: center; gap: 22px 14px; }
   #crawl-boss-battle figure {
     position: relative;
