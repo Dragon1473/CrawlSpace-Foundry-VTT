@@ -7,7 +7,7 @@ import { HEALTH_MAX } from '../config'
 import { applySlotDamage, dyingAfterHealthChange, type ConditionShield } from '../rules/core'
 import { debuffById } from '../rules/debuffs'
 import { CUSTOM_CHANGE_TYPES } from '../effects/mapping'
-import { capsMagicDamage, halvesAreaDamage, hasRegen, regenAdvance } from '../effects/specials'
+import { capsMagicDamage, halvesAreaDamage, hasRegen, piercingDr, regenAdvance } from '../effects/specials'
 import { afterHit, fireEvent } from '../effects/triggers'
 
 export type DamageOptions = {
@@ -156,6 +156,7 @@ export class CrawlActor extends Actor {
         .map((slot: any) => Number(slot.threshold))
       const result = applySlotDamage(incoming, system.shield.slots, system.shield.value, system.dr.total, healthValues, {
         armorPiercing,
+        piercingDr: piercingDr(this),
         damageTypes: types,
         responses: system.damageResponses,
         shieldBlock: options.shieldBlock,
@@ -181,6 +182,7 @@ export class CrawlActor extends Actor {
     const remaining = system.health.value
     const result = applySlotDamage(incoming, [], 0, system.dr?.total ?? 0, Array(remaining).fill(perSlot || 1), {
       armorPiercing,
+      piercingDr: piercingDr(this),
       damageTypes: types,
       responses: system.damageResponses,
       conditionShields: shields,

@@ -52,6 +52,7 @@
       "build": "Build"
     },
     "Sheet": {
+      "EffectiveHint": "With its effects and buffs. The box holds the base number.",
       "Crawler": "CrawlSpace Crawler",
       "Mob": "CrawlSpace Mob",
       "Npc": "CrawlSpace NPC",

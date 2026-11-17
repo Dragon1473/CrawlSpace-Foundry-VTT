@@ -21,6 +21,8 @@ export type Special = {
   itemId?: string
   effectId?: string
   stacks?: number
+  /** The Rank of the condition carrying it (a cast buff such as Astral Paw). */
+  rank?: number
 }
 
 export type DamageKind = 'skill' | 'spell' | undefined
@@ -53,7 +55,8 @@ function damageModifierApplies(special: Special, sources: string[], weapon: bool
  */
 const ownerRank = (actor: any, special: Special, attackRank: number) => {
   const item = special.itemId ? actor.items.get(special.itemId) : null
-  return item?.system?.rank ? Number(item.system.rank.total) || 0 : attackRank
+  if (item?.system?.rank) return Number(item.system.rank.total) || 0
+  return Number(special.rank) > 0 ? Number(special.rank) : attackRank
 }
 
 /** Damage Modifier bonuses that cover an attack. Stacks multiply a condition's bonus. */
@@ -77,6 +80,21 @@ export function piercesArmor(actor: any, itemIds: string[], sources: string[], w
       (special.type === 'armorPiercing' && !!special.itemId && itemIds.includes(special.itemId)) ||
       (special.type === 'damageBonus' && special.armorPiercing === true && damageModifierApplies(special, sources, weapon, kind)),
   )
+}
+
+/**
+ * Anti-Piercing: the DR that still stops Armor Piercing damage. On a piece of armor (or a shield) it is that
+ * piece's DR while it is worn and whole; on the actor itself, all of its DR.
+ */
+export function piercingDr(actor: any) {
+  const total = Math.max(0, Number(actor?.system?.dr?.total) || 0)
+  let dr = 0
+  for (const special of specialsOf(actor, 'antiPiercing')) {
+    const item = special.itemId ? actor.items?.get(special.itemId) : null
+    if (!item) return total
+    if (item.type === 'equipment' && item.system?.equipped && !item.system?.broken) dr += Math.max(0, (Number(item.system.armorDr) || 0) - (Number(item.system.drLost) || 0))
+  }
+  return Math.min(total, Math.floor(dr))
 }
 
 /** Wisp Armor: incoming magic damage from this kind of source is capped. */

@@ -113,6 +113,7 @@ export const CHANGE_TYPE_HANDLERS: Record<string, { label: string; defaultPriori
         itemId: item?.id ?? '',
         effectId: effect?.id ?? '',
         stacks: Number(effect?.system?.stacks) || 1,
+        rank: Number(effect?.system?.rank) || 0,
       })
     },
   },

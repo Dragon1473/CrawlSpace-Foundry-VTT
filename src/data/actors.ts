@@ -1,4 +1,5 @@
 import { modLostFor, mobEvadeAfterLoss, mobToHitAfterLoss, type LossKind } from '../rules/mod-loss'
+import { migrateMaster } from '../rules/follower-master'
 import { KILL_KINDS, migrateKills } from '../rules/crawler-marks'
 import { BOSS_TIERS, DAMAGE_TYPES, HEALTH_MAX, HEALTH_SLOTS, STAT_KEYS, statKeyFromCode, type StatKey } from '../config'
 import { abilityScoreModifier, mobDerived, mobToHit, resolveFormulaTokens, safeArithmetic, type DamageResponse } from '../rules/core'
@@ -60,6 +61,8 @@ abstract class CrawlActorData extends foundry.abstract.TypeDataModel {
     this.mana.bonus = 0
     this.dr ??= {}
     this.dr.bonus = 0
+    // Iron Skin doubles DR (rules/debuffs.ts): a multiplier on the worked-out total, not on a GM's override.
+    this.dr.factor = 1
     this.evade ??= {}
     this.evade.bonus = 0
     this.move ??= {}
@@ -267,7 +270,7 @@ export class CrawlerData extends CrawlActorData {
     this.shieldDr.max = shieldMax
     this.shieldDr.value = Math.clamp(shieldLeft - this.shieldDr.lost, 0, shieldMax)
     this.dr.armorTotal = Math.floor(this.dr.armor + equippedArmor)
-    this.dr.total = Math.floor(this.dr.override ?? this.dr.armorTotal + this.shieldDr.value + this.dr.buff + this.dr.bonus)
+    this.dr.total = Math.floor(this.dr.override ?? (this.dr.armorTotal + this.shieldDr.value + this.dr.buff + this.dr.bonus) * (Number(this.dr.factor) || 1))
 
     // Evade = DEX mod + Evade buffs.
     const hasDex = this.attributes.dex.total !== null || this.attributes.dex.modOverride !== null
@@ -339,7 +342,7 @@ const mobAttackSchema = () => {
 export class MobData extends CrawlActorData {
   /** The crawler link used to live on `companion.master` (pets) and `minion.caster` (minions). */
   static migrateData(source: any) {
-    if (!source.master) source.master = source.companion?.master || source.minion?.caster || ''
+    migrateMaster(source)
     return super.migrateData(source)
   }
 
@@ -409,7 +412,7 @@ export class MobData extends CrawlActorData {
     const dex = this.attributes.dex
     const evade = mobEvadeAfterLoss({ evade: derived.evade, published: !!this.evade.published, fullMod: dex.fullMod, lostAll: !!dex.modLost, lostEvade: modLostFor(dex, 'evade') })
     this.evade.total = Math.floor(evade + this.evade.bonus)
-    this.dr.total = Math.floor(this.dr.armor + this.dr.bonus)
+    this.dr.total = Math.floor((this.dr.armor + this.dr.bonus) * (Number(this.dr.factor) || 1))
     this.move.total = Math.floor(this.move.value + this.move.bonus)
     this.surpriseTotal = derived.surprise
     this.statPoints = derived.statPoints

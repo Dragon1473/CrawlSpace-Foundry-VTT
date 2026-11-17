@@ -171,3 +171,13 @@ test('grid calibration: scale the map to the grid and put the anchor on an inter
   assert.deepEqual(referencePoint({ x: 10, y: 10 }, { x: 160, y: 14 }, 'x'), { x: 160, y: 10 })
   assert.equal(cellFromMeasure({ x: 0, y: 0 }, { x: 150, y: 0 }), 50)
 })
+
+test('Armor Piercing damage ignores DR, except the DR of Anti-Piercing armor', async () => {
+  const { applySlotDamage } = await import('../src/rules/core.ts')
+  const slots = [10, 10, 10]
+  assert.equal(applySlotDamage(20, [], 0, 8, slots, { armorPiercing: true }).slotsLost, 2)
+  assert.equal(applySlotDamage(20, [], 0, 8, slots, { armorPiercing: true, piercingDr: 5 }).slotsLost, 1)
+  // Never more than the DR there is.
+  assert.equal(applySlotDamage(20, [], 0, 3, slots, { armorPiercing: true, piercingDr: 15 }).slotsLost, 1)
+  assert.equal(applySlotDamage(20, [], 0, 8, slots, {}).slotsLost, 1)
+})

@@ -121,6 +121,8 @@ export type SlotDamageOptions = {
   magic?: boolean
   /** Wisp Armor: magic damage is first reduced to the spell's Rank 1 base damage. */
   magicDamageCap?: number
+  /** Anti-Piercing: the DR that still counts against Armor Piercing damage (never more than the DR there is). */
+  piercingDr?: number
 }
 
 /**
@@ -166,7 +168,8 @@ export function applySlotDamage(
   if (options.shieldBlock) damage = blockedDamage(damage, options.shieldBlock.rank, options.shieldBlock.strength)
   const physicalShieldBlockedDamage = beforeBlock - damage
   const beforeDr = damage
-  if (!options.armorPiercing && Number.isFinite(dr)) damage = Math.max(0, damage - Math.max(0, dr))
+  const drApplied = options.armorPiercing ? Math.min(Math.max(0, dr), Math.max(0, options.piercingDr ?? 0)) : dr
+  if (Number.isFinite(drApplied)) damage = Math.max(0, damage - Math.max(0, drApplied))
   const drBlockedDamage = beforeDr - damage
   const adjusted = applyDamageResponses(damage, options.damageTypes ?? [], options.responses ?? [])
   damage = adjusted.damage

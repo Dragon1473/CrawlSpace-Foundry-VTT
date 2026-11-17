@@ -107,17 +107,48 @@ export function missingStandardChanges(statuses: Iterable<string>, existing: { k
 }
 
 /**
- * Compendium buffs by name whose effect is just a number, and the rules that do it: Nitrous Oxide (a vehicle) and
- * Twinkle Toes (a pet or minion) double the Mob's Move. Rank variants share their base name.
+ * Compendium buffs by name and the rules that do what their text says. A Rank variant ("Astral Paw (Rank 5)")
+ * is looked up by its full name first, then by its base name. Good Sleep needs the Floor, so it is only filled in
+ * once the buff is on an actor.
  */
-const NAMED_CHANGES: Record<string, DebuffChange[]> = {
-  'nitrous oxide': [{ key: 'system.move.value', type: 'multiply', value: '2', phase: 'initial' }],
-  'twinkle toes': [{ key: 'system.move.value', type: 'multiply', value: '2', phase: 'initial' }],
+const move2: DebuffChange[] = [{ key: 'system.move.value', type: 'multiply', value: '2', phase: 'initial' }]
+const specialChange = (key: string, data: Record<string, unknown>): DebuffChange => ({ key, type: 'crawlspace.special', value: JSON.stringify({ target: '', ...data }), phase: 'initial' })
+const astralPaw = [specialChange('damageBonus', { target: 'Pugilism, Slice', value: 'RANK_DIE', damageTypes: [], damageScope: '', armorPiercing: false })]
+const swimming = [{ key: 'checkMode:Swimming', type: 'crawlspace.rollMode', value: 'advantage', phase: 'initial' } as DebuffChange]
+
+const NAMED_CHANGES: Record<string, DebuffChange[] | ((context: NamedContext) => DebuffChange[])> = {
+  // A vehicle's or a pet's or minion's Move doubles.
+  'nitrous oxide': move2,
+  'twinkle toes': move2,
+  // The DR of the armor carrying it still counts against Armor Piercing damage (effects/specials.ts piercingDr).
+  'anti-piercing': [specialChange('antiPiercing', {})],
+  'astral paw (rank 5)': astralPaw,
+  'astral paw (rank 15)': astralPaw,
+  'good sleep': ({ floor }) =>
+    floor === undefined ? [] : ['str', 'int', 'con', 'dex', 'cha'].map((stat) => ({ key: `system.attributes.${stat}.bonus`, type: 'add', value: String(Math.floor(floor)), phase: 'initial' as const })),
+  'iron skin potion': [{ key: 'system.dr.factor', type: 'multiply', value: '2', phase: 'initial' }],
+  // Unseen Attackers: Advantage on its attacks, Disadvantage on attacks against it.
+  invisible: [rollMode('attackMode', 'advantage'), rollMode('incomingAttackMode', 'disadvantage')],
+  'replenish buff': [specialChange('manaPerRound', { value: 'INT', interval: '10 minutes' })],
+  'you are full!': [specialChange('regenPerRound', { value: '2', interval: '1 hour' })],
+  'water breathing (rank 10)': swimming,
+  'water breathing (rank 15)': swimming,
 }
 
+type NamedContext = { floor?: number }
+
 /** The named buff's rules the effect doesn't have yet. */
-export function missingNamedChanges(name: string, existing: { key: string; type: string }[] = []): DebuffChange[] {
-  const base = String(name ?? '').replace(/\s*\(.*\)\s*$/, '').trim().toLowerCase()
+export function missingNamedChanges(name: string, existing: { key: string; type: string }[] = [], context: NamedContext = {}): DebuffChange[] {
+  const full = String(name ?? '').trim().toLowerCase()
+  const base = full.replace(/\s*\(.*\)\s*$/, '')
+  const entry = NAMED_CHANGES[full] ?? NAMED_CHANGES[base]
+  const list = typeof entry === 'function' ? entry(context) : (entry ?? [])
   const has = new Set(existing.map((change) => `${change.type}|${change.key}`))
-  return (NAMED_CHANGES[base] ?? []).filter((change) => !has.has(`${change.type}|${change.key}`)).map((change) => ({ ...change }))
+  return list.filter((change) => !has.has(`${change.type}|${change.key}`)).map((change) => ({ ...change }))
+}
+
+/** Buffs that act once when they land: Recovery fills Health, Restore fills Mana. */
+export function instantRestore(name: string): 'health' | 'mana' | null {
+  const base = String(name ?? '').trim().toLowerCase()
+  return base === 'recovery buff' || base === 'recovery' ? 'health' : base === 'restore buff' || base === 'restore' ? 'mana' : null
 }
