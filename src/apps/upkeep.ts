@@ -6,7 +6,9 @@ import { openGrinding } from './grinding'
 import { openAwards } from './awards'
 import { openAutoLoot, openItemGenerator } from './loot-tools'
 import { openLootBoxes } from '../loot/boxes'
-import { advanceTime, expireActorEvent } from '../time'
+import { advanceTime, expireActorEvent, settleTime } from '../time'
+import { startRegenCollect, stopRegenCollect } from '../effects/regen-collector'
+import { recoveryRow } from '../rules/upkeep-summary'
 import { restSeconds } from '../rules/time'
 import { openTime } from './time'
 import { STATS, STAT_KEYS } from '../config'
@@ -20,9 +22,46 @@ async function report(actor: any, title: string, lines: string[]) {
 
 export async function rest(actor: any, kind: RecoveryKind, hours = 1, options: { advance?: boolean } = {}) {
   if (!game.user.isGM) return upkeepAction([actor.uuid], kind, hours)
-  if (options.advance !== false) {
-    await advanceTime(restSeconds(kind, hours))
+  return restParty([actor], kind, hours, options)
+}
+
+const pools = (actor: any) => ({ health: Number(actor.system.health.value) || 0, mana: Number(actor.system.mana.value) || 0 })
+
+/**
+ * A rest or hourly recovery for several crawlers, with one chat card for all of them. The time passes first
+ * (unless `advance` is false), and the regeneration buffs that heal over it (You are full!, Replenish) are
+ * counted on the card as their own bonus.
+ */
+export async function restParty(actors: any[], kind: RecoveryKind, hours = 1, options: { advance?: boolean } = {}) {
+  if (!game.user.isGM || !actors.length) return
+  const before = new Map(actors.map((actor) => [actor.uuid, pools(actor)]))
+  startRegenCollect()
+  let regen: Map<string, string[]>
+  try {
+    if (options.advance !== false) await advanceTime(restSeconds(kind, hours))
+    else await settleTime()
+  } finally {
+    regen = stopRegenCollect()
   }
+  const rows: string[] = []
+  for (const actor of actors) {
+    const afterRegen = pools(actor)
+    const cleared = await recover(actor, kind, hours)
+    const row = recoveryRow(before.get(actor.uuid)!, afterRegen, pools(actor), { sources: regen.get(actor.uuid) })
+    const esc = foundry.utils.escapeHTML
+    const parts = [game.i18n.format('CRAWLSPACE.Upkeep.Restored', { slots: row.slots, mana: row.mana })]
+    if (row.bonusFrom.length)
+      parts.push(game.i18n.format('CRAWLSPACE.Upkeep.BonusFrom', { slots: row.bonusSlots, mana: row.bonusMana, list: esc(row.bonusFrom.join(', ')) }))
+    if (cleared.length) parts.push(game.i18n.format('CRAWLSPACE.Upkeep.Cleared', { list: esc(cleared.join(', ')) }))
+    rows.push(`<b>${esc(actor.name)}</b>: ${parts.join(' ')}`)
+  }
+  const title = game.i18n.localize(`CRAWLSPACE.Upkeep.${kind}`) + (kind === 'hourly' ? ` (${game.i18n.format('CRAWLSPACE.Upkeep.HoursSpent', { hours })})` : '')
+  const content = `<div class="crawlspace chat-card upkeep-card"><h3>${title}</h3><ul>${rows.map((row) => `<li>${row}</li>`).join('')}</ul></div>`
+  await ChatMessage.create({ content, speaker: actors.length === 1 ? ChatMessage.getSpeaker({ actor: actors[0] }) : { alias: game.i18n.localize('CRAWLSPACE.Upkeep.Party') } })
+}
+
+/** One crawler's recovery: health, mana and the debuffs it clears. Returns the names of those cleared. */
+async function recover(actor: any, kind: RecoveryKind, hours: number) {
   const before = { health: actor.system.health.value, mana: actor.system.mana.value }
   const system = actor.system
   const result = recoverCrawler(kind, system.health.value, system.mana.value, system.mana.max, hours)
@@ -44,11 +83,7 @@ export async function rest(actor: any, kind: RecoveryKind, hours = 1, options: {
     await clearKillingBlows(actor, 'longRest')
   }
   if (result.health > before.health) await expireActorEvent('healed', [actor])
-  const restored = (result.health - before.health) / 10
-  await report(actor, game.i18n.localize(`CRAWLSPACE.Upkeep.${kind}`), [
-    game.i18n.format('CRAWLSPACE.Upkeep.Restored', { slots: Math.max(0, restored), mana: result.mana - before.mana }),
-    ...(removed.length ? [game.i18n.format('CRAWLSPACE.Upkeep.Cleared', { list: removed.join(', ') })] : []),
-  ])
+  return removed
 }
 
 /** Roll a d20 for each marked skill/spell; meeting its rank advances it (abilityAdvancement.ts). */
@@ -143,9 +178,7 @@ export async function performUpkeep(uuids: string[], kind: string, hours = 1, sk
   const actors = (await Promise.all([...new Set(uuids)].map((uuid) => fromUuid(uuid)))).filter((actor) => actor?.type === 'crawler')
   if (!actors.length) return
   if (['short', 'long', 'full', 'hourly'].includes(kind)) {
-    const seconds = restSeconds(kind as RecoveryKind, hours)
-    if (!skipTime) await advanceTime(seconds)
-    for (const actor of actors) await rest(actor, kind as RecoveryKind, hours, { advance: false })
+    await restParty(actors, kind as RecoveryKind, hours, { advance: !skipTime })
   } else if (['safeRoom', 'session', 'floor'].includes(kind)) {
     for (const actor of actors) await advanceMarked(actor, kind as AdvancementKind)
   } else if (kind === 'grinding') {

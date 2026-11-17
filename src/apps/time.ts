@@ -3,7 +3,7 @@ import { SPECIAL_DURATIONS } from '../effects/end-triggers'
 /** GM time controls and shared countdowns (partyTimers.ts); all game timers use core world time. */
 import { advanceTime } from '../time'
 import { durationSeconds, formatTime, restSeconds, timeParts, timePartsSeconds, type TimeParts } from '../rules/time'
-import { rest, advanceMarked, gmAllowsAutomation } from './upkeep'
+import { restParty, advanceMarked, gmAllowsAutomation } from './upkeep'
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api
 
@@ -247,9 +247,10 @@ export class CrawlTime extends HandlebarsApplicationMixin(ApplicationV2) {
       if (automate === null) return
       if (kind === 'grinding' && automate) return await openGrinding(actors, hours)
       const seconds = recovery ? restSeconds(kind, hours) : hours * 3600
-      await advanceTime(seconds)
+      // A rest passes its own time, so its card can count what regeneration did over it.
+      if (recovery && automate) await restParty(actors, kind as any, hours)
+      else await advanceTime(seconds)
       for (const actor of automate ? actors : []) {
-        if (recovery) await rest(actor, kind as any, hours, { advance: false })
         if (kind === 'safeRoom') {
           await advanceMarked(actor, 'safeRoom')
         }

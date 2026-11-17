@@ -7,6 +7,7 @@ import { HEALTH_MAX } from '../config'
 import { applySlotDamage, dyingAfterHealthChange, type ConditionShield } from '../rules/core'
 import { debuffById } from '../rules/debuffs'
 import { CUSTOM_CHANGE_TYPES } from '../effects/mapping'
+import { noteRegen } from '../effects/regen-collector'
 import { capsMagicDamage, halvesAreaDamage, hasRegen, piercingDr, regenAdvance } from '../effects/specials'
 import { afterHit, fireEvent } from '../effects/triggers'
 
@@ -223,7 +224,10 @@ export class CrawlActor extends Actor {
     // The counter changes every clock tick; only a mana change is worth redrawing the sheet for.
     await this.update(update, { render: 'system.mana.value' in update })
     const hurt = this.type === 'crawler' ? this.system.health.value < HEALTH_MAX : Number(this.system.slotsLost) > 0
-    if (result.slots > 0 && hurt) await this.applyHealing(result.slots, { source: game.i18n.localize('CRAWLSPACE.Effect.Regeneration') })
+    // During upkeep, the summary card says what regenerated instead of a card per tick.
+    const sources = (this.system.specials ?? []).filter((special: any) => special.type === 'manaPerRound' || special.type === 'regenPerRound').map((special: any) => special.source)
+    const quiet = (result.slots > 0 || result.mana > 0) && noteRegen(this, sources)
+    if (result.slots > 0 && hurt) await this.applyHealing(result.slots, { source: game.i18n.localize('CRAWLSPACE.Effect.Regeneration'), ...(quiet ? { chat: false } : {}) })
   }
 
   /** Heal whole health slots (CrawlSpace heals in slots, not points). */

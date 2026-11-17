@@ -559,6 +559,8 @@
       "AssignHint": "{points} stat points to assign.",
       "AssignAll": "Assign all {points} points before confirming.",
       "Restored": "Restored {slots} health slots and {mana} mana.",
+      "BonusFrom": "Bonus from {list}: +{slots} health slots, +{mana} mana.",
+      "HoursSpent": "{hours} h",
       "Cleared": "Cleared: {list}",
       "NothingMarked": "Nothing is marked for advancement.",
       "Advanced": "{name}: rolled {roll} vs rank {rank}. Advances to {next}!",
