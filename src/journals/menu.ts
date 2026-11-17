@@ -1,5 +1,5 @@
 /**
- * The Journal tab's Atlas Maps menu: start a neighborhood (the builder, or a blank one), or a new borough, city,
+ * The Journal tab's Atlas Journals menu: start a neighborhood (the builder, or a blank one), or a new borough, city,
  * province, country or floor. Each tier holds the ones below it, and CrawlSpace Atlas lays out their maps.
  */
 import { esc, t, TIER_ICONS } from './fields'

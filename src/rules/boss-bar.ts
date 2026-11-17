@@ -53,3 +53,19 @@ export function autoBossBattle(changes: { round?: unknown }, combatants: { kind?
   if (Number(changes?.round) !== 1 || (Number(previousRound) || 0) > 0) return false
   return combatants.some((entry) => entry.kind === 'boss' && !entry.hidden)
 }
+
+/** How wide the fill is, as an exact share of health left (0–100), so it moves smoothly rather than in steps. */
+export const barWidth = (value: unknown, max: unknown) => {
+  const top = Number(max) || 0
+  return top > 0 ? Math.min(100, Math.max(0, ((Number(value) || 0) * 100) / top)) : 0
+}
+
+/**
+ * The trail behind the fill that shows what a hit took, like a soulslike boss bar: after a hit it stays at the old
+ * health (or where an earlier, still-showing hit left it) and then drains down to the fill; healing drops it at once.
+ */
+export function lossTrail(previous: number | undefined, next: number, trail?: number) {
+  if (previous === undefined || next > previous) return { from: next, drain: false }
+  const from = Math.max(previous, trail ?? previous)
+  return { from, drain: from > next }
+}

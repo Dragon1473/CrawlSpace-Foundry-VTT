@@ -153,3 +153,10 @@ test('a headshot crop is a square inside the picture: zoom 1 is the largest squa
   assert.deepEqual(headshotCrop({ width: 400, height: 1000 }, { zoom: 3, x: 1, y: 1 }), { sx: 267, sy: 867, side: 133 })
   assert.deepEqual(headshotCrop({ width: 400, height: 1000 }, { zoom: 0.2, x: -1, y: -1 }), { sx: 0, sy: 0, side: 400 })
 })
+
+test('the frames list a crawler\'s players unless that is turned off', async () => {
+  const { framePlayers } = await import('../src/rules/crawler-marks.ts')
+  assert.equal(framePlayers(['Ann', 'Bo'], true), 'Ann, Bo')
+  assert.equal(framePlayers(['Ann', 'Bo'], false), '')
+  assert.equal(framePlayers([], true), '')
+})

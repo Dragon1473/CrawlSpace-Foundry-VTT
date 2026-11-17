@@ -1,3 +1,4 @@
+import { modLostFor, mobEvadeAfterLoss, mobToHitAfterLoss, type LossKind } from '../rules/mod-loss'
 import { KILL_KINDS, migrateKills } from '../rules/crawler-marks'
 import { BOSS_TIERS, DAMAGE_TYPES, HEALTH_MAX, HEALTH_SLOTS, STAT_KEYS, statKeyFromCode, type StatKey } from '../config'
 import { abilityScoreModifier, mobDerived, mobToHit, resolveFormulaTokens, safeArithmetic, type DamageResponse } from '../rules/core'
@@ -49,6 +50,7 @@ abstract class CrawlActorData extends foundry.abstract.TypeDataModel {
       attribute.modBonus = 0
       attribute.percentBonus = 0
       attribute.modLost = false
+      attribute.modLostFor = []
     }
     this.bonuses = { skillRanks: {}, spellRanks: {}, baseSkillRanks: {}, baseSpellRanks: {}, healthSlots: {} }
     this.rollModes = []
@@ -79,13 +81,21 @@ abstract class CrawlActorData extends foundry.abstract.TypeDataModel {
       if (attribute.total !== null) attribute.total = Math.floor(attribute.total)
       const baseMod =
         attribute.modOverride ?? (attribute.total === null ? 0 : abilityScoreModifier(attribute.total))
-      attribute.mod = attribute.modLost ? 0 : Math.floor(baseMod + attribute.modBonus)
+      // fullMod keeps the modifier a Modifier Loss took away, so a mob's published numbers can drop by it.
+      attribute.fullMod = Math.floor(baseMod + attribute.modBonus)
+      attribute.mod = attribute.modLost ? 0 : attribute.fullMod
     }
   }
 
   statMod(key: StatKey | string): number {
     const stat = statKeyFromCode(String(key))
     return stat ? Number(this.attributes[stat]?.mod) || 0 : 0
+  }
+
+  /** A stat's modifier for one kind of roll: 0 when a Modifier Loss (Woozy) takes it away for that kind. */
+  statModFor(key: StatKey | string, kind: LossKind): number {
+    const stat = statKeyFromCode(String(key))
+    return stat && !modLostFor(this.attributes[stat], kind) ? Number(this.attributes[stat]?.mod) || 0 : 0
   }
 
   /** Damage responses from traits, in the shape the damage rules expect. */
@@ -261,7 +271,7 @@ export class CrawlerData extends CrawlActorData {
 
     // Evade = DEX mod + Evade buffs.
     const hasDex = this.attributes.dex.total !== null || this.attributes.dex.modOverride !== null
-    this.evade.total = Math.floor(this.evade.override ?? (hasDex ? this.attributes.dex.mod : 0) + this.evade.buff + this.evade.bonus)
+    this.evade.total = Math.floor(this.evade.override ?? (hasDex ? this.statModFor('dex', 'evade') : 0) + this.evade.buff + this.evade.bonus)
 
     // Move = (20 + bonuses) × halving effects; Step = 10 + bonuses.
     const statuses: Set<string> = actor?.statuses ?? new Set()
@@ -393,7 +403,10 @@ export class MobData extends CrawlActorData {
       perSlot: this.healthPerSlotOverride ?? derived.healthPerSlot,
     }
     this.healthBar = { value: this.health.value, max: this.health.max }
-    this.evade.total = Math.floor(derived.evade + this.evade.bonus)
+    // Woozy and other Modifier Losses come off a mob's Evade and to-hit, published or not (rules/mod-loss.ts).
+    const dex = this.attributes.dex
+    const evade = mobEvadeAfterLoss({ evade: derived.evade, published: !!this.evade.published, fullMod: dex.fullMod, lostAll: !!dex.modLost, lostEvade: modLostFor(dex, 'evade') })
+    this.evade.total = Math.floor(evade + this.evade.bonus)
     this.dr.total = Math.floor(this.dr.armor + this.dr.bonus)
     this.move.total = Math.floor(this.move.value + this.move.bonus)
     this.surpriseTotal = derived.surprise
@@ -401,7 +414,15 @@ export class MobData extends CrawlActorData {
     const statuses: Set<string> = this.parent?.statuses ?? new Set()
     this.checkPenalty = this.checkPenaltyFromStatuses(statuses, (id) => this.parent?.debuffStacks?.(id) ?? 1)
     for (const attack of this.attacks) {
-      attack.toHit = mobToHit(attack.publishedToHit, this.statMod(attack.stat || 'STR'), this.floor)
+      const stat = this.attributes[statKeyFromCode(attack.stat || 'STR') ?? 'str']
+      const published = !!String(attack.publishedToHit ?? '').trim()
+      attack.toHit = mobToHitAfterLoss({
+        toHit: mobToHit(attack.publishedToHit, this.statMod(attack.stat || 'STR'), this.floor),
+        published,
+        fullMod: stat?.fullMod ?? 0,
+        lostAll: !!stat?.modLost,
+        lostAttack: modLostFor(stat, 'attack'),
+      })
     }
   }
 

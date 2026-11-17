@@ -4,18 +4,23 @@ import { expireActorEvent, expireCombatConditions, settleTime } from '../time'
 import { COMBAT_PHASES } from '../config'
 import { attackOutcome, outcomeLabel, resolveFormulaTokens, SUCCESS_OUTCOMES } from '../rules/core'
 import { debuffById } from '../rules/debuffs'
-import { naturalD20, penaltyModifiers, rollD20, rollDamage } from '../dice/rolls'
+import { mobModes, naturalD20, penaltyModifiers, rollD20, rollDamage, type RollModeName } from '../dice/rolls'
+import { canEvadeAgain, mobDifficulty, netMode, targetDifficulty, type Mode } from '../rules/mob-advantage'
 import { combatAction } from '../socket'
 import { shieldBlockAllowed, shieldBlockFor, shieldBlockSkill } from '../rules/shield-block'
 import { wearShields } from '../rules/repair'
+import { endConditionsOn } from '../effects/end-triggers'
 
 export type DefenseKind = 'evade' | 'tank' | 'block' | 'clap'
 export type DeclarationTarget = {
   combatantId: string
   actorUuid: string
   name: string
+  /** This target's Difficulty and mode when its own conditions (Held, Confusing Fog) change the attack's. */
+  toHit?: number | null
+  mode?: RollModeName
   /** `blocked`: a successful Shield Block, which halves the damage when it is applied. */
-  response?: { kind: DefenseKind; total?: number; natural?: number; outcome?: string; hit: boolean; half: boolean; blocked?: boolean }
+  response?: { kind: DefenseKind; total?: number; natural?: number; outcome?: string; hit: boolean; half: boolean; blocked?: boolean; again?: boolean }
 }
 export type Declaration = {
   id: string
@@ -23,7 +28,8 @@ export type Declaration = {
   mobCombatantId: string
   mobActorUuid: string
   mobName: string
-  attack: { id: string; name: string; toHit: number | null; damage: string; damageTypes: string[]; isArea: boolean; armorPiercing: boolean; magic: boolean; ranged?: boolean; failedDebuff: string; notes: string }
+  /** `toHit` is the Difficulty after the Mob's Advantage or Disadvantage (`mode`); `baseToHit` is the attack's own. */
+  attack: { id: string; name: string; toHit: number | null; baseToHit?: number | null; mode?: RollModeName; damage: string; damageTypes: string[]; isArea: boolean; armorPiercing: boolean; magic: boolean; ranged?: boolean; failedDebuff: string; notes: string }
   targets: DeclarationTarget[]
   messageId?: string
   damageRolled?: boolean
@@ -168,12 +174,23 @@ export class CrawlCombat extends Combat {
   /*  Declarations                                                       */
   /* ------------------------------------------------------------------ */
 
-  /** GM: a mob declares one of its attacks against one or more crawler combatants. */
-  async declareAttack(mobCombatantId: string, attackId: string, targetCombatantIds: string[]) {
+  /**
+   * GM: a mob declares one of its attacks against one or more crawler combatants. Its Advantage or Disadvantage
+   * (from its effects, or `mode` when the GM picks one) moves the attack's Difficulty 5 up or down.
+   */
+  async declareAttack(mobCombatantId: string, attackId: string, targetCombatantIds: string[], mode?: RollModeName) {
     const mob = this.combatants.get(mobCombatantId)
     const attack = mob?.actor?.system?.attacks?.find((entry: any) => entry.id === attackId)
     if (!mob || !attack) return
     const floor = Number(mob.actor.system.floor) || 0
+    const sources = attackSources(attack)
+    // The GM's pick replaces the Mob's own reasons; each target's conditions still count against them.
+    const own: string[] = mode ? (mode === 'normal' ? [] : [mode]) : mobModes(mob.actor, 'attackMode', sources)
+    const attackMode = netMode(own) as Mode
+    const forTarget = (combatant: any) => {
+      const faced = targetDifficulty(attack.toHit ?? null, own, mobModes(combatant.actor, 'incomingAttackMode', sources))
+      return faced.mode === attackMode ? {} : { toHit: faced.toHit, mode: faced.mode }
+    }
     const declaration: Declaration = {
       id: foundry.utils.randomID(),
       round: this.round,
@@ -183,7 +200,9 @@ export class CrawlCombat extends Combat {
       attack: {
         id: attack.id,
         name: attack.name,
-        toHit: attack.toHit ?? null,
+        toHit: mobDifficulty(attack.toHit ?? null, attackMode),
+        baseToHit: attack.toHit ?? null,
+        mode: attackMode,
         damage: resolveFormulaTokens(attack.damage, { floor }),
         damageTypes: attack.damageTypes ?? [],
         isArea: !!attack.aoeType,
@@ -196,7 +215,7 @@ export class CrawlCombat extends Combat {
       targets: targetCombatantIds
         .map((id) => this.combatants.get(id))
         .filter(Boolean)
-        .map((combatant: any) => ({ combatantId: combatant.id, actorUuid: combatant.actor?.uuid ?? '', name: combatant.name })),
+        .map((combatant: any) => ({ combatantId: combatant.id, actorUuid: combatant.actor?.uuid ?? '', name: combatant.name, ...forTarget(combatant) })),
     }
     const message = await ChatMessage.create({
       content: await this.#renderDeclaration(declaration),
@@ -205,12 +224,17 @@ export class CrawlCombat extends Combat {
     })
     declaration.messageId = message.id
     await this.update({ 'flags.crawlspace.declarations': [...this.crawl.declarations, declaration] })
+    // Mobs don't roll: declaring the attack is their check and action, so conditions lasting until then end here.
+    await endConditionsOn(mob.actor, 'check')
+    await endConditionsOn(mob.actor, 'action')
   }
 
   /** Player side: roll the defense locally (so the roller sees their dice), then hand the result to the GM. */
   async defendDeclaration(declarationId: string, combatantId: string, kind: DefenseKind, actor: any) {
     const declaration = this.crawl.declarations.find((entry) => entry.id === declarationId)
+    const target = declaration?.targets.find((entry) => entry.combatantId === combatantId)
     if (!declaration) return
+    const toHit = target ? targetToHit(declaration, target) : declaration.attack.toHit
     let total: number | undefined
     let natural: number | undefined
     if (kind === 'evade') {
@@ -241,7 +265,7 @@ export class CrawlCombat extends Combat {
       natural = naturalD20(result.roll)
       await result.roll.toMessage({ speaker: ChatMessage.getSpeaker({ actor }), flavor: await defenseFlavor(label, result.mode) }, { messageMode: game.settings.get('core', 'messageMode') })
       // A Shield Block that Major or Critically Fails against the attack wears the shield down.
-      if (kind === 'block' && declaration.attack.toHit !== null) await wearShields(actor, attackOutcome(total ?? 0, declaration.attack.toHit, natural))
+      if (kind === 'block' && toHit !== null) await wearShields(actor, attackOutcome(total ?? 0, toHit, natural))
     }
     return combatAction(this, 'respondToDeclaration', declarationId, combatantId, kind, total ?? null, natural ?? null)
   }
@@ -263,11 +287,15 @@ export class CrawlCombat extends Combat {
     const user = game.users.get(context.userId ?? game.user.id)
     if (!user?.isGM && !combatant?.actor?.testUserPermission(user, 'OWNER')) return
     if (!['evade', 'tank', 'block', 'clap'].includes(kind)) return
+    // One answer per crawler, except an Evade again after a failed free Evade against a Disadvantaged attack.
+    const again = !!target.response
+    if (again && !(kind === 'evade' && canEvadeAgain(targetMode(declaration, target), target.response))) return
+    const toHit = targetToHit(declaration, target)
     if (kind === 'clap' && (!bladeClapSkill(combatant?.actor) || !bladeClapAllowed(declaration.attack, bladeClapSkill(combatant.actor).system.rank.total))) return
-    if (kind === 'tank' || declaration.attack.toHit === null || total === null) {
+    if (kind === 'tank' || toHit === null || total === null) {
       target.response = { kind, hit: true, half: false }
     } else {
-      const outcome = attackOutcome(total, declaration.attack.toHit, natural ?? undefined)
+      const outcome = attackOutcome(total, toHit, natural ?? undefined)
       const success = SUCCESS_OUTCOMES.includes(outcome)
       // A Shield Block never avoids the hit: a successful one halves the damage when it is applied.
       if (kind === 'block')
@@ -281,6 +309,7 @@ export class CrawlCombat extends Combat {
         half: success && !!declaration.attack.isArea,
       }
     }
+    if (again && target.response) target.response.again = true
     await this.update({ 'flags.crawlspace.declarations': declarations })
     const message = game.messages.get(declaration.messageId)
     if (message) await message.update({ content: await this.#renderDeclaration(declaration) })
@@ -320,8 +349,14 @@ export class CrawlCombat extends Combat {
       declaration,
       combatId: this.id,
       toHit: declaration.attack.toHit ?? game.i18n.localize('CRAWLSPACE.Combat.AutoHit'),
+      mode: declaration.attack.mode && declaration.attack.mode !== 'normal' ? game.i18n.localize(`CRAWLSPACE.Combat.MobMode.${declaration.attack.mode}`) : '',
+      freeEvade: declaration.targets.some((target) => targetMode(declaration, target) === 'disadvantage' && targetToHit(declaration, target) !== null),
       targets: declaration.targets.map((target) => ({
         ...target,
+        own: target.mode && target.mode !== declaration.attack.mode
+          ? `${game.i18n.localize('CRAWLSPACE.Mob.ToHitShort')} ${target.toHit ?? game.i18n.localize('CRAWLSPACE.Combat.AutoHit')} · ${game.i18n.localize(`CRAWLSPACE.Combat.MobMode.${target.mode}`)}`
+          : '',
+        evadeAgain: canEvadeAgain(targetMode(declaration, target), target.response),
         halfNote: target.response?.half,
         canBlock: canBlock(target.actorUuid, declaration),
         canClap: !!bladeClapSkill(fromUuidSync(target.actorUuid)) && bladeClapAllowed(declaration.attack, bladeClapSkill(fromUuidSync(target.actorUuid)).system.rank.total),
@@ -387,6 +422,7 @@ export async function promptDeclaration(combat: CrawlCombat, mobCombatantId?: st
       })),
     })),
     crawlers: crawlers.map((crawler: any) => ({ id: crawler.id, name: crawler.name, checked: targeted.has(crawler.tokenId) })),
+    modes: ['auto', 'normal', 'advantage', 'disadvantage'].map((value) => ({ value, label: game.i18n.localize(`CRAWLSPACE.Combat.MobModeChoice.${value}`) })),
   })
   const answer = await foundry.applications.api.DialogV2.wait({
     window: { title: game.i18n.localize('CRAWLSPACE.Combat.Declare') },
@@ -412,11 +448,19 @@ export async function promptDeclaration(combat: CrawlCombat, mobCombatantId?: st
           const mob = form.elements.mob.value
           const attack = form.querySelector(`[data-mob-attacks="${mob}"] input[name="attack-${mob}"]:checked`)?.value
           const targets = [...form.querySelectorAll('input[name=target]:checked')].map((input: any) => input.value)
-          return { mob, attack, targets }
+          const mode = form.elements.mode?.value
+          return { mob, attack, targets, mode: mode && mode !== 'auto' ? (mode as RollModeName) : undefined }
         },
       },
     ],
   })
   if (!answer?.mob || !answer.attack || !answer.targets.length) return
-  return combat.declareAttack(answer.mob, answer.attack, answer.targets)
+  return combat.declareAttack(answer.mob, answer.attack, answer.targets, answer.mode)
 }
+
+/** What a mob attack counts as for effects that name their targets: its own name, Ranged, Spells. */
+const attackSources = (attack: any) => [attack.name, ...(attack.ranged ? ['Ranged'] : []), ...(attack.magic ? ['Spells'] : [])]
+
+/** The Difficulty and mode one target faces: its own when its conditions changed the attack's. */
+const targetToHit = (declaration: Declaration, target: DeclarationTarget) => (target.toHit !== undefined ? target.toHit : declaration.attack.toHit)
+const targetMode = (declaration: Declaration, target: DeclarationTarget) => (target.mode ?? declaration.attack.mode) as Mode | undefined

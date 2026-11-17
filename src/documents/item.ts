@@ -28,7 +28,7 @@ export class CrawlItem extends Item {
     const stat = statKeyFromCode(system.stat)
     return [
       { label: game.i18n.format('CRAWLSPACE.Roll.RankOf', { name: this.name }), value: Number(system.rank?.total) || 0 },
-      { label: stat ? STATS[stat].label : game.i18n.localize('CRAWLSPACE.Roll.Modifier'), value: Number(system.rank?.mod) || 0 },
+      { label: stat ? STATS[stat].label : game.i18n.localize('CRAWLSPACE.Roll.Modifier'), value: Number(system.rank?.mod) || 0, ...(stat ? { stat } : {}) },
       ...penaltyModifiers(actor),
     ]
   }

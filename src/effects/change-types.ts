@@ -3,6 +3,7 @@
  * own field logic; each one writes into the derived buckets that `prepareBaseData` reset.
  */
 import { statKeyFromCode } from '../config'
+import { lossScope } from '../rules/mod-loss'
 import { CUSTOM_CHANGE_TYPES } from './mapping'
 import { unwrapTriggered } from './trigger-events'
 
@@ -52,11 +53,16 @@ export const CHANGE_TYPE_HANDLERS: Record<string, { label: string; defaultPriori
     },
   },
   [CUSTOM_CHANGE_TYPES.modLoss]: {
-    label: 'Lose Stat Modifier (key: stat)',
+    label: 'Lose Stat Modifier (key: stat; value: true, or attack,evade,check)',
     defaultPriority: 90,
     handler: (actor, change) => {
       const stat = statKeyFromCode(change.key)
-      if (stat && actor.system?.attributes?.[stat]) actor.system.attributes[stat].modLost = true
+      const attribute = stat ? actor.system?.attributes?.[stat] : null
+      if (!attribute) return
+      // Everywhere (Feared), or only for the kinds of roll it names (Woozy: attack,evade).
+      const scope = lossScope(change.value)
+      if (scope === 'all') attribute.modLost = true
+      else attribute.modLostFor = [...new Set([...(attribute.modLostFor ?? []), ...scope])]
     },
   },
   [CUSTOM_CHANGE_TYPES.rollMode]: {

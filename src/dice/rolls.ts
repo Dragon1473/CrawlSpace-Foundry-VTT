@@ -4,6 +4,8 @@ import { attackOutcome, doubleDice, outcomeLabel, resolveFormulaTokens, SUCCESS_
 import { debuffById } from '../rules/debuffs'
 import { isRepairSkill, shieldBlockSkill } from '../rules/shield-block'
 import { joinFormula, toggledRollMode } from '../rules/damage-effects'
+import { mobDifficulty, netMode } from '../rules/mob-advantage'
+import { modLostFor } from '../rules/mod-loss'
 import { wearShields } from '../rules/repair'
 import type { AttackDamage } from '../actors/attacks'
 
@@ -20,6 +22,8 @@ export type Modifier = {
   skillRank?: number
   /** Shown beside the option in the roll dialog. */
   detail?: string
+  /** The stat whose modifier this is (str, dex…), so a Modifier Loss (Woozy) can take it away. */
+  stat?: string
 }
 
 export type CheckOptions = {
@@ -59,20 +63,34 @@ export function effectRollMode(actor: any, kind: CheckOptions['kind'], sources: 
     if (!targets.length || targets.includes('all') || lowered.some((source) => targets.includes(source)))
       modes.add(entry.value)
   }
-  // incomingAttackMode: attacks against the effect's owner. Attacking it applies the mode as is; when the owner
-  // rolls Evade instead (crawlers against Mobs), the mode reaches the table inverted (combat.ts crawlerEvadeMode).
+  // incomingAttackMode: attacks against the effect's owner. A crawler's attack on it rolls with the mode; a Mob's
+  // attack on it moves that target's Difficulty instead (combat.ts declareAttack, rules/mob-advantage.ts).
   const incoming = (owner: any) => (owner?.system?.rollModes ?? []).filter((entry: any) => entry.kind === 'incomingAttackMode')
   if (kind === 'attack') for (const target of targets) for (const entry of incoming(target)) modes.add(entry.value)
-  if (kind === 'evade')
-    for (const entry of incoming(actor)) modes.add(entry.value === 'disadvantage' ? 'advantage' : 'disadvantage')
-  for (const status of actor?.statuses ?? []) {
-    const debuff = debuffById(status)
-    if (debuff?.disadvantage === 'checks' || (debuff?.disadvantage === 'attacks' && kind === 'attack'))
-      modes.add('disadvantage')
-  }
+  // Standard debuffs (Shit-Faced, Terrified, Woozy…) carry their roll modes as effect changes (rules/debuffs.ts).
   const advantage = modes.has('advantage')
   const disadvantage = modes.has('disadvantage')
   return advantage === disadvantage ? 'normal' : advantage ? 'advantage' : 'disadvantage'
+}
+
+/**
+ * A Mob's own Advantage or Disadvantage on its attacks or its Evade, from its effects (debuffs included), counted one
+ * for one (rules/mob-advantage.ts). Attackers' and targets' effects are left out: they change the crawler's roll.
+ */
+export function mobMode(actor: any, kind: 'attack' | 'evade', sources: string[] = []): RollModeName {
+  return netMode(mobModes(actor, kind === 'attack' ? 'attackMode' : 'evadeMode', sources))
+}
+
+/** Every Advantage and Disadvantage of one kind on the actor's effects that applies to these sources, uncounted. */
+export function mobModes(actor: any, type: 'attackMode' | 'evadeMode' | 'incomingAttackMode', sources: string[] = []): string[] {
+  const lowered = sources.map((source) => source.toLowerCase())
+  const modes: string[] = []
+  for (const entry of actor?.system?.rollModes ?? []) {
+    if (entry.kind !== type) continue
+    const targets = String(entry.target || 'All').split(',').map((target) => target.trim().toLowerCase()).filter(Boolean)
+    if (!targets.length || targets.includes('all') || lowered.some((source) => targets.includes(source))) modes.push(entry.value)
+  }
+  return modes
 }
 
 /** The general check penalty from debuffs, as a modifier row. */
@@ -127,7 +145,12 @@ async function promptCheck(options: CheckOptions, mode: RollModeName) {
 /** Roll a d20 check with toggled modifiers. Returns the evaluated Roll and the chosen mode. */
 export async function rollD20(actor: any, options: CheckOptions) {
   let mode = effectRollMode(actor, options.kind, options.sources, options.targets)
-  let modifiers = options.modifiers.filter((modifier) => modifier.value !== 0 || modifier.enabled === false || modifier.detail)
+  // A stat modifier lost for this kind of roll (Woozy: DEX on attacks) counts for nothing.
+  const lostLabel = game.i18n.localize('CRAWLSPACE.Roll.ModLost')
+  const kept = options.modifiers.map((modifier) =>
+    modifier.stat && modifier.value && modLostFor(actor?.system?.attributes?.[modifier.stat], options.kind) ? { ...modifier, label: `${modifier.label} (${lostLabel})`, value: 0, enabled: false, detail: lostLabel } : modifier,
+  )
+  let modifiers = kept.filter((modifier) => modifier.value !== 0 || modifier.enabled === false || modifier.detail)
   if (!options.fast) {
     const answer = await promptCheck({ ...options, modifiers }, mode)
     if (!answer) return null
@@ -213,9 +236,10 @@ export type AttackSource = {
   skills?: { name: string; rank: number }[]
 }
 
-/** Target defense used against an attack: Evade for everyone in CrawlSpace. */
+/** Target defense used against an attack: Evade for everyone in CrawlSpace, 5 up or down for a Mob with Advantage or Disadvantage. */
 export function targetDefense(actor: any): number {
-  return Number(actor?.system?.evade?.total) || 0
+  const evade = Number(actor?.system?.evade?.total) || 0
+  return actor?.type === 'mob' ? (mobDifficulty(evade, mobMode(actor, 'evade')) ?? evade) : evade
 }
 
 /**

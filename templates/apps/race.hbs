@@ -1,0 +1,66 @@
+{{!-- The GM's Race & Chase window (apps/race.ts). --}}
+<section class="crawl-race-body">
+  <div class="race-top">
+    <label class="race-mode"><input type="radio" name="mode" value="race" {{checked (eq state.mode "race")}}> <i class="fa-solid fa-flag-checkered"></i> {{localize "CRAWLSPACE.Race.Race"}}</label>
+    <label class="race-mode"><input type="radio" name="mode" value="chase" {{checked chase}}> <i class="fa-solid fa-person-running"></i> {{localize "CRAWLSPACE.Race.Chase"}}</label>
+    {{#if chase}}<label class="race-quarry"><span>{{localize "CRAWLSPACE.Race.Quarry"}}</span><input type="text" name="quarry" value="{{state.quarry}}"></label>{{/if}}
+    <span class="race-spacer"></span>
+    <button type="button" data-action="addSelected"><i class="fa-solid fa-user-plus"></i> {{localize "CRAWLSPACE.Race.AddSelected"}}</button>
+  </div>
+  <p class="hint">{{#if chase}}{{localize "CRAWLSPACE.Race.ChaseHint"}}{{else}}{{localize "CRAWLSPACE.Race.RaceHint"}}{{/if}}</p>
+  <table class="race-table">
+    <thead>
+      <tr>
+        <th class="race-name">{{localize "CRAWLSPACE.Race.Entrant"}}</th>
+        <th class="race-move" data-tooltip="{{localize 'CRAWLSPACE.Race.MoveModHint'}}">{{localize "CRAWLSPACE.Stat.Move"}}</th>
+        {{#each legs as |leg|}}
+        <th class="race-leg">
+          <span>{{localize "CRAWLSPACE.Race.Leg" leg=leg.number}}</span>
+          <input type="text" name="legs.{{leg.index}}.skill" value="{{leg.skill}}" aria-label="{{localize 'CRAWLSPACE.Race.LegSkill' leg=leg.number}}" placeholder="{{localize 'CRAWLSPACE.Race.Skill'}}">
+          {{#if @root.chase}}<input type="number" name="legs.{{leg.index}}.quarry" value="{{leg.quarry}}" aria-label="{{localize 'CRAWLSPACE.Race.QuarryResult' leg=leg.number}}" placeholder="{{localize 'CRAWLSPACE.Race.QuarryShort'}}" data-tooltip="{{localize 'CRAWLSPACE.Race.QuarryHint'}}">{{/if}}
+        </th>
+        {{/each}}
+        <th class="race-total">{{#if chase}}{{localize "CRAWLSPACE.Race.Ground"}}{{else}}{{localize "CRAWLSPACE.Race.Total"}}{{/if}}</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each entrants as |entrant|}}
+      <tr data-key="{{entrant.key}}" class="{{#if entrant.first}}race-first{{/if}} race-{{entrant.statusKey}}">
+        <td class="race-name"><div class="race-who">
+          <img src="{{entrant.img}}" alt="">
+          <span>{{entrant.name}}</span>
+          <label class="race-npc" data-tooltip="{{localize 'CRAWLSPACE.Race.NpcHint'}}"><input type="checkbox" name="entrants.{{entrant.key}}.npc" {{checked entrant.npc}}> {{localize "CRAWLSPACE.Race.Npc"}}</label>
+          {{#if entrant.npc}}<select name="entrants.{{entrant.key}}.stat" aria-label="{{localize 'CRAWLSPACE.Race.NpcStat'}}">{{selectOptions @root.stats selected=entrant.stat}}</select>{{/if}}
+        </div></td>
+        <td class="race-move">{{entrant.move}} <small>+{{entrant.moveMod}}</small></td>
+        {{#each entrant.cells as |cell|}}
+        <td class="race-cell {{#if cell.skipped}}race-skipped{{/if}}">
+          {{#if entrant.npc}}<b class="race-set">{{cell.result}}</b>
+          {{else}}
+          <span class="race-entry"><input type="number" name="entrants.{{entrant.key}}.results.{{cell.index}}" value="{{cell.result}}" aria-label="{{localize 'CRAWLSPACE.Race.LegTotal' leg=cell.number name=entrant.name}}">
+          <button type="button" class="icon" data-action="roll" data-leg="{{cell.index}}" data-tooltip="{{localize 'CRAWLSPACE.Race.Roll'}}" aria-label="{{localize 'CRAWLSPACE.Race.Roll'}}"><i class="fa-solid fa-dice-d20"></i></button></span>
+          {{/if}}
+          {{#if @root.chase}}{{#if cell.gainShown}}<small class="race-gain">{{crawlSigned cell.gain}}</small>{{/if}}
+          {{else if cell.place}}<small class="race-place">#{{cell.place}}</small>{{/if}}
+        </td>
+        {{/each}}
+        <td class="race-total">
+          {{#if @root.chase}}<b>{{#if entrant.out}}—{{else}}{{crawlSigned entrant.ground}}{{/if}}</b> <small>{{entrant.status}}</small>{{#if entrant.first}} <i class="fa-solid fa-trophy" data-tooltip="{{localize 'CRAWLSPACE.Race.First'}}"></i>{{/if}}
+          {{else}}<b>{{entrant.total}}</b>{{#if entrant.place}} <small class="race-standing">{{localize "CRAWLSPACE.Race.Place" place=entrant.place}}</small>{{/if}}{{/if}}
+        </td>
+        <td><button type="button" class="icon" data-action="remove" data-tooltip="{{localize 'CRAWLSPACE.Race.Remove'}}" aria-label="{{localize 'CRAWLSPACE.Race.Remove'}}"><i class="fa-solid fa-xmark"></i></button></td>
+      </tr>
+      {{else}}
+      <tr><td colspan="99" class="hint">{{localize "CRAWLSPACE.Race.Empty"}}</td></tr>
+      {{/each}}
+    </tbody>
+  </table>
+  <footer class="race-footer">
+    <button type="button" data-action="addLeg"><i class="fa-solid fa-plus"></i> {{localize "CRAWLSPACE.Race.AddLeg"}}</button>
+    <button type="button" data-action="removeLeg"><i class="fa-solid fa-minus"></i> {{localize "CRAWLSPACE.Race.RemoveLeg"}}</button>
+    <span class="race-spacer"></span>
+    <button type="button" data-action="reset"><i class="fa-solid fa-rotate-left"></i> {{localize "CRAWLSPACE.Race.Reset"}}</button>
+    <button type="button" data-action="post"><i class="fa-solid fa-comment"></i> {{localize "CRAWLSPACE.Race.Post"}}</button>
+  </footer>
+</section>

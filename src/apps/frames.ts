@@ -8,7 +8,7 @@
 import { followerKind, followersOf } from '../actors/companions'
 import { clickCondition, isStackable } from '../effects/stacks'
 import { openParties, partyCrawlers, playerPartyLabel } from '../actors/party'
-import { crawlerMarks } from '../rules/crawler-marks'
+import { crawlerMarks, framePlayers } from '../rules/crawler-marks'
 import { healthColor } from '../rules/boss-bar'
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api
@@ -93,7 +93,7 @@ class CrawlerFrames extends HandlebarsApplicationMixin(ApplicationV2) {
       return {
         uuid: actor.uuid,
         name: actor.name,
-        players: players.join(', '),
+        players: framePlayers(players, !!game.settings.get('crawlspace', 'crawlerFramePlayers')),
         ...marksOf(actor),
         pct,
         color: healthColor(pct),
@@ -231,6 +231,15 @@ let frames: CrawlerFrames | null = null
 
 export function registerFrames() {
   game.settings.register('crawlspace', 'crawlerFrames', { scope: 'client', config: false, type: Boolean, default: true })
+  game.settings.register('crawlspace', 'crawlerFramePlayers', {
+    name: 'CRAWLSPACE.Frames.PlayersSetting',
+    hint: 'CRAWLSPACE.Frames.PlayersSettingHint',
+    scope: 'client',
+    config: true,
+    type: Boolean,
+    default: true,
+    onChange: () => frames?.rendered && frames.render(),
+  })
   game.settings.register('crawlspace', 'crawlerMarks', {
     name: 'CRAWLSPACE.Marks.Setting',
     hint: 'CRAWLSPACE.Marks.SettingHint',

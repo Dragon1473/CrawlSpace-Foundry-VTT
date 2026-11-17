@@ -3,6 +3,7 @@
  * fields (Stat bonus: stat + value, Skill Rank: skill + value...), with a JSON editor for anything else.
  * Used by every item sheet's Effects tab and by the effect sheet, so all effects edit the same way.
  */
+import { lossScope } from '../rules/mod-loss'
 import { DAMAGE_TYPES, STATS, STAT_KEYS, statKeyFromCode } from '../config'
 import { DEBUFFS } from '../rules/debuffs'
 import { CUSTOM_CHANGE_TYPES } from './mapping'
@@ -40,6 +41,7 @@ type Field = {
     | 'yesNo'
     | 'magicKind'
     | 'statOrNone'
+    | 'lossScope'
     | 'textarea'
 }
 type Values = Record<string, any>
@@ -192,10 +194,13 @@ export const RULE_TYPES: RuleType[] = [
   {
     id: 'modLoss',
     label: 'CRAWLSPACE.Rules.Type.modLoss',
-    fields: [F.stat],
+    fields: [F.stat, { name: 'scope', label: 'CRAWLSPACE.Rules.Field.lossScope', kind: 'lossScope' }],
     match: (c) => c.type === CUSTOM_CHANGE_TYPES.modLoss,
-    read: (c) => ({ stat: statCode(c.key) }),
-    write: (v) => make(statKeyFromCode(v.stat) ?? 'str', CUSTOM_CHANGE_TYPES.modLoss, true),
+    read: (c) => {
+      const scope = lossScope(c.value)
+      return { stat: statCode(c.key), scope: scope === 'all' ? 'all' : scope.join(',') }
+    },
+    write: (v) => make(statKeyFromCode(v.stat) ?? 'str', CUSTOM_CHANGE_TYPES.modLoss, !v.scope || v.scope === 'all' ? true : v.scope),
   },
   pathRule('mana', 'system.mana.bonus'),
   pathRule('dr', 'system.dr.bonus'),
@@ -365,6 +370,7 @@ const OPTIONS: Record<string, () => { value: string; label: string }[]> = {
   debuff: () => DEBUFFS.map((debuff) => ({ value: debuff.name, label: debuff.name })),
   rollKind: () =>
     ['attackMode', 'checkMode', 'evadeMode', 'incomingAttackMode'].map((value) => ({ value, label: game.i18n.localize(`CRAWLSPACE.Rules.RollKind.${value}`) })),
+  lossScope: () => ['all', 'attack,evade', 'attack', 'evade', 'check'].map((value) => ({ value, label: game.i18n.localize(`CRAWLSPACE.Rules.LossScope.${value}`) })),
   rollValue: () => ['advantage', 'disadvantage'].map((value) => ({ value, label: game.i18n.localize(`CRAWLSPACE.Roll.Mode.${value}`) })),
   shieldScope: () => ['all', 'nonMagic'].map((value) => ({ value, label: game.i18n.localize(`CRAWLSPACE.Rules.ShieldScope.${value}`) })),
   timing: () => ['before', 'after'].map((value) => ({ value, label: game.i18n.localize(`CRAWLSPACE.Rules.Timing.${value}`) })),

@@ -25,6 +25,7 @@ import { STAT_KEYS, statKeyFromCode } from '../config'
 import { effectDuration } from '../import/convert'
 import { endTriggers } from './end-triggers'
 import { conditionData, useConditions } from './use-conditions'
+import { withAreaAura } from '../rules/area-auras'
 
 const STATS = ['STR', 'INT', 'CON', 'DEX', 'CHA'] as const
 
@@ -50,7 +51,7 @@ export function areaFields(item: any): AbilityTemplateFields {
 export function itemArea(item: any): AbilityTemplate | null {
   if (!['skill', 'spell'].includes(item?.type)) return null
   const rank = Math.floor(Number(item.system?.rank?.total) || 0)
-  return rankAbilityTemplate(areaFields(item), rank, statTotals(item.actor))
+  return withAreaAura(item.name, rankAbilityTemplate(areaFields(item), rank, statTotals(item.actor)))
 }
 
 const COLORS = { aura: '#3fa9f5', dread: '#c0392b', splash: '#ff9e62', area: '#71c9ff' }

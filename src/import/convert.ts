@@ -7,7 +7,7 @@ import { tokenSquares } from '../rules/token-size.ts'
  */
 import { damageEffectFromText } from '../rules/damage-effects.ts'
 import { effectPropertiesToActiveEffects, type CrawlEffectProperty } from '../effects/mapping.ts'
-import { debuffByName } from '../rules/debuffs.ts'
+import { debuffByName, missingNamedChanges, missingStandardChanges } from '../rules/debuffs.ts'
 import { raceClassGrant } from '../crawlspace-shared/shared/raceClassGrants.ts'
 import { linkedEffects } from '../rules/build-links.ts'
 import { durationSeconds, durationEvent } from '../rules/time.ts'
@@ -256,6 +256,9 @@ export function buffToEffect(data: Record<string, any>, img = ICONS.buff) {
     const shield = special('shield', { target: str(data.shield.healthPerSlot), value: str(data.shield.slots), scope: data.shield.scope === 'nonMagic' ? 'nonMagic' : 'all' } as any)
     if (shield) changes.push(shield as any)
   }
+  // A standard debuff carries its rules (Woozy's lost DEX, Held's Advantage for attackers…).
+  if (standard) changes.push(...(missingStandardChanges([standard.id], changes as any) as any[]))
+  changes.push(...(missingNamedChanges(str(data.name), changes as any) as any[]))
   return {
     name: str(data.name) || 'Condition',
     img: standard ? `systems/crawlspace/assets/debuffs/${standard.id}.png` : str(properties.icon) || img,
@@ -966,7 +969,7 @@ export function characterToActor(input: Record<string, any>) {
       type: 'base',
       statuses: [definition.id],
       description: `<p>${escapeHtml(definition.effect)}</p>`,
-      system: { changes: [], conditionType: 'debuff', stacks, cleanup: definition.cleanup ?? { formula: '', types: [] }, durationText: definition.duration },
+      system: { changes: missingStandardChanges([definition.id]), conditionType: 'debuff', stacks, cleanup: definition.cleanup ?? { formula: '', types: [] }, durationText: definition.duration },
     })
   }
 

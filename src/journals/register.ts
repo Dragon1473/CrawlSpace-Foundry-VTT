@@ -1,6 +1,6 @@
 /**
  * Neighborhood, borough and higher region journals: page types, sheets, mob tables, field guide access, and the Journal
- * tab's Atlas Maps button.
+ * tab's Atlas Journals button.
  */
 import { BoroughPageData, NeighborhoodPageData, RegionPageData } from './data'
 import { HIGHER_TIERS } from './model'
@@ -25,7 +25,7 @@ export function registerJournals() {
     for (const table of game.tables.filter((table: any) => String(table.getFlag('crawlspace', 'page') ?? '').startsWith(`${journal.uuid}.`))) await table.delete()
   })
 
-  // The Journal tab: one Atlas Maps button, opening the menu of new neighborhoods, boroughs and the tiers above.
+  // The Journal tab: one Atlas Journals button, opening the menu of new neighborhoods, boroughs and the tiers above.
   Hooks.on('renderJournalDirectory', (app: any, html: HTMLElement) => {
     if (!game.user.isGM) return
     const root = html instanceof HTMLElement ? html : app.element

@@ -151,7 +151,7 @@ export function resolveAttack(actor: any, row: AttackRow): AttackSource & { toHi
   const statLabel = ranged ? 'Dexterity' : 'Strength'
   const modifiers: Modifier[] = skill
     ? skill.checkModifiers()
-    : [{ label: statLabel, value: actor.system.statMod?.(ranged ? 'DEX' : 'STR') ?? 0 }, ...penaltyModifiers(actor)]
+    : [{ label: statLabel, value: actor.system.statMod?.(ranged ? 'DEX' : 'STR') ?? 0, stat: ranged ? 'dex' : 'str' }, ...penaltyModifiers(actor)]
   if (row.hitBonus) modifiers.push({ label: game.i18n.localize('CRAWLSPACE.Attack.HitBonus'), value: Number(row.hitBonus) })
   modifiers.push(...damageEffectModifiers(actor, skill?.name ?? ''))
 

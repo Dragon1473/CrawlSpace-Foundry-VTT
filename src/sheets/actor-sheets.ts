@@ -18,6 +18,7 @@ import { PaperDollApp } from '../apps/paper-doll-app'
 import { TokenMakerApp } from '../apps/token-maker'
 import { HeadshotMakerApp } from '../apps/headshot-maker'
 import { KillsApp } from '../apps/kills'
+import { chooseSampleVehicle, ramWith } from '../actors/vehicles'
 import { moveInOrder } from '../rules/row-order'
 import { applyBackground, applyBuildItem, openBuildPacks, pickBackground } from '../apps/build-drop'
 import { ActionsConfig, actionRowsOf, addActionRow, addToHotlist, HotlistConfig, hotlistOf, openActionPack, postAction, runAction } from '../apps/actions-config'
@@ -1173,6 +1174,8 @@ export class MobSheet extends CrawlActorSheet {
       endMinion: MobSheet.#onEndMinion,
       openMaster: MobSheet.#onOpenMaster,
       clearMaster: MobSheet.#onClearMaster,
+      ramVehicle: MobSheet.#onRamVehicle,
+      sampleVehicle: MobSheet.#onSampleVehicle,
     },
   }
 
@@ -1216,7 +1219,7 @@ export class MobSheet extends CrawlActorSheet {
         {
           const master = system.master ? fromUuidSync(system.master) : null
           const raised = !!system.minion?.temporary
-          if (actor.type === 'companion') context.companion = { vehicle: system.kind !== 'pet' }
+          if (actor.type === 'companion') context.companion = { vehicle: system.kind !== 'pet', isVehicle: system.kind === 'vehicle' }
           if (actor.type !== 'mob' || raised)
             context.follower = {
               master: master?.name ?? '',
@@ -1378,6 +1381,14 @@ export class MobSheet extends CrawlActorSheet {
 
   static async #onClearMaster(this: MobSheet) {
     await unlinkFollower(this.actor)
+  }
+
+  static async #onRamVehicle(this: MobSheet, event: PointerEvent) {
+    return ramWith(this.actor, { fast: event.shiftKey })
+  }
+
+  static async #onSampleVehicle(this: MobSheet) {
+    return chooseSampleVehicle(this.actor)
   }
 
   /** Drop a crawler onto a pet, mount or minion to make it follow that crawler. */

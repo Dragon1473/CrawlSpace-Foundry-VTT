@@ -2,21 +2,25 @@
   <h4 class="card-title"><i class="fa-solid fa-skull"></i> {{declaration.mobName}}: {{declaration.attack.name}}</h4>
   <p class="damage-tags">
     <span class="tag">{{localize "CRAWLSPACE.Mob.ToHitShort"}} {{toHit}}</span>
+    {{#if mode}}<span class="tag">{{mode}}</span>{{/if}}
     {{#if declaration.attack.damage}}<span class="tag">{{declaration.attack.damage}}</span>{{/if}}
     {{#if declaration.attack.damageTypes.length}}<span class="tag">{{crawlJoin declaration.attack.damageTypes}}</span>{{/if}}
     {{#if declaration.attack.isArea}}<span class="tag">{{localize "CRAWLSPACE.Combat.Area"}}</span>{{/if}}
     {{#if declaration.attack.armorPiercing}}<span class="tag">{{localize "CRAWLSPACE.Item.ArmorPiercing"}}</span>{{/if}}
   </p>
   {{#if declaration.attack.notes}}<p class="hint">{{declaration.attack.notes}}</p>{{/if}}
+  {{#if freeEvade}}<p class="hint">{{localize "CRAWLSPACE.Combat.FreeEvadeHint"}}</p>{{/if}}
   <ul class="declaration-targets">
     {{#each targets as |target|}}
     <li>
       <span class="target-name">{{target.name}}</span>
+      {{#if target.own}}<span class="tag">{{target.own}}</span>{{/if}}
       {{#if target.response}}
         <span class="outcome {{#if target.response.blocked}}success{{else if target.response.hit}}failure{{else}}success{{/if}}">
           {{#if (eq target.response.kind "tank")}}{{localize "CRAWLSPACE.Combat.Tanked"}}{{else if (eq target.response.kind "block")}}{{#if target.response.blocked}}{{localize "CRAWLSPACE.Combat.Blocked" total=target.response.total}}{{else}}{{localize "CRAWLSPACE.Combat.BlockFailed" total=target.response.total}}{{/if}}{{else if (eq target.response.kind "clap")}}{{localize "CRAWLSPACE.Combat.Clapped" total=target.response.total}} - {{target.response.outcome}}{{else}}{{localize "CRAWLSPACE.Combat.Evaded" total=target.response.total}} · {{target.response.outcome}}{{/if}}
           {{#if target.halfNote}} ({{localize "CRAWLSPACE.Combat.Half"}}){{/if}}
         </span>
+        {{#if target.evadeAgain}}<button type="button" data-crawl-action="defend" data-actor="{{target.actorUuid}}" data-target="{{target.combatantId}}" data-kind="evade" data-tooltip="{{localize 'CRAWLSPACE.Combat.EvadeAgainHint'}}"><i class="fa-solid fa-person-running"></i> {{localize "CRAWLSPACE.Combat.EvadeAgain"}}</button>{{/if}}
         {{#if target.failedDebuff}}<button type="button" data-crawl-action="apply-debuff" data-debuff="{{target.failedDebuff}}" data-target="{{target.actorUuid}}">{{target.failedDebuff}}</button>{{/if}}
       {{else}}
         <span class="defend-buttons">

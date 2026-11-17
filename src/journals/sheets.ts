@@ -10,6 +10,7 @@ import { BOROUGH_SECTIONS, NEIGHBORHOOD_SECTIONS, QUARTER_SECTIONS, REGION_SECTI
 import { bindFields, bindTabs, esc, renderSection, renderSlot, renderTabs, t } from './fields'
 import { boroughView, neighborhoodView, regionView, uuidLink } from './view'
 import { compileFieldGuide } from './field-guide'
+import { bindMap, mapTab, mapView } from './maps'
 
 const { ApplicationV2 } = foundry.applications.api
 const BODY = 'systems/crawlspace/templates/journal/page-body.hbs'
@@ -229,6 +230,7 @@ class CrawlPageSheet extends PageSheet {
         } catch {}
       }
     }
+    bindMap(root, this.page, (path) => this.save({ ...this.data, mapImage: path }))
     if (this.isView) return this.bindView(root)
     bindTabs(root, (id) => {
       this.tab = id
@@ -248,12 +250,12 @@ class CrawlPageSheet extends PageSheet {
 
 export class NeighborhoodPageSheet extends CrawlPageSheet {
   get tabs() {
-    return [...NEIGHBORHOOD_SECTIONS, { id: 'quarters', label: t('Quarters'), fields: [] }, { id: 'boss', label: t('Boss'), fields: [] }]
+    return [...NEIGHBORHOOD_SECTIONS, { id: 'map', label: t('Map'), fields: [] }, { id: 'quarters', label: t('Quarters'), fields: [] }, { id: 'boss', label: t('Boss'), fields: [] }]
   }
 
   async viewHTML() {
     const system = this.page.system
-    return mapItemButton(system) + neighborhoodView(system, (quarter) => {
+    return mapView(system) + mapItemButton(system) + neighborhoodView(system, (quarter) => {
       const table = quarter.mobTable && fromUuidSync(quarter.mobTable) ? quarter.mobTable : ''
       const zone = quarter.zone ? fromUuidSync(quarter.zone) : null
       return {
@@ -270,7 +272,8 @@ export class NeighborhoodPageSheet extends CrawlPageSheet {
     const active = tabs.find((tab) => tab.id === this.tab) ?? tabs[0]
     const data = this.data
     let body = ''
-    if (active.id === 'quarters') body = `${renderSlot('scene', 'scene', data.scene, t('NeighborhoodMap'))}<p class="hint">${esc(t('NeighborhoodMapHint'))}</p>${mapItemButton(data)}${quarterCards(data.quarters ?? [], true)}`
+    if (active.id === 'map') body = mapTab(data)
+    else if (active.id === 'quarters') body = `${renderSlot('scene', 'scene', data.scene, t('NeighborhoodMap'))}<p class="hint">${esc(t('NeighborhoodMapHint'))}</p>${mapItemButton(data)}${quarterCards(data.quarters ?? [], true)}`
     else if (active.id === 'boss') body = `${bossFields(data)}<label class="journal-field">${esc(t('BossBattle'))}<textarea data-path="bossBattle" rows="5">${esc(data.bossBattle)}</textarea></label>`
     else body = renderSection(data, active)
     return `<div class="crawl-journal-body journal-edit">${renderTabs(tabs, active.id)}<div class="journal-tab-body">${body}</div></div>`
@@ -299,13 +302,13 @@ export class NeighborhoodPageSheet extends CrawlPageSheet {
 
 export class BoroughPageSheet extends CrawlPageSheet {
   get tabs() {
-    return [...BOROUGH_SECTIONS, { id: 'boss', label: t('Boss'), fields: [] }, { id: 'neighborhoods', label: t('Neighborhoods'), fields: [] }, { id: 'guide', label: t('FieldGuide'), fields: [] }]
+    return [...BOROUGH_SECTIONS, { id: 'map', label: t('Map'), fields: [] }, { id: 'boss', label: t('Boss'), fields: [] }, { id: 'neighborhoods', label: t('Neighborhoods'), fields: [] }, { id: 'guide', label: t('FieldGuide'), fields: [] }]
   }
 
   async viewHTML() {
     const system = this.page.system
     const guide = game.user.isGM ? `<p><button type="button" class="journal-compile"><i class="fa-solid fa-book"></i> ${esc(t('CompileGuide'))}</button></p>` : ''
-    return boroughView(system, { journal: system.fieldGuide, item: system.fieldGuideItem }) + guide
+    return mapView(system) + boroughView(system, { journal: system.fieldGuide, item: system.fieldGuideItem }) + guide
   }
 
   editHTML() {
@@ -313,7 +316,8 @@ export class BoroughPageSheet extends CrawlPageSheet {
     const active = tabs.find((tab) => tab.id === this.tab) ?? tabs[0]
     const data = this.data
     let body = ''
-    if (active.id === 'boss') body = `${renderSlot('boss', 'boss', data.boss, t('BoroughBoss'))}<label class="journal-field">${esc(t('BossNotes'))}<textarea data-path="boss.notes" rows="4">${esc(data.boss?.notes)}</textarea></label>`
+    if (active.id === 'map') body = mapTab(data)
+    else if (active.id === 'boss') body = `${renderSlot('boss', 'boss', data.boss, t('BoroughBoss'))}<label class="journal-field">${esc(t('BossNotes'))}<textarea data-path="boss.notes" rows="4">${esc(data.boss?.notes)}</textarea></label>`
     else if (active.id === 'neighborhoods') body = renderSection(data, { id: 'neighborhoods', label: '', fields: [{ type: 'links', key: 'neighborhoods', label: t('Neighborhoods'), kind: 'neighborhood' }] }) + `<p class="hint">${esc(t('NeighborhoodsHint'))}</p>`
     else if (active.id === 'guide')
       body = `<p>${esc(t('FieldGuideHint'))}</p><button type="button" class="journal-compile bright"><i class="fa-solid fa-book"></i> ${esc(t('CompileGuide'))}</button>
@@ -352,11 +356,11 @@ export class RegionPageSheet extends CrawlPageSheet {
   }
 
   get tabs() {
-    return [...REGION_SECTIONS, { id: 'members', label: t(`Members.${this.tier}`), fields: [] }]
+    return [...REGION_SECTIONS, { id: 'map', label: t('Map'), fields: [] }, { id: 'members', label: t(`Members.${this.tier}`), fields: [] }]
   }
 
   async viewHTML() {
-    return regionView(this.page.system, t(`Members.${this.tier}`), t('RegionEmpty', { tier: t(`Tier.${this.tier}`).toLowerCase() }))
+    return mapView(this.page.system) + regionView(this.page.system, t(`Members.${this.tier}`), t('RegionEmpty', { tier: t(`Tier.${this.tier}`).toLowerCase() }))
   }
 
   editHTML() {
@@ -364,7 +368,9 @@ export class RegionPageSheet extends CrawlPageSheet {
     const active = tabs.find((tab) => tab.id === this.tab) ?? tabs[0]
     const data = this.data
     const body =
-      active.id === 'members'
+      active.id === 'map'
+        ? mapTab(data)
+        : active.id === 'members'
         ? renderSection(data, { id: 'members', label: '', fields: [{ type: 'links', key: 'members', label: t(`Members.${this.tier}`), kind: `${this.tier}Part` }] }) + `<p class="hint">${esc(t('MembersHint', { kinds: t(`Kind.${this.tier}Part`) }))}</p>`
         : renderSection(data, active)
     return `<div class="crawl-journal-body journal-edit">${renderTabs(tabs, active.id)}<div class="journal-tab-body">${body}</div></div>`

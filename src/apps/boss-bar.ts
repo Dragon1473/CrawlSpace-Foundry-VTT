@@ -8,11 +8,14 @@
  * It appears only once the combat has started, and never while the boss battle splash is up: when an encounter
  * starts with a boss, the bar waits for the splash to come and go.
  */
-import { barPercent, bossBarBox, bossBarVisible, bossCombatants, bossNameShown, healthColor, type BarBox } from '../rules/boss-bar'
+import { barPercent, barWidth, bossBarBox, bossBarVisible, bossCombatants, bossNameShown, healthColor, lossTrail, type BarBox } from '../rules/boss-bar'
 import { bossBattleOpen, splashExpected } from './boss-battle'
 
 /** How long to hold the bar back for a splash that should be coming; after that it shows anyway. */
 const SPLASH_WAIT_MS = 4000
+/** How long a hit's trail holds at the old health before it drains down to the fill. */
+const TRAIL_HOLD_MS = 700
+const trailTimers = new Map<string, number>()
 let awaitingSplash = false
 let awaitTimer: number | undefined
 
@@ -44,7 +47,7 @@ function bosses() {
     const health = combatant.actor.system.health ?? {}
     const pct = barPercent(health.value, health.max)
     const shown = bossNameShown(game.user.isGM, combatant.token?.displayName ?? 0)
-    return { id: combatant.id, name: shown ? combatant.token?.name ?? combatant.name : '', pct }
+    return { id: combatant.id, name: shown ? combatant.token?.name ?? combatant.name : '', pct, width: barWidth(health.value, health.max) }
   })
 }
 
@@ -66,16 +69,48 @@ function render() {
       row = document.createElement('div')
       row.className = 'boss-bar-row'
       row.dataset.combatantId = boss.id
-      row.innerHTML = '<div class="boss-bar-track" role="meter" aria-valuemin="0" aria-valuemax="100"><div class="boss-bar-fill"></div></div><div class="boss-bar-name"></div>'
+      row.innerHTML = '<div class="boss-bar-track" role="meter" aria-valuemin="0" aria-valuemax="100"><div class="boss-bar-loss"></div><div class="boss-bar-fill"></div></div><div class="boss-bar-name"></div>'
     }
-    rows.append(row)
+    // Moving a row that is already in place would take it out of the page and cut its animations short.
+    if (rows.lastElementChild !== row) rows.append(row)
     const track = row.querySelector<HTMLElement>('.boss-bar-track')!
     track.setAttribute('aria-valuenow', String(boss.pct))
     track.setAttribute('aria-label', boss.name || game.i18n.localize('CRAWLSPACE.BossBar.Boss'))
-    const fill = row.querySelector<HTMLElement>('.boss-bar-fill')!
-    Object.assign(fill.style, { width: `${boss.pct}%`, backgroundColor: healthColor(boss.pct) })
+    setWidths(row, boss.id, boss.width, healthColor(boss.pct))
     row.querySelector<HTMLElement>('.boss-bar-name')!.innerHTML = esc(boss.name)
   }
+}
+
+/**
+ * The fill glides to the new health. Behind it, the loss trail holds at the old health for a moment after a hit,
+ * then drains down to the fill; healing pulls the trail straight to the fill.
+ */
+function setWidths(row: HTMLElement, id: string, width: number, color: string) {
+  const fill = row.querySelector<HTMLElement>('.boss-bar-fill')!
+  const loss = row.querySelector<HTMLElement>('.boss-bar-loss')!
+  fill.style.backgroundColor = color
+  const previous = row.dataset.width === undefined ? undefined : Number(row.dataset.width)
+  if (previous === width) return
+  const trail = lossTrail(previous, width, row.dataset.trail === undefined ? undefined : Number(row.dataset.trail))
+  row.dataset.width = String(width)
+  fill.style.width = `${width}%`
+  window.clearTimeout(trailTimers.get(id))
+  loss.classList.remove('draining')
+  loss.style.width = `${trail.from}%`
+  row.dataset.trail = String(trail.from)
+  if (!trail.drain) return
+  // A hit: the fill's edge flares, then the trail drains away.
+  row.classList.remove('hit')
+  void row.offsetWidth
+  row.classList.add('hit')
+  trailTimers.set(
+    id,
+    window.setTimeout(() => {
+      loss.classList.add('draining')
+      loss.style.width = `${width}%`
+      row.dataset.trail = String(width)
+    }, TRAIL_HOLD_MS),
+  )
 }
 
 function create() {

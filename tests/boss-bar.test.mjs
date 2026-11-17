@@ -62,3 +62,22 @@ test('the boss bar waits for the combat to start and for the boss battle splash 
   assert.equal(bossBarVisible({ started: true, splashOpen: false, awaitingSplash: true }), false)
   assert.equal(bossBarVisible({ started: true, splashOpen: false, awaitingSplash: false }), true)
 })
+
+test('the fill width is the exact share of health left, so it moves smoothly instead of in whole percents', async () => {
+  const { barWidth } = await import('../src/rules/boss-bar.ts')
+  assert.equal(barWidth(1, 3), 100 / 3)
+  assert.equal(barWidth(7, 7), 100)
+  assert.equal(barWidth(-2, 7), 0)
+  assert.equal(barWidth(9, 7), 100)
+  assert.equal(barWidth(3, 0), 0)
+})
+
+test('a hit leaves a trail at the old health that drains after; healing drops the trail at once', async () => {
+  const { lossTrail } = await import('../src/rules/boss-bar.ts')
+  assert.deepEqual(lossTrail(undefined, 80), { from: 80, drain: false })
+  assert.deepEqual(lossTrail(80, 50), { from: 80, drain: true })
+  // A second hit while the trail is still up keeps it where the first hit started.
+  assert.deepEqual(lossTrail(50, 30, 80), { from: 80, drain: true })
+  assert.deepEqual(lossTrail(50, 70, 80), { from: 70, drain: false })
+  assert.deepEqual(lossTrail(50, 50, 80), { from: 80, drain: true })
+})

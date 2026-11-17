@@ -29,8 +29,10 @@ export class NeighborhoodPageData extends foundry.abstract.TypeDataModel {
       bossBattle: text(),
       boss: bossSchema(),
       quarters: new (f().ArrayField)(quarterSchema()),
-      /** The atlas scene this neighborhood is the map of (CrawlSpace Atlas). */
+      /** The scene this neighborhood is the map of: an atlas map (CrawlSpace Atlas), or one made from `mapImage`. */
       scene: new (f().SchemaField)({ uuid: text(), name: text() }),
+      /** A plain image used as the map (journals/maps.ts). */
+      mapImage: text(),
     }
   }
 }
@@ -46,6 +48,9 @@ export class BoroughPageData extends foundry.abstract.TypeDataModel {
       /** The compiled Borough Field Guide journal and the item that gives it out. */
       fieldGuide: text(),
       fieldGuideItem: text(),
+      /** A plain image used as the map, and the scene made from it (journals/maps.ts). */
+      mapImage: text(),
+      scene: new (f().SchemaField)({ uuid: text(), name: text() }),
     }
   }
 }
@@ -57,6 +62,9 @@ export class RegionPageData extends foundry.abstract.TypeDataModel {
     return {
       ...fieldsOf(REGION_SECTIONS),
       members: new (f().ArrayField)(linkSchema()),
+      /** A plain image used as the map, and the scene made from it (journals/maps.ts). */
+      mapImage: text(),
+      scene: new (f().SchemaField)({ uuid: text(), name: text() }),
     }
   }
 }

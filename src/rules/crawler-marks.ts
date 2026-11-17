@@ -37,3 +37,6 @@ export function migrateKills<T extends Record<string, unknown>>(kills: T) {
   const { bosses, ...rest } = kills as Record<string, unknown>
   return (rest.neighborhood === undefined && count(bosses) > 0 ? { ...rest, neighborhood: count(bosses) } : rest) as Omit<T, 'bosses'>
 }
+
+/** The players named beside a crawler in its frame, or nothing when that is turned off. */
+export const framePlayers = (names: string[], shown: boolean) => (shown ? names.join(', ') : '')

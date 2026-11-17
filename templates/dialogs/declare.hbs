@@ -13,6 +13,13 @@
     {{else}}<p class="hint">{{localize "CRAWLSPACE.Combat.NoAttacks"}}</p>{{/each}}
   </fieldset>
   {{/each}}
+  <div class="form-group">
+    <label>{{localize "CRAWLSPACE.Combat.MobModeLabel"}}</label>
+    <div class="form-fields">
+      <select name="mode">{{#each modes}}<option value="{{value}}">{{label}}</option>{{/each}}</select>
+    </div>
+    <p class="hint">{{localize "CRAWLSPACE.Combat.MobModeHint"}}</p>
+  </div>
   <fieldset>
     <legend>{{localize "CRAWLSPACE.Combat.Targets"}}</legend>
     {{#each crawlers}}

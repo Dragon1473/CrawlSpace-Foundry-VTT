@@ -3001,11 +3001,31 @@
     border-radius: 3px;
     background: rgb(0 0 0 / 70%);
   }
+  #crawl-boss-bar .boss-bar-fill,
+  #crawl-boss-bar .boss-bar-loss { position: absolute; top: 0; bottom: 0; left: 0; width: 0; }
   #crawl-boss-bar .boss-bar-fill {
-    height: 100%;
     background-image: linear-gradient(180deg, rgb(255 255 255 / 25%), transparent 60%);
-    transition: width 0.5s ease-out, background-color 0.5s ease-out;
+    transition: width 0.35s ease-out, background-color 0.5s ease-out;
   }
+  /* The flare at the fill's leading edge: a bright sliver with a glow that flickers, and burns brighter on a hit. */
+  #crawl-boss-bar .boss-bar-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: -1px;
+    bottom: 0;
+    width: 3px;
+    border-radius: 2px;
+    background: linear-gradient(180deg, #fff, #ffe9a8 50%, #fff);
+    box-shadow: 0 0 4px 1px rgb(255 236 170 / 85%), 0 0 10px 2px rgb(255 160 60 / 55%);
+    animation: crawl-boss-flare 1.6s ease-in-out infinite;
+  }
+  #crawl-boss-bar .boss-bar-row.hit .boss-bar-fill::after { animation: crawl-boss-flare-hit 0.6s ease-out, crawl-boss-flare 1.6s ease-in-out 0.6s infinite; }
+  /* Pale gold, so it stays clear of the fill even when the fill is yellow at half health. */
+  #crawl-boss-bar .boss-bar-loss { background: linear-gradient(180deg, #fffaf0, #f2d79c 60%, #d8b46a); }
+  #crawl-boss-bar .boss-bar-loss.draining { transition: width 0.9s cubic-bezier(0.4, 0, 0.6, 1); }
+  @keyframes crawl-boss-flare { 50% { opacity: 0.65; box-shadow: 0 0 3px 1px rgb(255 236 170 / 70%), 0 0 6px 1px rgb(255 160 60 / 40%); } }
+  @keyframes crawl-boss-flare-hit { from { width: 7px; box-shadow: 0 0 8px 3px #fff, 0 0 18px 6px rgb(255 190 80 / 90%); } }
   #crawl-boss-bar .boss-bar-name {
     color: #ffe2dd;
     font-size: 11px;
@@ -3028,7 +3048,8 @@
     cursor: nwse-resize;
   }
   @media (prefers-reduced-motion: reduce) {
-    #crawl-boss-bar .boss-bar-fill { transition: none; }
+    #crawl-boss-bar .boss-bar-fill, #crawl-boss-bar .boss-bar-loss.draining { transition: none; }
+    #crawl-boss-bar .boss-bar-fill::after { animation: none !important; }
   }
 
   #crawl-boss-battle {
@@ -3963,4 +3984,57 @@
     flex: none;
     width: auto;
   }
+}
+
+@layer system {
+  /* Vehicles: Ram and sample vehicles under the header (actors/vehicles.ts). */
+  .crawlspace .vehicle-actions { display: flex; gap: 6px; margin: 4px 0; }
+  .crawlspace .vehicle-actions button { flex: none; width: auto; padding: 0 10px; }
+
+  /* Race & Chase (apps/race.ts). */
+  .crawlspace.crawl-race .crawl-race-body { display: flex; flex-direction: column; gap: 6px; }
+  .crawlspace.crawl-race .race-top,
+  .crawlspace.crawl-race .race-footer { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .crawlspace.crawl-race .race-top button,
+  .crawlspace.crawl-race .race-footer button { flex: none; width: auto; padding: 0 10px; }
+  .crawlspace.crawl-race .race-spacer { flex: 1; }
+  .crawlspace.crawl-race .race-mode { display: inline-flex; flex-direction: row; align-items: center; gap: 4px; white-space: nowrap; }
+  .crawlspace.crawl-race .race-quarry { display: inline-flex; align-items: center; gap: 6px; }
+  .crawlspace.crawl-race .race-quarry input { width: 160px; }
+  .crawlspace.crawl-race .race-table { width: 100%; margin: 0; border-collapse: collapse; }
+  .crawlspace.crawl-race .race-table th,
+  .crawlspace.crawl-race .race-table td { padding: 3px 4px; vertical-align: middle; text-align: center; }
+  .crawlspace.crawl-race .race-table th.race-leg { min-width: 96px; }
+  .crawlspace.crawl-race .race-table th.race-leg input { display: block; width: 100%; margin-top: 2px; font-weight: normal; }
+  .crawlspace.crawl-race td.race-name { min-width: 170px; text-align: left; }
+  .crawlspace.crawl-race .race-who { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; }
+  .crawlspace.crawl-race .race-who img { flex: none; width: 28px; height: 28px; border: none; border-radius: 4px; object-fit: cover; }
+  .crawlspace.crawl-race .race-who > span { flex: 1; min-width: 70px; font-weight: 700; }
+  .crawlspace.crawl-race .race-who select { flex: none; width: auto; }
+  .crawlspace.crawl-race .race-npc { display: inline-flex; flex-direction: row; align-items: center; gap: 2px; font-size: 11px; white-space: nowrap; }
+  .crawlspace.crawl-race .race-npc input { margin: 0; }
+  .crawlspace.crawl-race .race-entry { display: inline-flex; align-items: center; gap: 3px; }
+  .crawlspace.crawl-race .race-entry input { flex: none; width: 52px; }
+  .crawlspace.crawl-race .race-entry button.icon { flex: none; width: 24px; height: 24px; padding: 0; }
+  .crawlspace.crawl-race .race-move { white-space: nowrap; }
+  .crawlspace.crawl-race .race-skipped { opacity: 0.4; }
+  .crawlspace.crawl-race .race-place,
+  .crawlspace.crawl-race .race-gain { display: block; font-weight: 700; opacity: 0.85; }
+  .crawlspace.crawl-race tr.race-first td { background: rgb(255 204 51 / 14%); }
+  .crawlspace.crawl-race tr.race-out td,
+  .crawlspace.crawl-race tr.race-lost td { opacity: 0.6; }
+  .crawlspace .race-card .race-results { margin: 4px 0 0; padding-left: 18px; }
+
+  /* Image maps on region journals (journals/maps.ts). */
+  .crawl-journal-body .journal-image-map { display: flex; flex-direction: column; gap: 8px; }
+  .crawl-journal-body .journal-map-path { display: flex; gap: 4px; }
+  .crawl-journal-body .journal-map-path input { flex: 1; }
+  .crawl-journal-body .journal-map-path button { flex: none; width: 32px; }
+  .crawl-journal-body .journal-map-preview { display: block; max-width: 100%; max-height: 320px; margin: 0 auto; border: 1px solid rgb(255 255 255 / 20%); border-radius: 4px; object-fit: contain; }
+  .crawl-journal-body .journal-map-popout { cursor: zoom-in; }
+  .crawl-journal-body .journal-map-buttons { display: flex; gap: 6px; }
+  .crawl-journal-body .journal-map-buttons button { flex: none; width: auto; padding: 0 12px; }
+  .crawl-journal-body .journal-map-figure { margin: 0 0 12px; text-align: center; }
+  .crawl-journal-body .journal-map-figure figcaption { margin-top: 6px; font-style: normal; }
+  .crawl-journal-body .journal-map-figure button { width: auto; padding: 0 12px; }
 }

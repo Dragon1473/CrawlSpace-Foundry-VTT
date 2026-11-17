@@ -1,3 +1,6 @@
+import { registerStandardDebuffRules } from './effects/standard-debuffs'
+import { registerRace } from './apps/race'
+import { registerVehicleExplosions } from './actors/vehicles'
 import { registerLootTools } from './apps/loot-tools'
 import { createAuraBehavior, registerAreas } from './effects/areas'
 import { CrawlRoll } from './dice/crawl-roll'
@@ -46,6 +49,7 @@ import { actionRowsOf, runAction } from './apps/actions-config'
 import { attackWithRow, findAttackRow } from './actors/attacks'
 import { registerHotlistUpkeep } from './rules/hotlist-upkeep'
 import { registerHomebrewSetting } from './settings/homebrew'
+import { registerSettingsLayout } from './settings/layout'
 import { registerHandRules } from './rules/hands-upkeep'
 import { registerFlavorTooltip } from './canvas/flavor-tooltip'
 import { registerMinimap } from './canvas/minimap'
@@ -104,6 +108,10 @@ const TEMPLATES = [
 Hooks.once('init', () => {
   console.log('CrawlSpace | Initializing')
   registerHomebrewSetting()
+  registerSettingsLayout()
+  registerVehicleExplosions()
+  registerRace()
+  registerStandardDebuffRules()
   CONFIG.CRAWLSPACE = config
   // A CrawlSpace round is 10 seconds of game time (regen effects count in it).
   CONFIG.time.roundTime = 10

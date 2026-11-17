@@ -16,6 +16,12 @@
     {{else if (and follower.master editable)}}<button type="button" data-action="clearMaster">{{localize "CRAWLSPACE.Companion.Unlink"}}</button>{{/if}}
   </div>
   {{/if}}
+  {{#if companion.isVehicle}}
+  <div class="vehicle-actions">
+    <button type="button" data-action="ramVehicle" data-tooltip="{{localize 'CRAWLSPACE.Vehicle.RamHint'}}"><i class="fa-solid fa-car-burst"></i> {{localize "CRAWLSPACE.Vehicle.Ram"}}</button>
+    {{#if editable}}<button type="button" data-action="sampleVehicle"><i class="fa-solid fa-car-side"></i> {{localize "CRAWLSPACE.Vehicle.Samples"}}</button>{{/if}}
+  </div>
+  {{/if}}
   {{#if tagList.length}}<div class="pf-tags">{{#each tagList}}<span class="pf-tag">{{this}}</span>{{/each}}</div>{{/if}}
   <div class="pf-actor-fields">
     <label><span>{{localize "CRAWLSPACE.Mob.Kind"}}</span>
