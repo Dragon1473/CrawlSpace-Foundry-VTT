@@ -20,7 +20,7 @@
     "damageEffect": {
       "enabled": true,
       "skills": [
-        "Passive"
+        "Heel Striker"
       ],
       "addRank": null,
       "mode": ""
@@ -90,14 +90,18 @@
         "rank5HealingFormula": "",
         "sharedWithCelestial": false,
         "rank10HealingFormula": "",
-        "rank15HealingFormula": ""
+        "rank15HealingFormula": "",
+        "isDamageEffectSkill": true,
+        "damageEffectSkills": [
+          "Heel Striker"
+        ]
       }
     }
   },
   "_stats": {
     "coreVersion": "14.370",
     "systemId": "crawlspace",
-    "systemVersion": "0.1.0",
+    "systemVersion": "0.9.8.26",
     "createdTime": null,
     "modifiedTime": null,
     "lastModifiedBy": null,

@@ -1,0 +1,93 @@
+{
+  "_id": "m4x1FcWWeBwYhpPz",
+  "name": "Slice Attack",
+  "type": "skill",
+  "img": "icons/skills/melee/strike-slashes-red.webp",
+  "system": {
+    "description": "<p>Attack against Evade with claws, teeth or whatever edge your body has. Every animal crawler starts with it.</p>",
+    "notes": "",
+    "stat": "DEX",
+    "rank": {
+      "value": 0,
+      "override": null,
+      "modOverride": null
+    },
+    "checkType": "Attack",
+    "cooldown": "",
+    "marked": false,
+    "isAttack": true,
+    "isUnarmed": false,
+    "damageEffect": {
+      "enabled": false,
+      "skills": [],
+      "addRank": null,
+      "mode": ""
+    },
+    "damage": {
+      "formula": "1d4+STR",
+      "types": [
+        "Slashing"
+      ],
+      "armorPiercing": false,
+      "magic": false,
+      "area": false
+    },
+    "healing": {
+      "formula": "",
+      "rank5": "",
+      "rank10": "",
+      "rank15": ""
+    },
+    "upgrades": {
+      "rank5": "Add 1d4 base damage.",
+      "rank10": "Add 1d4 base damage.",
+      "rank15": "Add 2d4 base damage.",
+      "rank5Damage": "2d4+STR",
+      "rank10Damage": "3d4+STR",
+      "rank15Damage": "5d4+STR"
+    },
+    "source": {
+      "database": "homebrew",
+      "id": 900002,
+      "book": "",
+      "pages": ""
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "sourceId": "homebrew-900002",
+      "contentType": "skill",
+      "data": {
+        "name": "Slice Attack",
+        "stat": "DEX",
+        "checkType": "Attack",
+        "isAttackSkill": true,
+        "damageTypes": [
+          "Slashing"
+        ],
+        "damageFormula": "1d4+STR",
+        "rank5DamageFormula": "2d4+STR",
+        "rank10DamageFormula": "3d4+STR",
+        "rank15DamageFormula": "5d4+STR",
+        "details": "Attack against Evade with claws, teeth or whatever edge your body has. Every animal crawler starts with it.",
+        "rank5": "Add 1d4 base damage.",
+        "rank10": "Add 1d4 base damage.",
+        "rank15": "Add 2d4 base damage."
+      },
+      "builderStart": true
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.26",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!m4x1FcWWeBwYhpPz"
+}

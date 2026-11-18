@@ -1,0 +1,88 @@
+{
+  "_id": "Xh1RXCTlNiq0hD1t",
+  "name": "Heal",
+  "type": "spell",
+  "img": "icons/magic/life/heart-cross-green.webp",
+  "system": {
+    "description": "<p>Restore 2 Health Bar slots to yourself.</p>",
+    "notes": "",
+    "stat": "INT",
+    "rank": {
+      "value": 0,
+      "override": null,
+      "modOverride": null
+    },
+    "checkType": "Passive",
+    "cooldown": "",
+    "marked": false,
+    "killingBlowStacking": false,
+    "killingBlowStacks": 0,
+    "killingBlowAt": null,
+    "killingBlowGameClock": null,
+    "killingBlowFloor": "",
+    "isAttack": false,
+    "isUnarmed": false,
+    "damage": {
+      "formula": "",
+      "types": [],
+      "armorPiercing": false,
+      "magic": true,
+      "area": false
+    },
+    "healing": {
+      "formula": "2",
+      "rank5": "",
+      "rank10": "",
+      "rank15": ""
+    },
+    "upgrades": {
+      "rank5": "",
+      "rank10": "",
+      "rank15": "",
+      "rank5Damage": "",
+      "rank10Damage": "",
+      "rank15Damage": ""
+    },
+    "source": {
+      "database": "homebrew",
+      "id": 900003,
+      "book": "",
+      "pages": ""
+    },
+    "mana": "2",
+    "range": "Self",
+    "duration": "",
+    "usage": "learned"
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "sourceId": "homebrew-900003",
+      "contentType": "spell",
+      "data": {
+        "name": "Heal",
+        "stat": "INT",
+        "checkType": "Passive",
+        "mana": "2",
+        "range": "Self",
+        "isHealing": true,
+        "healingUnit": "slots",
+        "healingFormula": "2",
+        "details": "Restore 2 Health Bar slots to yourself."
+      },
+      "builderStart": true
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.26",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!Xh1RXCTlNiq0hD1t"
+}

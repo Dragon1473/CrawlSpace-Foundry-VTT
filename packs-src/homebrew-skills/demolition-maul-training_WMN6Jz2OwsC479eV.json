@@ -15,7 +15,7 @@
     "checkType": "Attack",
     "cooldown": "",
     "marked": false,
-    "isAttack": false,
+    "isAttack": true,
     "isUnarmed": false,
     "damageEffect": {
       "enabled": false,
@@ -87,7 +87,7 @@
         },
         "combatRelated": false,
         "damageFormula": "1d10+STR",
-        "isAttackSkill": false,
+        "isAttackSkill": true,
         "healingFormula": "",
         "unenhancedRank": "",
         "rank5DamageTypes": [],
@@ -106,7 +106,7 @@
   "_stats": {
     "coreVersion": "14.370",
     "systemId": "crawlspace",
-    "systemVersion": "0.1.0",
+    "systemVersion": "0.9.8.26",
     "createdTime": null,
     "modifiedTime": null,
     "lastModifiedBy": null,
