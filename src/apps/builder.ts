@@ -344,9 +344,12 @@ export class CharacterBuilder extends HandlebarsApplicationMixin(ApplicationV2) 
   }
 }
 
-export const openBuilder = () => {
+export const openBuilder = (name = '') => {
   const existing = foundry.applications.instances.get('crawl-character-builder')
-  return existing ? existing.bringToFront() : new CharacterBuilder().render(true)
+  if (existing) return existing.bringToFront()
+  const builder = new CharacterBuilder()
+  builder.draft.name = name
+  return builder.render(true)
 }
 
 /** A player's builder closes and their new crawler opens when the GM has made it. */

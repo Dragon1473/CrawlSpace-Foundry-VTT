@@ -1025,6 +1025,12 @@ export function characterToActor(input: Record<string, any>) {
         popularity: int(data.sideInfo?.popularity),
         gold: int(character.gold),
       },
+      background: {
+        childhood: str(data.background?.childhood),
+        adolescence: str(data.background?.adolescence),
+        career: str(data.background?.career),
+        hobby: str(data.background?.hobby),
+      },
       journal: {
         pastTrauma: toHtml(data.sideInfo?.pastTrauma),
         looseEnds: toHtml(data.sideInfo?.looseEnds),

@@ -70,6 +70,16 @@ test('imports retain spell stacks and remap grinding progress to Foundry item id
   assert.equal(actor.flags.crawlspace.grinding.attempted[skill._id], 4)
 })
 
+test('builder backgrounds populate the Info fields as well as embedded items', () => {
+  const background = { childhood: 'Farm', adolescence: 'School', career: 'Builder', hobby: 'Games' }
+  const actor = characterToActor({ data: { character: { name: 'New Crawler' }, background } })
+  assert.deepEqual(actor.system.background, background)
+  for (const [stage, name] of Object.entries(background)) {
+    assert.ok(actor.items.some((item) => item.type === 'background' && item.system.stage === stage && item.name === name))
+  }
+  assert.deepEqual(characterToActor({}).system.background, { childhood: '', adolescence: '', career: '', hobby: '' })
+})
+
 test('character import floors decimals instead of removing their decimal points', () => {
   const actor = characterToActor({ character: { name: 'Fractional import' }, attributeValues: [{ unenhanced: '12.9' }], attributeModOverrides: { 0: '-1.5' }, skills: [{ name: 'Test', unenhancedRank: '2.9' }] })
   assert.equal(actor.system.attributes.str.value, 12)

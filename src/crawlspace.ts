@@ -329,18 +329,21 @@ Hooks.on('renderActorDirectory', (_app: any, html: HTMLElement) => {
 
 Hooks.on('renderDialogV2', (app: any, html: HTMLElement) => {
   if (!app.options.classes?.includes('crawl-create-actor') || html.querySelector('.crawlspace-builder')) return
-  const button = builderButton(() => app.close())
+  const button = builderButton(() => {
+    const name = html.querySelector<HTMLInputElement>('input[name="name"]')?.value ?? ''
+    app.close()
+    return name
+  })
   html.querySelector('.form-footer')?.prepend(button)
 })
 
-function builderButton(before?: () => unknown) {
+function builderButton(before?: () => string) {
   const build = document.createElement('button')
   build.type = 'button'
   build.className = 'crawlspace-builder'
   build.innerHTML = `<i class="fa-solid fa-user-plus"></i> ${game.i18n.localize('CRAWLSPACE.Builder.Button')}`
   build.addEventListener('click', () => {
-    before?.()
-    openBuilder()
+    openBuilder(before?.() ?? '')
   })
   return build
 }
