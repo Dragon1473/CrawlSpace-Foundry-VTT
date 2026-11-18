@@ -1,0 +1,42 @@
+{
+  "name": "Trail Companion",
+  "type": "background",
+  "img": "icons/svg/house.svg",
+  "system": {
+    "description": "",
+    "notes": "",
+    "source": {
+      "database": "homebrew",
+      "id": null,
+      "book": "",
+      "pages": ""
+    },
+    "stage": "adolescence",
+    "species": "animal",
+    "skills": [
+      "Creature Rapport",
+      "Gentle Nudge",
+      "Silver Bluff"
+    ]
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "builderBackground": true
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.25",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_id": "ltXmn5MttzVLNNaQ",
+  "_key": "!items!ltXmn5MttzVLNNaQ",
+  "folder": "GYznV0GYS7jkPZD2"
+}

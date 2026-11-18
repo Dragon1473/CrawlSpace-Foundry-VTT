@@ -1,0 +1,42 @@
+{
+  "name": "Transit Inspector",
+  "type": "background",
+  "img": "icons/svg/house.svg",
+  "system": {
+    "description": "",
+    "notes": "",
+    "source": {
+      "database": "homebrew",
+      "id": null,
+      "book": "",
+      "pages": ""
+    },
+    "stage": "career",
+    "species": "human",
+    "skills": [
+      "Read the Tell",
+      "Sidearm Drill",
+      "Road Wrangler"
+    ]
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "builderBackground": true
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.25",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_id": "ll4cln9ALhTU5V6a",
+  "_key": "!items!ll4cln9ALhTU5V6a",
+  "folder": "GYznV0GYS7jkPZD2"
+}

@@ -1,0 +1,42 @@
+{
+  "name": "Orchard Helper",
+  "type": "background",
+  "img": "icons/svg/house.svg",
+  "system": {
+    "description": "",
+    "notes": "",
+    "source": {
+      "database": "homebrew",
+      "id": null,
+      "book": "",
+      "pages": ""
+    },
+    "stage": "career",
+    "species": "animal",
+    "skills": [
+      "Creature Rapport",
+      "Lasting Grit",
+      "Take the Hit"
+    ]
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "builderBackground": true
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.25",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_id": "kgBDt6lYS9xQvTI7",
+  "_key": "!items!kgBDt6lYS9xQvTI7",
+  "folder": "GYznV0GYS7jkPZD2"
+}

@@ -1,0 +1,42 @@
+{
+  "name": "Last Pick",
+  "type": "background",
+  "img": "icons/svg/house.svg",
+  "system": {
+    "description": "",
+    "notes": "",
+    "source": {
+      "database": "homebrew",
+      "id": null,
+      "book": "",
+      "pages": ""
+    },
+    "stage": "childhood",
+    "species": "animal",
+    "skills": [
+      "Shadow Nest",
+      "Slip the Knot",
+      "Raking Talons"
+    ]
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "builderBackground": true
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.25",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_id": "K63qxhf8MsBHjZYD",
+  "_key": "!items!K63qxhf8MsBHjZYD",
+  "folder": "GYznV0GYS7jkPZD2"
+}
