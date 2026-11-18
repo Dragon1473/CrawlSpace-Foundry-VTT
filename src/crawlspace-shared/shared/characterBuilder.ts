@@ -3,7 +3,6 @@ import { createDefaultSheet, createSkill, createSpell, createInventoryItem, crea
 import { copyDatabaseSkill, copyDatabaseSpell, copyDatabaseItem } from './characterSheetContent'
 import { normalizeSkillName } from './characterSheetRules'
 import {
-  bookBackgrounds,
   bookCombat,
   builderStages,
   type BuilderSpecies,
@@ -61,9 +60,8 @@ export function builderBackgroundOptions(
   species: BuilderSpecies,
   stage: BuilderStage,
 ): BuilderBackground[] {
-  const options = new Map(
-    bookBackgrounds.filter((item) => item.species === species && item.stage === stage).map((item) => [item.name, item]),
-  )
+  // Foundry: only backgrounds in this game's compendia and items, never the app's built-in book list.
+  const options = new Map<string, BuilderBackground>()
   for (const entry of entries) {
     if (
       entry.content_type !== `background_${stage}` ||
@@ -93,7 +91,15 @@ export function builderBackgroundOptions(
   return [...options.values()]
 }
 export function builderCombatOptions(entries: BuilderCatalogEntry[]): BuilderCombat[] {
-  const options = new Map(bookCombat.map((item) => [item.name, item]))
+  // Foundry: a book combat choice is offered only when this game's compendia or items hold its skill or spell (and
+  // its effect skill), so a world without the game compendium doesn't offer choices that would build empty skills.
+  const has = (name: string, type: string) =>
+    entries.some((entry) => entry.content_type === type && normalizeSkillName(entry.name) === normalizeSkillName(name))
+  const options = new Map(
+    bookCombat
+      .filter((item) => has(item.skill, item.kind === 'spell' ? 'spell' : 'skill') && (!item.effect || has(item.effect, 'skill')))
+      .map((item) => [item.name, item]),
+  )
   for (const entry of entries) {
     const combat = entry.data.builderCombat as BuilderCombat | undefined
     if (combat && ['weapon', 'spell', 'unarmed'].includes(combat.kind) && typeof combat.skill === 'string') {
