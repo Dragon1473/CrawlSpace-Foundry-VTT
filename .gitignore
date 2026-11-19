@@ -9,3 +9,10 @@ build/
 .DS_Store
 # Packaged releases (npm run release).
 release/
+# Agent prompts, handoffs and plans are internal notes, never committed.
+CLAUDE*.md
+CODEX*.md
+AGENTS.md
+*HANDOFF*.md
+*_PLAN.md
+.claude/
