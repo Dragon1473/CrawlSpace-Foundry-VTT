@@ -1802,7 +1802,8 @@
       "PortraitSet": "{name} now uses this portrait.",
       "DragHint": "Drag onto the scene to place a token",
       "Linked": "World actor",
-      "LinkedHint": "This entry has a world actor: edits go to it.",
+      "LinkedHint": "This entry has a world actor, unchanged from the book: edits go to it. Once it's changed, it's listed as a homebrew mob of its own and this entry shows the book's original again.",
+      "ChangedFrom": "changed from {name}",
       "LoadFailed": "The bestiary could not be loaded. Reopen it to try again.",
       "SourceFailed": "The bestiary could not load {source}.",
       "Failed": "That didn't work. See the console for details."

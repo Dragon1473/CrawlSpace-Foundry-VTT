@@ -36,6 +36,8 @@ export interface BestiaryEntry {
   actorUuid?: string
   /** Text searched besides the name. */
   searchText?: string
+  /** A homebrew mob changed from a module entry's mob: that entry's name. */
+  basedOn?: string
 }
 
 /**
@@ -58,27 +60,88 @@ export function actorLink(actor: { flags?: any }): { source: string; id: string 
 
 export interface LinkedActor {
   uuid: string
+  name?: string
   img?: string
+  /** The module entry it was made from in the bestiary (flags.crawlspace.bestiary). */
   link: { source: string; id: string } | null
+  /** The compendium actor it was imported from (_stats.compendiumSource). */
+  sourceUuid?: string | null
+  /** Its data no longer matches that compendium actor (see actorSignature). */
+  changed?: boolean
+}
+
+/** Module entries with the UUID of the compendium actor holding their stat block. */
+export type ModuleEntry = BestiaryEntry & { statUuid?: string | null }
+
+/**
+ * World actors that are a module entry's own mob, unchanged, fold into that entry: the card points at the actor
+ * (and shows its portrait) and the actor isn't listed again as homebrew. An actor is the entry's own when the
+ * bestiary made it from the entry, or when it was imported from the entry's compendium actor.
+ *
+ * Once its data changes it's a mob of its own: it's listed as homebrew ("changed from" the entry) and the entry
+ * shows the book's original again.
+ */
+export function mergeEntries(homebrew: BestiaryEntry[], modules: ModuleEntry[], actors: LinkedActor[]) {
+  const byKey = new Map(modules.map((entry) => [`${entry.source}:${entry.id}`, entry]))
+  const byStat = new Map<string, ModuleEntry[]>()
+  for (const entry of modules) if (entry.statUuid) byStat.set(entry.statUuid, [...(byStat.get(entry.statUuid) ?? []), entry])
+  /** The module entry an actor is a copy of: its link, else the entry with its compendium source (same name first). */
+  const entryOf = (actor: LinkedActor) => {
+    const linked = actor.link && byKey.get(`${actor.link.source}:${actor.link.id}`)
+    if (linked) return linked
+    const candidates = (actor.sourceUuid && byStat.get(actor.sourceUuid)) || []
+    return candidates.find((entry) => entry.name === actor.name) ?? candidates[0]
+  }
+  const folded = new Map<string, LinkedActor>()
+  const hidden = new Set<string>()
+  const basedOn = new Map<string, ModuleEntry>()
+  for (const actor of actors) {
+    const entry = entryOf(actor)
+    if (!entry) continue
+    if (actor.changed) basedOn.set(actor.uuid, entry)
+    else {
+      // Another unchanged copy of the same mob is the same entry too.
+      if (!folded.has(entry.key)) folded.set(entry.key, actor)
+      hidden.add(actor.uuid)
+    }
+  }
+  const merged = modules.map(({ statUuid: _stat, ...entry }) => {
+    const actor = folded.get(entry.key)
+    if (!actor) return entry
+    return { ...entry, actorUuid: actor.uuid, img: actor.img || entry.img, pixelArt: actor.img && actor.img !== entry.img ? false : entry.pixelArt }
+  })
+  // Actors from a module that isn't loaded, or changed since, stay homebrew.
+  const own = homebrew
+    .filter((entry) => !(entry.actorUuid && hidden.has(entry.actorUuid)))
+    .map((entry) => {
+      const original = entry.actorUuid ? basedOn.get(entry.actorUuid) : undefined
+      return original ? { ...entry, basedOn: original.name } : entry
+    })
+  return { homebrew: own, modules: merged as BestiaryEntry[] }
+}
+
+/** Data that doesn't make a mob a different mob: ids, sort order, ownership, flags, its look and damage taken. */
+const IGNORED = new Set(['_id', '_stats', 'folder', 'sort', 'ownership', 'flags', 'img', 'prototypeToken', 'slotsLost', 'origin'])
+
+function canonical(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(canonical)
+  if (!value || typeof value !== 'object') return value ?? null
+  return Object.fromEntries(
+    Object.keys(value)
+      .filter((key) => !IGNORED.has(key))
+      .sort()
+      .map((key) => [key, canonical((value as any)[key])]),
+  )
 }
 
 /**
- * Module entries take over the world actors made from them: the entry points at the actor (and shows its portrait),
- * and the actor drops out of the homebrew list. Homebrew is everything else.
+ * What makes a mob the mob it is, to tell an untouched compendium import from one that was changed: its name,
+ * system data, items and effects (ignoring ids, flags, portrait, token and damage taken). Items and effects are
+ * compared without their order.
  */
-export function mergeEntries(homebrew: BestiaryEntry[], modules: BestiaryEntry[], actors: LinkedActor[]) {
-  const linked = new Map<string, LinkedActor>()
-  for (const actor of actors) if (actor.link) linked.set(`${actor.link.source}:${actor.link.id}`, actor)
-  const taken = new Set<string>()
-  const merged = modules.map((entry) => {
-    const actor = linked.get(`${entry.source}:${entry.id}`)
-    if (!actor) return entry
-    taken.add(actor.uuid)
-    return { ...entry, actorUuid: actor.uuid, img: actor.img || entry.img, pixelArt: actor.img && actor.img !== entry.img ? false : entry.pixelArt }
-  })
-  // An actor linked to a module that isn't loaded stays homebrew.
-  const own = homebrew.filter((entry) => !(entry.actorUuid && taken.has(entry.actorUuid)))
-  return { homebrew: own, modules: merged }
+export function actorSignature(data: any) {
+  const list = (rows: any[] = []) => rows.map((row) => JSON.stringify(canonical(row))).sort()
+  return JSON.stringify({ name: data?.name ?? '', system: canonical(data?.system ?? {}), items: list(data?.items), effects: list(data?.effects) })
 }
 
 export interface BestiaryFilters {

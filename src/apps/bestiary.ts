@@ -13,6 +13,9 @@ import { displayFormula } from '../actors/attacks'
 import {
   actorCategory,
   actorLink,
+  actorSignature,
+  type LinkedActor,
+  type ModuleEntry,
   BESTIARY_CATEGORIES,
   booksIn,
   filterEntries,
@@ -113,18 +116,52 @@ async function packEntries() {
 async function loadEntries(style: string | undefined) {
   const world = game.actors.contents.map((actor: any) => actorEntry(actor, 'world')).filter(Boolean) as BestiaryEntry[]
   const pack = await packEntries().catch((error) => (console.error('CrawlSpace | bestiary compendiums', error), []))
-  const modules: BestiaryEntry[] = []
+  const modules: ModuleEntry[] = []
   for (const source of sources.values()) {
     try {
-      for (const entry of await source.load(style)) modules.push({ ...entry, id: String(entry.id), source: source.id, key: `${source.id}:${entry.id}` })
+      for (const entry of await source.load(style)) {
+        const full: ModuleEntry = { ...entry, id: String(entry.id), source: source.id, key: `${source.id}:${entry.id}` }
+        full.statUuid = (await source.statActor?.(full)) || null
+        modules.push(full)
+      }
     } catch (error) {
       console.error(`CrawlSpace | bestiary source ${source.id}`, error)
       ui.notifications.error(t('SourceFailed', { source: source.label }))
     }
   }
-  const actors = game.actors.contents.map((actor: any) => ({ uuid: actor.uuid, img: actor.img, link: actorLink(actor) }))
+  const statUuids = new Set(modules.map((entry) => entry.statUuid).filter(Boolean))
+  const actors: LinkedActor[] = []
+  for (const actor of game.actors.contents) {
+    if (!actorCategory(actor)) continue
+    const link = actorLink(actor)
+    const sourceUuid = compendiumSource(actor)
+    // Only copies of a module's mobs are compared with their compendium actor.
+    if (!link && !(sourceUuid && statUuids.has(sourceUuid))) continue
+    actors.push({ uuid: actor.uuid, name: actor.name, img: actor.img, link, sourceUuid, changed: sourceUuid ? await changedFrom(actor, sourceUuid) : false })
+  }
   const merged = mergeEntries([...world, ...pack], modules, actors)
-  return { entries: [...merged.homebrew, ...merged.modules], originals: new Map(modules.map((entry) => [entry.key, entry])) }
+  return { entries: [...merged.homebrew, ...merged.modules], originals: new Map(modules.map(({ statUuid: _stat, ...entry }) => [entry.key, entry as BestiaryEntry])) }
+}
+
+/** The compendium actor a world actor was imported from. */
+function compendiumSource(actor: any): string | null {
+  const uuid = actor._stats?.compendiumSource ?? actor.flags?.core?.sourceId
+  return typeof uuid === 'string' && uuid.startsWith('Compendium.') ? uuid : null
+}
+
+/** Compendium actors' signatures, by UUID (dropped when that compendium actor changes). */
+const sourceSignatures = new Map<string, string>()
+
+/** Whether an imported actor's data differs from the compendium actor it came from (a missing source: unchanged). */
+async function changedFrom(actor: any, sourceUuid: string) {
+  let signature = sourceSignatures.get(sourceUuid)
+  if (signature === undefined) {
+    const source: any = await fromUuid(sourceUuid).catch(() => null)
+    if (!source) return false
+    signature = actorSignature(source.toObject())
+    sourceSignatures.set(sourceUuid, signature)
+  }
+  return actorSignature(actor.toObject()) !== signature
 }
 
 /** The stat block's HTML. */
@@ -366,7 +403,7 @@ export class BestiaryApp extends ApplicationV2 {
     if (hasStats) actions.push(button('statBlock', 'fa-solid fa-table-list', t('StatBlock')))
     const open = this.open.has(entry.key)
     const drag = entry.actorUuid && !this.actor ? ` draggable="true" data-uuid="${esc(entry.actorUuid)}" data-tooltip="${esc(t('DragHint'))}" data-tooltip-direction="UP"` : ''
-    const origin = source ? source.label : entry.source === 'pack' ? entry.book : t('View.homebrew')
+    const origin = [source ? source.label : entry.source === 'pack' ? entry.book : t('View.homebrew'), entry.basedOn ? t('ChangedFrom', { name: entry.basedOn }) : ''].filter(Boolean).join(' · ')
     const sections = (entry.sections ?? [])
       .filter((section) => section.text)
       .map((section, index) => `<div class="${index ? 'bestiary-profile' : ''}"><div class="bestiary-label">${esc(section.label)}</div><div class="bestiary-desc">${esc(section.text)}</div></div>`)
@@ -550,7 +587,18 @@ export const bestiaryApi = {
 
 export function registerBestiary() {
   // Compendium actors fire these too.
-  for (const hook of ['createActor', 'updateActor', 'deleteActor']) Hooks.on(hook, refreshBestiaries)
+  for (const hook of ['createActor', 'updateActor', 'deleteActor'])
+    Hooks.on(hook, (actor: any) => {
+      if (actor.pack) sourceSignatures.delete(actor.uuid)
+      refreshBestiaries()
+    })
+  // An actor's items and effects are part of its stat block, and of whether it's changed from its book entry.
+  for (const hook of ['createItem', 'updateItem', 'deleteItem', 'createActiveEffect', 'updateActiveEffect', 'deleteActiveEffect'])
+    Hooks.on(hook, (document: any) => {
+      if (document.parent?.documentName !== 'Actor') return
+      if (document.parent.pack) sourceSignatures.delete(document.parent.uuid)
+      refreshBestiaries()
+    })
 
   Hooks.on('renderActorDirectory', (_app: any, html: HTMLElement) => {
     if (!game.user.isGM || html.querySelector('.crawlspace-bestiary-open')) return

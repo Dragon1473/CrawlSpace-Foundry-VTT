@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { actorCategory, actorLink, booksIn, filterEntries, mergeEntries, statBlockOf } from '../src/rules/bestiary.ts'
+import { actorCategory, actorLink, actorSignature, booksIn, filterEntries, mergeEntries, statBlockOf } from '../src/rules/bestiary.ts'
 
 const entry = (source, id, name, extra = {}) => ({ key: `${source}:${id}`, source, id: String(id), name, category: 'Mob', ...extra })
 const filters = (extra = {}) => ({ search: '', category: 'main', view: 'all', book: '', ...extra })
@@ -34,6 +34,66 @@ test('a module entry takes over the world actor made from it, with that actor’
   assert.equal(merged.modules[0].img, 'mine.webp')
   assert.equal(merged.modules[0].pixelArt, false, 'a new portrait is not pixel art')
   assert.equal(merged.modules[1].actorUuid, undefined)
+})
+
+test('a mob imported from the game compendium shows once, as its book entry, until it’s changed', () => {
+  const stat = 'Compendium.crawlspace-content.mobs.Actor.gob'
+  const homebrew = [entry('world', 'Actor.a', 'Goblin', { actorUuid: 'Actor.a' }), entry('world', 'Actor.b', 'Goblin', { actorUuid: 'Actor.b' })]
+  const modules = [entry('crawlspace-bestiary', 7, 'Goblin', { img: 'book.webp', statUuid: stat }), entry('crawlspace-bestiary', 9, 'Goblin Chief', { statUuid: 'Compendium.x.y.Actor.chief' })]
+  const unchanged = mergeEntries(homebrew.slice(0, 1), modules, [{ uuid: 'Actor.a', name: 'Goblin', img: 'icon.webp', link: null, sourceUuid: stat, changed: false }])
+  assert.deepEqual(unchanged.homebrew, [], 'not listed twice')
+  assert.equal(unchanged.modules[0].actorUuid, 'Actor.a')
+  assert.equal('statUuid' in unchanged.modules[0], false)
+
+  const changed = mergeEntries(homebrew.slice(0, 1), modules, [{ uuid: 'Actor.a', name: 'Goblin', link: null, sourceUuid: stat, changed: true }])
+  assert.equal(changed.homebrew.length, 1, 'the changed version is listed')
+  assert.equal(changed.homebrew[0].basedOn, 'Goblin')
+  assert.equal(changed.modules[0].actorUuid, undefined, 'and the original is the book’s again')
+  assert.equal(changed.modules[0].img, 'book.webp')
+
+  const twice = mergeEntries(homebrew, modules, [
+    { uuid: 'Actor.a', name: 'Goblin', link: null, sourceUuid: stat, changed: false },
+    { uuid: 'Actor.b', name: 'Goblin', link: null, sourceUuid: stat, changed: false },
+  ])
+  assert.deepEqual(twice.homebrew, [], 'two untouched imports are still the one mob')
+})
+
+test('a bestiary-made actor that’s been edited splits off from its entry too', () => {
+  const homebrew = [entry('world', 'Actor.a', 'Goblin', { actorUuid: 'Actor.a' })]
+  const modules = [entry('crawlspace-bestiary', 7, 'Goblin')]
+  const merged = mergeEntries(homebrew, modules, [{ uuid: 'Actor.a', name: 'Goblin', link: { source: 'crawlspace-bestiary', id: '7' }, changed: true }])
+  assert.equal(merged.homebrew[0].basedOn, 'Goblin')
+  assert.equal(merged.modules[0].actorUuid, undefined)
+})
+
+test('an import is unchanged when only its ids, portrait, token, flags or damage taken differ', () => {
+  const source = {
+    _id: 'src',
+    name: 'Goblin',
+    img: 'a.webp',
+    system: { level: 2, slotsLost: 0, attacks: [{ name: 'Shiv', damage: '1d6' }] },
+    items: [
+      { _id: 'i1', name: 'Club', system: { damage: '1d4' } },
+      { _id: 'i2', name: 'Rags', system: {} },
+    ],
+    effects: [],
+    prototypeToken: { texture: { src: 'a.webp' } },
+    flags: {},
+    _stats: { createdTime: 1 },
+  }
+  const copy = structuredClone(source)
+  Object.assign(copy, { _id: 'new', img: 'b.webp', prototypeToken: { texture: { src: 'c.webp' } }, flags: { crawlspace: { bestiary: { id: 7 } } }, _stats: { createdTime: 2 } })
+  copy.system.slotsLost = 2
+  copy.items = [{ ...copy.items[1], _id: 'x' }, { ...copy.items[0], _id: 'y' }]
+  assert.equal(actorSignature(copy), actorSignature(source))
+  copy.system.level = 3
+  assert.notEqual(actorSignature(copy), actorSignature(source), 'a sheet change')
+  copy.system.level = 2
+  copy.items[0].system = { note: 'new' }
+  assert.notEqual(actorSignature(copy), actorSignature(source), 'an item change')
+  copy.items[0].system = {}
+  copy.name = 'Goblin Boss'
+  assert.notEqual(actorSignature(copy), actorSignature(source), 'renamed')
 })
 
 test('an actor linked to a module that isn’t installed stays homebrew', () => {
