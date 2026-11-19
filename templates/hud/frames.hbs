@@ -3,6 +3,7 @@
   <header class="crawl-frames-head" data-tooltip="{{localize 'CRAWLSPACE.Frames.DragHint'}}">
     <i class="fa-solid fa-grip-vertical"></i>
     <span>{{partyName}}</span>
+    <a data-action="partyScreen" data-tooltip="{{localize 'CRAWLSPACE.PartyScreen.Open'}}" aria-label="{{localize 'CRAWLSPACE.PartyScreen.Open'}}"><i class="fa-solid fa-users-viewfinder"></i></a>
     {{#if gm}}<a data-action="parties" data-tooltip="{{localize 'CRAWLSPACE.Party.Title'}}" aria-label="{{localize 'CRAWLSPACE.Party.Title'}}"><i class="fa-solid fa-people-group"></i></a>{{/if}}
     <a data-action="toggle" data-tooltip="{{#if collapsed}}{{localize 'CRAWLSPACE.Frames.Show'}}{{else}}{{localize 'CRAWLSPACE.Frames.Hide'}}{{/if}}"><i class="fa-solid fa-chevron-{{#if collapsed}}down{{else}}up{{/if}}"></i></a>
   </header>

@@ -1,0 +1,97 @@
+{{!-- Party screen, Overview tab (apps/party-screen.ts): a big crawler frame per party crawler, then the party's skills and spells. --}}
+<section class="tab party-overview {{tab.cssClass}}" data-group="{{tab.group}}" data-tab="{{tab.id}}">
+  {{#unless members.length}}<p class="hint">{{localize "CRAWLSPACE.PartyScreen.NoMembers"}}</p>{{/unless}}
+  <div class="party-members">
+    {{#each members as |member|}}
+    <article class="party-member {{#if member.expanded}}expanded{{/if}} {{#if member.leader}}leader{{/if}}" data-member-id="{{member.id}}" data-uuid="{{member.uuid}}">
+      <div class="member-main">
+        <a class="member-token" {{#if member.canOpen}}data-action="openSheet" data-tooltip="{{localize 'CRAWLSPACE.PartyScreen.OpenSheet'}}"{{/if}}><img src="{{member.img}}" alt="{{member.name}}"></a>
+        <div class="member-body">
+          <h3 class="member-name">
+            {{#if member.leader}}<i class="fa-solid fa-crown member-crown" data-tooltip="{{localize 'CRAWLSPACE.PartyScreen.Leader'}}" aria-label="{{localize 'CRAWLSPACE.PartyScreen.Leader'}}"></i>{{/if}}
+            <a data-action="toggleMember" data-tooltip="{{#if member.expanded}}{{localize 'CRAWLSPACE.PartyScreen.HideDetails'}}{{else}}{{localize 'CRAWLSPACE.PartyScreen.ShowDetails'}}{{/if}}" aria-expanded="{{#if member.expanded}}true{{else}}false{{/if}}">{{member.name}} <i class="fa-solid fa-chevron-{{#if member.expanded}}up{{else}}down{{/if}}"></i></a>
+            {{#if member.marks.length}}<span class="frame-marks" data-tooltip="{{member.marksTooltip}}" aria-label="{{member.marksLabel}}">{{#each member.marks as |mark|}}<span class="frame-mark mark-{{mark.tier}}"><i class="fa-solid fa-{{mark.icon}}"></i><b>x{{mark.count}}</b></span>{{/each}}</span>{{/if}}
+          </h3>
+          <div class="member-line">
+            <span>{{localize "CRAWLSPACE.Crawler.Level"}} <b>{{member.level}}</b></span>
+            <span>{{member.race}}</span>
+            <span>{{member.className}}</span>
+          </div>
+          <div class="member-bars">
+            <div class="frame-health" data-tooltip="{{localize 'CRAWLSPACE.Stat.Health'}}: {{member.health.pct}}%"><div class="fill" style="width: {{member.health.pct}}%; background-color: {{member.health.color}}"></div><span>{{member.health.pct}}%</span></div>
+            <div class="frame-mana" data-tooltip="{{localize 'CRAWLSPACE.Stat.Mana'}}: {{member.mana.value}} / {{member.mana.max}}"><div class="fill" style="width: {{member.mana.pct}}%"></div><span>{{member.mana.value}} / {{member.mana.max}}</span></div>
+          </div>
+        </div>
+        <div class="member-numbers">
+          <div class="member-defense"><span class="value">{{member.evade}}</span><small>{{localize "CRAWLSPACE.Stat.Evade"}}</small></div>
+          <div class="member-defense"><span class="value">{{member.dr}}</span><small>{{localize "CRAWLSPACE.Stat.DR"}}</small></div>
+          {{#each member.stats as |stat|}}
+          <div class="member-stat" data-tooltip="{{stat.label}}: {{stat.total}} ({{localize 'CRAWLSPACE.PartyScreen.Unenhanced'}} {{stat.base}})"><span class="value">{{stat.total}}</span><small>{{stat.code}}</small></div>
+          {{/each}}
+          <div class="member-stat unenhanced" data-tooltip="{{localize 'CRAWLSPACE.PartyScreen.UnenhancedHint'}}"><span class="value">{{member.unenhanced}}</span><small>{{localize "CRAWLSPACE.PartyScreen.Base"}}</small></div>
+        </div>
+      </div>
+      {{> crawlPartyBadges effects=member.effects}}
+      {{#if member.details}}
+      <div class="member-details">
+        <div class="member-facts">
+          <span>{{localize "CRAWLSPACE.Crawler.AiFavor"}} <b>{{member.details.aiFavor}}</b></span>
+          <span>{{localize "CRAWLSPACE.PartyScreen.Popularity"}} <b>{{member.details.popularity}}</b></span>
+        </div>
+        <div class="member-traits">
+          <div><h4>{{localize "CRAWLSPACE.PartyScreen.Immunities"}}</h4>{{#each member.details.immunities}}<span class="trait-chip">{{this}}</span>{{else}}<span class="none">—</span>{{/each}}</div>
+          <div><h4>{{localize "CRAWLSPACE.PartyScreen.Vulnerabilities"}}</h4>{{#each member.details.vulnerabilities}}<span class="trait-chip">{{this}}</span>{{else}}<span class="none">—</span>{{/each}}</div>
+          <div><h4>{{localize "CRAWLSPACE.PartyScreen.Resistances"}}</h4>{{#each member.details.resistances}}<span class="trait-chip">{{this}}</span>{{else}}<span class="none">—</span>{{/each}}</div>
+        </div>
+        <div class="member-columns">
+          <div class="member-doll">{{> "systems/crawlspace/templates/actor/paper-doll.hbs" doll=member.details.doll document=member}}</div>
+          <div class="member-lists">
+            <h4>{{localize "CRAWLSPACE.PartyScreen.Skills"}}</h4>
+            <ul>{{#each member.details.skills as |skill|}}<li><img src="{{skill.img}}" alt=""><span>{{skill.name}}</span><b>{{skill.rankLabel}}</b></li>{{else}}<li class="none">—</li>{{/each}}</ul>
+            <h4>{{localize "CRAWLSPACE.PartyScreen.Spells"}}</h4>
+            <ul>{{#each member.details.spells as |spell|}}<li><img src="{{spell.img}}" alt=""><span>{{spell.name}}</span><b>{{spell.rankLabel}}</b></li>{{else}}<li class="none">—</li>{{/each}}</ul>
+          </div>
+        </div>
+      </div>
+      {{/if}}
+      {{#if member.followers.length}}
+      <div class="member-followers">
+        {{#each member.followers as |follower|}}
+        <div class="frame-follower" data-uuid="{{follower.uuid}}">
+          <div class="follower-line"><a data-action="openSheet">{{follower.name}}</a> <small>{{follower.kind}}</small></div>
+          <div class="frame-health small" data-tooltip="{{localize 'CRAWLSPACE.Stat.Health'}}: {{follower.health.value}}/{{follower.health.max}}">
+            <div class="fill" style="width: {{follower.pct}}%; background-color: {{follower.color}}"></div>
+            <span>{{follower.health.value}}/{{follower.health.max}}</span>
+          </div>
+          {{> crawlPartyBadges effects=follower.effects}}
+        </div>
+        {{/each}}
+      </div>
+      {{/if}}
+    </article>
+    {{/each}}
+  </div>
+
+  {{#if (or partySkills.length partySpells.length)}}
+  <section class="party-skills">
+    {{#if partySkills.length}}
+    <h3>{{localize "CRAWLSPACE.PartyScreen.PartySkills"}}</h3>
+    <div class="party-chips">{{#each partySkills as |skill|}}<span class="party-chip" data-tooltip-html="{{skill.tooltip}}">{{skill.label}}</span>{{/each}}</div>
+    {{/if}}
+    {{#if partySpells.length}}
+    <h3>{{localize "CRAWLSPACE.PartyScreen.PartySpells"}}</h3>
+    <div class="party-chips">{{#each partySpells as |spell|}}<span class="party-chip spell" data-tooltip-html="{{spell.tooltip}}">{{spell.label}}</span>{{/each}}</div>
+    {{/if}}
+  </section>
+  {{/if}}
+</section>
+
+{{#*inline "crawlPartyBadges"}}
+{{#if effects.length}}
+<div class="frame-effects">
+  {{#each effects as |effect|}}
+  <span class="frame-effect {{effect.kind}}" data-tooltip="{{effect.tooltip}}"><img src="{{effect.img}}" alt="{{effect.name}}">{{#if effect.stacks}}<b>{{effect.stacks}}</b>{{/if}}</span>
+  {{/each}}
+</div>
+{{/if}}
+{{/inline}}

@@ -24,11 +24,8 @@ export function flavorText(system: { flavor?: string; description?: string } | n
   return text.length > FLAVOR_LIMIT ? `${text.slice(0, FLAVOR_LIMIT - 1).trimEnd()}…` : text
 }
 
-/**
- * A crawler's card (crawlerTooltip.ts): number, name, level, race and class, then its own flavor text if it has
- * any.
- */
-export function crawlerFlavorText(details: Record<string, unknown> | null | undefined, name: string, flavor = '') {
+/** A crawler's card (crawlerTooltip.ts): number, name, level, race and class, nothing more. */
+export function crawlerFlavorText(details: Record<string, unknown> | null | undefined, name: string) {
   const field = (key: string) => String(details?.[key] ?? '').trim()
   const digits = field('crawlerNumber').replace(/^#/, '')
   const plain = digits.replaceAll(',', '')
@@ -40,6 +37,5 @@ export function crawlerFlavorText(details: Record<string, unknown> | null | unde
     `Race: ${field('race') || 'Not yet assigned'}`,
     `Class: ${field('className') || 'Not yet assigned'}`,
   ]
-  const extra = String(flavor ?? '').trim()
-  return extra ? `${lines.join('\n')}\n\n${extra}` : lines.join('\n')
+  return lines.join('\n')
 }

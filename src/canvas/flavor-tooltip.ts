@@ -1,5 +1,5 @@
 /**
- * Hold Shift while hovering a token to read its actor's flavor text (a crawler shows its System card) (the app's TokenFlavorTooltip): a card above
+ * Hold Shift while hovering a token to read its actor's flavor text (a crawler shows only its System card: number, name, level, race and class) (the app's TokenFlavorTooltip): a card above
  * the token when it fits, otherwise below, always kept on screen. It sits on the page, not the canvas, so fog and
  * zoom can't hide or shrink it.
  */
@@ -19,7 +19,7 @@ function show() {
   const actor = token?.actor
   // A crawler's card is built from its sheet (number, name, level, race, class), like the app's.
   const crawler = actor?.type === 'crawler'
-  const text = !actor ? '' : crawler ? crawlerFlavorText(actor.system.details, actor.name, actor.system.flavor) : flavorText(actor.system)
+  const text = !actor ? '' : crawler ? crawlerFlavorText(actor.system.details, actor.name) : flavorText(actor.system)
   if (!token || !shift || !text || !token.visible) return hide()
   card ??= document.body.appendChild(Object.assign(document.createElement('div'), { id: 'crawl-flavor-tip' }))
   card.className = `crawlspace crawl-flavor-tip${crawler ? ' crawler' : ''}`

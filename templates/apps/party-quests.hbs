@@ -1,0 +1,77 @@
+{{!-- Party screen, Quests tab (apps/party-screen.ts): the quest list (name and reward), and the chosen quest. Players read its summary; the GM edits every section. --}}
+<section class="tab party-quests {{tab.cssClass}}" data-group="{{tab.group}}" data-tab="{{tab.id}}">
+  <div class="quest-list">
+    {{#if gm}}<button type="button" class="quest-add" data-action="addQuest"><i class="fa-solid fa-plus"></i> {{localize "CRAWLSPACE.PartyScreen.AddQuest"}}</button>{{/if}}
+    <ul>
+      {{#each quests as |quest|}}
+      <li class="quest-row status-{{quest.status}} {{#if quest.active}}active{{/if}}" data-quest-id="{{quest.id}}">
+        <a data-action="selectQuest">
+          <span class="quest-name">{{quest.name}}</span>
+          {{#if quest.reward}}<span class="quest-reward"><i class="fa-solid fa-gift"></i> {{quest.reward}}</span>{{/if}}
+          {{#if (or @root.gm (crawlEq quest.status "completed"))}}<small class="quest-status">{{quest.statusLabel}}</small>{{/if}}
+        </a>
+      </li>
+      {{else}}
+      <li class="none">{{#if gm}}{{localize "CRAWLSPACE.PartyScreen.NoQuestsGM"}}{{else}}{{localize "CRAWLSPACE.PartyScreen.NoQuests"}}{{/if}}</li>
+      {{/each}}
+    </ul>
+  </div>
+  <div class="quest-detail">
+    {{#if quest}}
+    {{#if gm}}
+    <input type="hidden" name="questId" value="{{quest.id}}">
+    <div class="quest-head">
+      <label class="quest-field grow"><span>{{localize "CRAWLSPACE.PartyScreen.QuestName"}}</span><input type="text" name="quest.name" value="{{quest.name}}"></label>
+      <label class="quest-field"><span>{{localize "CRAWLSPACE.PartyScreen.StatusLabel"}}</span><select name="quest.status">{{#each statuses as |status|}}<option value="{{status.value}}" {{#if status.selected}}selected{{/if}}>{{status.label}}</option>{{/each}}</select></label>
+      <button type="button" class="icon" data-action="deleteQuest" data-tooltip="{{localize 'CRAWLSPACE.PartyScreen.DeleteTitle'}}" aria-label="{{localize 'CRAWLSPACE.PartyScreen.DeleteTitle'}}"><i class="fa-solid fa-trash"></i></button>
+    </div>
+    <label class="quest-field"><span>{{localize "CRAWLSPACE.PartyScreen.Reward"}}</span><input type="text" name="quest.reward" value="{{quest.reward}}" placeholder="{{localize 'CRAWLSPACE.PartyScreen.RewardHint'}}"></label>
+    {{else}}
+    <h2>{{quest.displayName}}</h2>
+    {{#if quest.reward}}<p class="quest-reward"><i class="fa-solid fa-gift"></i> {{quest.reward}}</p>{{/if}}
+    {{/if}}
+
+    {{#each sections as |section|}}
+    <section class="quest-section quest-{{section.key}}">
+      <h3>{{section.label}}</h3>
+      {{#if section.text}}
+        {{#if @root.gm}}<prose-mirror name="quest.{{section.key}}" value="{{section.raw}}" toggled>{{{section.enriched}}}</prose-mirror>
+        {{else}}<div class="quest-text">{{{section.enriched}}}</div>{{/if}}
+      {{/if}}
+      {{#if section.isStages}}
+      <ol class="quest-stages">
+        {{#each section.stages as |stage|}}
+        <li data-stage-id="{{stage.id}}">
+          <input type="checkbox" name="quest.stages.{{stage.id}}.done" {{#if stage.done}}checked{{/if}} aria-label="{{localize 'CRAWLSPACE.PartyScreen.StageDone'}}">
+          <input type="text" name="quest.stages.{{stage.id}}.text" value="{{stage.text}}" placeholder="{{localize 'CRAWLSPACE.PartyScreen.StageHint'}}">
+          <a data-action="removeStage" data-tooltip="{{localize 'CRAWLSPACE.PartyScreen.Remove'}}" aria-label="{{localize 'CRAWLSPACE.PartyScreen.Remove'}}"><i class="fa-solid fa-xmark"></i></a>
+        </li>
+        {{/each}}
+      </ol>
+      <button type="button" data-action="addStage"><i class="fa-solid fa-plus"></i> {{localize "CRAWLSPACE.PartyScreen.AddStage"}}</button>
+      {{/if}}
+      {{#each section.groups as |group|}}
+      <div class="quest-links" data-link-key="{{group.key}}">
+        <div class="quest-links-head">
+          <h4>{{group.label}}</h4>
+          <button type="button" data-action="addLink"><i class="fa-solid fa-plus"></i> {{localize "CRAWLSPACE.PartyScreen.Add"}}</button>
+        </div>
+        <ul>
+          {{#each group.links as |link|}}
+          <li data-link-uuid="{{link.uuid}}">
+            <a data-action="openLink"><img src="{{#if link.img}}{{link.img}}{{else}}icons/svg/mystery-man.svg{{/if}}" alt=""><span>{{link.name}}</span></a>
+            <a class="remove" data-action="removeLink" data-tooltip="{{localize 'CRAWLSPACE.PartyScreen.Remove'}}" aria-label="{{localize 'CRAWLSPACE.PartyScreen.Remove'}}"><i class="fa-solid fa-xmark"></i></a>
+          </li>
+          {{else}}
+          <li class="none">{{localize "CRAWLSPACE.PartyScreen.DropHint"}}</li>
+          {{/each}}
+        </ul>
+      </div>
+      {{/each}}
+    </section>
+    {{/each}}
+    {{else}}
+    <p class="hint">{{#if quests.length}}{{localize "CRAWLSPACE.PartyScreen.PickQuest"}}{{else if gm}}{{localize "CRAWLSPACE.PartyScreen.NoQuestsGM"}}{{else}}{{localize "CRAWLSPACE.PartyScreen.NoQuests"}}{{/if}}</p>
+    {{/if}}
+  </div>
+</section>

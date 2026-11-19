@@ -87,11 +87,11 @@ test('flavor text: its own field first, else the description as plain text, capp
   assert.ok(long.endsWith('…'))
 })
 
-test('a crawler card reads like the app: number, name, level, race, class (no periods)', () => {
+test('a crawler card reads like the app: number, name, level, race, class (no periods), never flavor text', () => {
   assert.equal(
     crawlerFlavorText({ crawlerNumber: '6125891', level: 5, race: 'Human', className: '' }, 'Heath'),
     'Crawler #6,125,891 “Heath”\nLevel 5\nRace: Human\nClass: Not yet assigned',
   )
   assert.equal(crawlerFlavorText({}, ''), 'Crawler #???\nLevel ???\nRace: Not yet assigned\nClass: Not yet assigned')
-  assert.equal(crawlerFlavorText({ crawlerNumber: '#9,160,223', level: 3, race: 'Dwarf', className: 'Alchemist' }, 'Carl', 'Wears no pants.').split('\n').at(-1), 'Wears no pants.')
+  assert.equal(crawlerFlavorText({ crawlerNumber: '#9,160,223', level: 3, race: 'Dwarf', className: 'Alchemist' }, 'Carl', 'Wears no pants.').split('\n').at(-1), 'Class: Alchemist')
 })

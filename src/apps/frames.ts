@@ -10,6 +10,7 @@ import { clickCondition, isStackable } from '../effects/stacks'
 import { openParties, partyCrawlers, playerPartyLabel } from '../actors/party'
 import { crawlerMarks, framePlayers } from '../rules/crawler-marks'
 import { healthColor } from '../rules/boss-bar'
+import { openPartyScreen, refreshPartyScreen, registerPartyScreen } from './party-screen'
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api
 
@@ -46,7 +47,7 @@ function badge(effect: any, shields: any[] = []) {
 }
 
 /** Skulls and stars by the name, unless this user hid them. */
-function marksOf(actor: any) {
+export function marksOf(actor: any) {
   if (!game.settings.get('crawlspace', 'crawlerMarks')) return { marks: [], marksTooltip: '', marksLabel: '' }
   const marks = crawlerMarks(actor.system.kills)
   const lines = marks.map((mark) => `${game.i18n.localize(`CRAWLSPACE.Marks.Kind.${mark.key}`)}: ${mark.count}`)
@@ -55,10 +56,27 @@ function marksOf(actor: any) {
 
 const shieldText = (shield: any) => (shield ? game.i18n.format('CRAWLSPACE.Effect.ShieldCount', { remaining: shield.remaining, perSlot: shield.perSlot }) : '')
 
-const conditionsOf = (actor: any) => {
+export const conditionsOf = (actor: any) => {
   const shields = actor.conditionShields?.() ?? []
   // Cooldowns aren't conditions: they stay on the sheet's Cooldowns list.
   return actor.effects.contents.filter((effect: any) => effect.active && !effect.flags?.crawlspace?.build && !effect.flags?.crawlspace?.cooldownKey).map((effect: any) => badge(effect, shields))
+}
+
+/** A crawler's pets, mounts and minions as frames show them (the party screen shows them the same way). */
+export function followerFrames(actor: any) {
+  return followersOf(actor).map((follower: any) => {
+    const health = follower.system.health
+    const percent = health.max > 0 ? Math.floor((health.value / health.max) * 100) : 0
+    return {
+      uuid: follower.uuid,
+      name: follower.name,
+      kind: game.i18n.localize(`CRAWLSPACE.Companion.${followerKind(follower)}`),
+      health,
+      pct: percent,
+      color: healthColor(percent),
+      effects: conditionsOf(follower),
+    }
+  })
 }
 
 class CrawlerFrames extends HandlebarsApplicationMixin(ApplicationV2) {
@@ -71,6 +89,7 @@ class CrawlerFrames extends HandlebarsApplicationMixin(ApplicationV2) {
       toggle: CrawlerFrames.#onToggle,
       openSheet: CrawlerFrames.#onOpenSheet,
       parties: () => openParties(),
+      partyScreen: () => openPartyScreen(),
     },
   }
 
@@ -102,19 +121,7 @@ class CrawlerFrames extends HandlebarsApplicationMixin(ApplicationV2) {
         details: gm
           ? { evade: system.evade.total, dr: system.dr.total, level: system.details?.level ?? system.level, race: system.details?.race || '—', className: system.details?.className || '—' }
           : null,
-        followers: followersOf(actor).map((follower: any) => {
-          const health = follower.system.health
-          const percent = health.max > 0 ? Math.floor((health.value / health.max) * 100) : 0
-          return {
-            uuid: follower.uuid,
-            name: follower.name,
-            kind: game.i18n.localize(`CRAWLSPACE.Companion.${followerKind(follower)}`),
-            health,
-            pct: percent,
-            color: healthColor(percent),
-            effects: conditionsOf(follower),
-          }
-        }),
+        followers: followerFrames(actor),
       }
     })
     return { frames, gm, collapsed, partyName: playerPartyLabel() }
@@ -255,7 +262,11 @@ export function registerFrames() {
     // After the floor timer has drawn, so the default spot sits under it.
     setTimeout(() => frames?.render(true), 250)
   })
-  const refresh = foundry.utils.debounce(() => frames?.rendered && frames.render(), 100)
+  registerPartyScreen()
+  const refresh = foundry.utils.debounce(() => {
+    if (frames?.rendered) frames.render()
+    refreshPartyScreen()
+  }, 100)
   const changed = (actor: any) => actor?.documentName === 'Actor' && refresh()
   // Bookkeeping flags (the regeneration counter ticks every second) don't change what a frame shows.
   const quiet = (changes: any) => {
