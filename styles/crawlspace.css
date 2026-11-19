@@ -4300,7 +4300,11 @@
   .crawl-party-screen .quest-field { display: flex; flex-direction: column; gap: 2px; }
   .crawl-party-screen .quest-field.grow { flex: 1; }
   .crawl-party-screen .quest-section h3 { margin: 4px 0; }
-  .crawl-party-screen .quest-section prose-mirror { min-height: 60px; }
+  /* Sections keep their height in the scrolling column, and each editor has room to write in. */
+  .crawl-party-screen .quest-detail > * { flex: none; }
+  .crawl-party-screen .quest-section prose-mirror { min-height: 120px; }
+  .crawl-party-screen .quest-section prose-mirror.active { display: flex; flex-direction: column; height: 320px; min-height: 0; resize: vertical; overflow: hidden; }
+  .crawl-party-screen .quest-section prose-mirror.active .editor-content { flex: 1; min-height: 0; overflow-y: auto; }
   .crawl-party-screen .quest-links { margin-bottom: 6px; padding: 4px 6px; border: 1px dashed rgb(131 223 255 / 45%); border-radius: 4px; }
   .crawl-party-screen .quest-links.drop-hover { border-color: var(--hud-cyan); background: var(--crawl-accent-soft); }
   .crawl-party-screen .quest-links-head { display: flex; align-items: center; justify-content: space-between; gap: 6px; }

@@ -1686,6 +1686,7 @@
     "PartyScreen": {
       "Title": "Party",
       "Open": "Party screen",
+      "KeybindHint": "Opens the party screen.",
       "Tab": {
         "overview": "Overview",
         "quests": "Quests"

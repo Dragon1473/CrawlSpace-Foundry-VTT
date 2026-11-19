@@ -409,6 +409,15 @@ export function refreshPartyScreen() {
 
 export function registerPartyScreen() {
   game.settings.register('crawlspace', 'quests', { scope: 'world', config: false, type: Array, default: [], onChange: () => screen()?.refreshPart('quests') })
+  game.keybindings.register('crawlspace', 'partyScreen', {
+    name: 'CRAWLSPACE.PartyScreen.Open',
+    hint: 'CRAWLSPACE.PartyScreen.KeybindHint',
+    editable: [{ key: 'KeyP' }],
+    onDown: () => {
+      openPartyScreen()
+      return true
+    },
+  })
   Hooks.on('getSceneControlButtons', (controls: any) => {
     const tokens = controls.tokens
     if (!tokens?.tools) return
