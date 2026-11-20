@@ -7,6 +7,7 @@ import { CrawlRoll } from './dice/crawl-roll'
 import { openGrinding } from './apps/grinding'
 import { openAwards } from './apps/awards'
 import { registerImmunity } from './effects/immunity'
+import { registerGrantedSkills } from './actors/granted-skills'
 import { openTime, registerClock, registerTimePickers } from './apps/time'
 import { registerFrames } from './apps/frames'
 import { registerBossBattle, startBossBattle } from './apps/boss-battle'
@@ -264,6 +265,7 @@ Hooks.once('ready', () => {
   registerSocket()
   registerTime()
   registerImmunity()
+  registerGrantedSkills()
 })
 
 /** Dragging an owned item to the hotbar makes a macro that uses it. */
@@ -278,9 +280,22 @@ Hooks.on('hotbarDrop', (_bar: any, data: any, slot: number) => {
 async function createRowMacro(data: any, slot: number) {
   const use = data.type === 'CrawlAttack' ? 'useAttack' : 'useAction'
   const command = `game.crawlspace.${use}(${JSON.stringify(data.actorUuid)}, ${JSON.stringify(data.id)}, { fast: event?.shiftKey });`
-  let macro = game.macros.find((entry: any) => entry.command === command)
-  macro ??= await foundry.documents.Macro.implementation.create({ name: data.name, type: 'script', img: data.img || 'icons/svg/sword.svg', command, flags: { crawlspace: { rowMacro: true } } })
-  game.user.assignHotbarMacro(macro, slot)
+  const macro = await hotbarMacro(command, { name: data.name, img: data.img || 'icons/svg/sword.svg', flags: { crawlspace: { rowMacro: true } } })
+  if (macro) game.user.assignHotbarMacro(macro, slot)
+}
+
+/**
+ * Reuses a macro with this command only when this user can run it; another user's macro (say, the GM's from testing
+ * the same item) would sit on a player's hotbar and refuse to execute. Otherwise makes the user their own.
+ */
+async function hotbarMacro(command: string, data: { name: string; img: string; flags: object }) {
+  const own = game.macros.find((entry: any) => entry.command === command && entry.canExecute)
+  if (own) return own
+  if (!game.user.can('MACRO_SCRIPT')) {
+    ui.notifications.warn(game.i18n.localize('CRAWLSPACE.Warn.MacroScript'))
+    return null
+  }
+  return foundry.documents.Macro.implementation.create({ ...data, type: 'script', command })
 }
 
 /** Hotbar macros: an Attacks row, or an Actions row, by the actor's UUID and the row's id. */
@@ -302,9 +317,8 @@ async function createItemMacro(data: any, slot: number) {
   const item = await fromUuid(data.uuid)
   if (!item?.actor) return ui.notifications.warn(game.i18n.localize('CRAWLSPACE.Warn.MacroOwned'))
   const command = `const item = await fromUuid(${JSON.stringify(item.uuid)});\nif (item) item.use({ fast: event?.shiftKey });`
-  let macro = game.macros.find((entry: any) => entry.name === item.name && entry.command === command)
-  macro ??= await foundry.documents.Macro.implementation.create({ name: item.name, type: 'script', img: item.img, command, flags: { crawlspace: { itemMacro: true } } })
-  game.user.assignHotbarMacro(macro, slot)
+  const macro = await hotbarMacro(command, { name: item.name, img: item.img, flags: { crawlspace: { itemMacro: true } } })
+  if (macro) game.user.assignHotbarMacro(macro, slot)
 }
 
 /**

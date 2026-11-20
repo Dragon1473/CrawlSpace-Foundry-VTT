@@ -650,6 +650,7 @@
       "NotYours": "You don't own that actor.",
       "NeedGM": "A GM must be connected to do that.",
       "MacroOwned": "That macro needs an item owned by an actor.",
+      "MacroScript": "Your role can't make script macros. The GM can allow it under Configure Permissions → Use Script Macros.",
       "Muted": "{name} is Muted and can't cast.",
       "NoMana": "{name} costs {cost} mana; only {current} left.",
       "NoneLeft": "No {name} left.",
