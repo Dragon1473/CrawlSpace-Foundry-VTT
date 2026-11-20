@@ -7,7 +7,6 @@ import { CrawlRoll } from './dice/crawl-roll'
 import { openGrinding } from './apps/grinding'
 import { openAwards } from './apps/awards'
 import { registerImmunity } from './effects/immunity'
-import { registerGrantedSkills } from './actors/granted-skills'
 import { openTime, registerClock, registerTimePickers } from './apps/time'
 import { registerFrames } from './apps/frames'
 import { registerBossBattle, startBossBattle } from './apps/boss-battle'
@@ -265,7 +264,6 @@ Hooks.once('ready', () => {
   registerSocket()
   registerTime()
   registerImmunity()
-  registerGrantedSkills()
 })
 
 /** Dragging an owned item to the hotbar makes a macro that uses it. */
