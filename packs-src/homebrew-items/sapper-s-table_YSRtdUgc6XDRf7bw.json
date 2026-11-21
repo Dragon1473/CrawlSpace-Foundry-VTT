@@ -1,0 +1,44 @@
+{
+  "name": "Sapper's Table",
+  "type": "craftingTable",
+  "img": "icons/commodities/tech/smoke-bomb-red-yellow.webp",
+  "system": {
+    "notes": "",
+    "source": {
+      "database": "homebrew",
+      "id": null,
+      "book": "",
+      "pages": ""
+    },
+    "quantity": 1,
+    "equipped": false,
+    "broken": false,
+    "tags": [],
+    "rarity": "",
+    "description": "<p>Make explosives, and keep their parts stable.</p>",
+    "category": "sappers",
+    "tier": 1,
+    "upgrades": [],
+    "autoLevel": true
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "craftingStarter": true
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_id": "YSRtdUgc6XDRf7bw",
+  "_key": "!items!YSRtdUgc6XDRf7bw",
+  "folder": "Z1QaPl51zVZjbJdD"
+}

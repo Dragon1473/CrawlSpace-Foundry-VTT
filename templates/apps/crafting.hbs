@@ -1,0 +1,170 @@
+<div class="craft-shell">
+  <header class="craft-top">
+    <nav class="craft-tabs">
+      <a class="{{#if (eq tab 'recipes')}}active{{/if}}" data-action="tab" data-tab="recipes"><i class="fa-solid fa-book-bookmark"></i> {{localize "CRAWLSPACE.Craft.Recipes"}}</a>
+      <a class="{{#if (eq tab 'experiment')}}active{{/if}}" data-action="tab" data-tab="experiment"><i class="fa-solid fa-flask-vial"></i> {{localize "CRAWLSPACE.Craft.Experiment"}}{{#if pending.length}} <span class="craft-count">{{pending.length}}</span>{{/if}}</a>
+    </nav>
+    <span class="craft-approval" data-tooltip="{{localize 'CRAWLSPACE.Craft.ApprovalHint'}}"><i class="fa-solid fa-scale-balanced"></i> {{approval}}</span>
+    {{#if gm}}<button type="button" class="icon" data-action="rules" data-tooltip="{{localize 'CRAWLSPACE.Craft.RulesTitle'}}"><i class="fa-solid fa-sliders"></i></button>{{/if}}
+  </header>
+
+  {{#if (eq tab "recipes")}}
+  <div class="craft-body">
+    <aside class="craft-rail">
+      <ul class="craft-categories">
+        {{#each categories}}
+        <li><a class="{{#if active}}active{{/if}}" data-action="category" data-category="{{id}}"><i class="{{icon}}"></i><span>{{label}}</span><b>{{count}}</b></a></li>
+        {{/each}}
+      </ul>
+      <section class="craft-rail-box">
+        <h4><i class="fa-solid fa-table-cells-large"></i> {{localize "CRAWLSPACE.Craft.YourTables"}}</h4>
+        {{#each tables}}
+        <div class="craft-table-chip"><i class="{{icon}}"></i> {{label}} <span class="craft-tier">{{localize "CRAWLSPACE.Craft.TierShort" tier=tier}}</span></div>
+        {{else}}<p class="hint">{{localize "CRAWLSPACE.Craft.NoTables"}}</p>{{/each}}
+      </section>
+      {{#if books.length}}
+      <section class="craft-rail-box">
+        <h4><i class="fa-solid fa-book"></i> {{localize "CRAWLSPACE.Craft.Books"}}</h4>
+        {{#each books}}
+        <div class="craft-book">
+          <img src="{{img}}" alt="">
+          <span>{{name}}</span>
+          {{#if fresh}}<button type="button" class="craft-mini" data-action="study" data-item-id="{{id}}" data-tooltip="{{localize 'CRAWLSPACE.Craft.StudyHint'}}"><i class="fa-solid fa-book-open-reader"></i> {{localize "CRAWLSPACE.Craft.Study"}}</button>{{else}}<i class="fa-solid fa-check craft-ok" data-tooltip="{{localize 'CRAWLSPACE.Craft.AllLearned'}}"></i>{{/if}}
+        </div>
+        {{/each}}
+      </section>
+      {{/if}}
+    </aside>
+
+    <section class="craft-list">
+      <div class="craft-toolbar">
+        <input type="search" data-craft-search value="{{search}}" placeholder="{{localize 'CRAWLSPACE.Filter.Search'}}">
+        <div class="craft-segment">
+          {{#each filters}}<button type="button" class="{{#if active}}active{{/if}}" data-action="filter" data-filter="{{id}}">{{label}}</button>{{/each}}
+        </div>
+        <label class="check craft-ready-toggle"><input type="checkbox" data-craft-ready {{checked readyOnly}}> {{localize "CRAWLSPACE.Craft.ReadyOnly"}}</label>
+      </div>
+      <ol class="craft-recipes">
+        {{#each recipes}}
+        <li class="craft-recipe status-{{status}}{{#if selected}} selected{{/if}}" data-recipe-row data-key="{{key}}" data-category="{{category}}" data-status="{{status}}" data-search="{{search}}" data-action="select">
+          <img class="{{#if blurred}}blurred{{/if}}" src="{{img}}" alt="">
+          <div class="craft-recipe-text">
+            <strong>{{name}}</strong>
+            <span><i class="{{categoryIcon}}"></i> {{sub}}</span>
+          </div>
+          {{#if secret}}<span class="craft-chip" data-tooltip="{{localize 'CRAWLSPACE.Craft.GmOnlyHint'}}"><i class="fa-solid fa-eye-slash"></i> {{visibilityLabel}}</span>{{/if}}
+          <span class="craft-status">{{statusLabel}}</span>
+        </li>
+        {{/each}}
+      </ol>
+      <p class="craft-empty" data-craft-empty hidden><i class="fa-solid fa-box-open"></i> {{localize "CRAWLSPACE.Craft.NoRecipes"}}</p>
+    </section>
+
+    <section class="craft-detail">
+      {{#with detail}}
+      <div class="craft-output">
+        <img class="{{#if blurred}}blurred{{/if}}" src="{{img}}" alt="" {{#unless blurred}}data-action="openOutput" data-tooltip="{{localize 'CRAWLSPACE.Craft.OpenItem'}}"{{/unless}}>
+        <div>
+          <h3>{{name}}</h3>
+          {{#if recipeName}}<p class="craft-recipe-name">{{recipeName}}</p>{{/if}}
+          <p class="craft-meta"><i class="{{category.icon}}"></i> {{category.label}}{{#if size}} · {{size}}{{/if}} · {{method}}</p>
+        </div>
+      </div>
+
+      {{#unless unlocked}}
+      <div class="craft-locked">
+        <i class="fa-solid fa-lock"></i>
+        <div>
+          {{#if hint}}<p>{{hint}}</p>{{/if}}
+          <p><strong>{{localize "CRAWLSPACE.Craft.UnlocksWhen"}}</strong> {{unlockText}}</p>
+        </div>
+      </div>
+      {{/unless}}
+
+      {{#if (or unlocked gm)}}
+      <div class="craft-stats">
+        <div><span>{{localize "CRAWLSPACE.Craft.Difficulty"}}</span><b>{{difficulty}}</b></div>
+        <div><span>{{localize "CRAWLSPACE.Craft.TableBonusShort"}}</span><b>+{{tableBonus}}</b></div>
+        <div><span>{{localize "CRAWLSPACE.Craft.Time"}}</span><b>{{time}}</b></div>
+        <div><span>{{localize "CRAWLSPACE.Craft.Makes"}}</span><b>×{{makes}}</b></div>
+      </div>
+      {{#if advantage}}<p class="craft-note"><i class="fa-solid fa-angles-up"></i> {{localize "CRAWLSPACE.Craft.WithAdvantage"}}</p>{{/if}}
+
+      {{#if (or skills.length tables.length tools.length)}}
+      <h4>{{localize "CRAWLSPACE.Craft.Requires"}}</h4>
+      <ul class="craft-needs">
+        {{#each skills}}<li class="{{#if ok}}ok{{else}}missing{{/if}}"><i class="fa-solid {{#if ok}}fa-circle-check{{else}}fa-circle-xmark{{/if}}"></i> {{name}} {{rank}}+ <span class="hint">({{localize "CRAWLSPACE.Craft.YouHave" value=have}})</span>{{#if rolled}} <span class="craft-chip">{{localize "CRAWLSPACE.Craft.Rolled"}}</span>{{/if}}</li>{{/each}}
+        {{#each tables}}<li class="{{#if ok}}ok{{else}}missing{{/if}}"><i class="fa-solid {{#if ok}}fa-circle-check{{else}}fa-circle-xmark{{/if}}"></i> <i class="{{icon}}"></i> {{localize "CRAWLSPACE.Craft.TableNeed" name=label tier=tier}}{{#if upgrades}} <span class="hint">({{upgrades}})</span>{{/if}}</li>{{/each}}
+        {{#each tools}}<li class="{{#if ok}}ok{{else}}missing{{/if}}"><i class="fa-solid {{#if ok}}fa-circle-check{{else}}fa-circle-xmark{{/if}}"></i> {{name}} <span class="hint">({{localize (concat "TYPES.Item." kind)}})</span></li>{{/each}}
+      </ul>
+      {{/if}}
+
+      <h4>{{localize "CRAWLSPACE.Craft.Ingredients"}}</h4>
+      <ul class="craft-ingredients">
+        {{#each ingredients}}
+        <li class="{{#if ok}}ok{{else}}missing{{/if}}"><img src="{{img}}" alt=""><span>{{name}}</span><b>{{have}}/{{need}}</b></li>
+        {{else}}<li class="hint">{{localize "CRAWLSPACE.Craft.NoIngredients"}}</li>{{/each}}
+      </ul>
+      {{/if}}
+
+      <footer class="craft-actions">
+        {{#if gm}}
+        <button type="button" class="craft-ghost" data-action="editRecipe"><i class="fa-solid fa-pen"></i> {{localize "CRAWLSPACE.Craft.EditRecipe"}}</button>
+        <button type="button" class="craft-ghost" data-action="teach"><i class="fa-solid {{#if learned}}fa-user-minus{{else}}fa-user-graduate{{/if}}"></i> {{#if learned}}{{localize "CRAWLSPACE.Craft.Forget"}}{{else}}{{localize "CRAWLSPACE.Craft.Teach"}}{{/if}}</button>
+        {{/if}}
+        {{#if unlocked}}
+        {{#if batch}}<label class="craft-batch">{{localize "CRAWLSPACE.Craft.Batch"}} <input type="number" min="1" value="{{count}}" data-craft-count></label>{{/if}}
+        <button type="button" class="craft-go" data-action="craft" {{#unless ready}}disabled{{/unless}}><i class="fa-solid {{#if auto}}fa-hammer{{else}}fa-paper-plane{{/if}}"></i> {{#if auto}}{{localize "CRAWLSPACE.Craft.Craft"}}{{else}}{{localize "CRAWLSPACE.Craft.AskGm"}}{{/if}}</button>
+        {{/if}}
+      </footer>
+      {{else}}
+      <div class="craft-placeholder"><i class="fa-solid fa-hammer"></i><p>{{localize "CRAWLSPACE.Craft.PickRecipe"}}</p></div>
+      {{/with}}
+    </section>
+  </div>
+  {{else}}
+  <div class="craft-bench">
+    <section class="craft-bench-col">
+      <h3><i class="fa-solid fa-toolbox"></i> {{localize "CRAWLSPACE.Craft.Workbench"}}</h3>
+      <div class="craft-drop" data-bench-drop>
+        {{#each bench}}
+        <div class="craft-bench-entry kind-{{kind}}">
+          <img src="{{img}}" alt="">
+          <span>{{name}}</span>
+          {{#if (eq kind "item")}}<input type="number" min="1" max="{{max}}" value="{{quantity}}" data-bench-quantity="{{@index}}">{{else}}<span class="craft-chip">{{localize (concat "TYPES.Item." kind)}}{{#if rank}} {{rank}}{{/if}}</span>{{/if}}
+          <a data-action="removeBench" data-index="{{@index}}" data-tooltip="{{localize 'CRAWLSPACE.Craft.Remove'}}"><i class="fa-solid fa-xmark"></i></a>
+        </div>
+        {{else}}
+        <p class="craft-drop-hint"><i class="fa-solid fa-hand-holding-droplet"></i> {{localize "CRAWLSPACE.Craft.BenchHint"}}</p>
+        {{/each}}
+      </div>
+    </section>
+    <section class="craft-bench-col">
+      <h3><i class="fa-solid fa-wand-magic-sparkles"></i> {{localize "CRAWLSPACE.Craft.Hoping"}}</h3>
+      <div class="craft-drop craft-desired" data-desired-drop>
+        {{#if desired.uuid}}
+        <div class="craft-desired-item">
+          <img src="{{desired.img}}" alt="" data-action="openItem" data-uuid="{{desired.uuid}}">
+          <strong>{{desired.name}}</strong>
+          <a data-action="clearDesired" data-tooltip="{{localize 'CRAWLSPACE.Craft.Remove'}}"><i class="fa-solid fa-xmark"></i></a>
+        </div>
+        {{else}}
+        <p class="craft-drop-hint"><i class="fa-solid fa-arrow-down"></i> {{localize "CRAWLSPACE.Craft.DesiredHint"}}</p>
+        <label>{{localize "CRAWLSPACE.Craft.DesiredName"}}<input type="text" data-desired-field="name" value="{{desired.name}}"></label>
+        <label>{{localize "CRAWLSPACE.Craft.DesiredType"}}<select data-desired-field="type">{{selectOptions desiredTypes selected=desired.type}}</select></label>
+        <label>{{localize "CRAWLSPACE.Craft.DesiredDescription"}}<textarea data-desired-field="description" rows="3">{{desired.description}}</textarea></label>
+        {{/if}}
+      </div>
+      <label>{{localize "CRAWLSPACE.Craft.Category"}}<select data-bench-category>{{selectOptions benchCategories selected=benchCategory}}</select></label>
+      <label>{{localize "CRAWLSPACE.Craft.NoteToGm"}}<textarea data-bench-note rows="2">{{benchNote}}</textarea></label>
+      <button type="button" class="craft-go" data-action="submitExperiment" {{#unless canSubmit}}disabled{{/unless}}><i class="fa-solid fa-paper-plane"></i> {{localize "CRAWLSPACE.Craft.SendToGm"}}</button>
+      {{#if pending.length}}
+      <h4>{{localize "CRAWLSPACE.Craft.Waiting"}}</h4>
+      <ul class="craft-pending">
+        {{#each pending}}<li><img src="{{img}}" alt=""><span>{{name}}</span><a data-action="cancelExperiment" data-id="{{id}}" data-tooltip="{{localize 'CRAWLSPACE.Craft.CancelHint'}}"><i class="fa-solid fa-rotate-left"></i></a></li>{{/each}}
+      </ul>
+      {{/if}}
+    </section>
+  </div>
+  {{/if}}
+</div>

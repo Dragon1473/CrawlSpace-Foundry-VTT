@@ -1,0 +1,116 @@
+<section class="tab crafting {{tab.cssClass}}" data-group="{{tab.group}}" data-tab="{{tab.id}}">
+  <div class="recipe-editor" data-recipe-editor>
+    <div class="recipe-editor-head">
+      <h3><i class="fa-solid fa-hammer"></i> {{localize "CRAWLSPACE.Craft.RecipesForThis"}}</h3>
+      <button type="button" data-recipe-op="add"><i class="fa-solid fa-plus"></i> {{localize "CRAWLSPACE.Craft.AddRecipe"}}</button>
+    </div>
+    {{#unless craft.recipes.length}}<p class="hint">{{localize "CRAWLSPACE.Craft.NoRecipesHere"}}</p>{{/unless}}
+
+    {{#each craft.recipes as |recipe|}}
+    <article class="recipe-card" data-recipe="{{recipe.index}}">
+      <header>
+        <input type="text" class="recipe-name" data-field="name" value="{{recipe.name}}" placeholder="{{localize 'CRAWLSPACE.Craft.RecipeNamePlaceholder'}}">
+        <select data-field="category">{{selectOptions @root.craft.categories selected=recipe.category}}</select>
+        <a data-recipe-op="duplicate" data-tooltip="{{localize 'CRAWLSPACE.Craft.Duplicate'}}"><i class="fa-solid fa-copy"></i></a>
+        <a data-recipe-op="delete" data-tooltip="{{localize 'CRAWLSPACE.Craft.DeleteRecipe'}}"><i class="fa-solid fa-trash"></i></a>
+      </header>
+
+      <div class="recipe-grid">
+        <label>{{localize "CRAWLSPACE.Craft.MethodLabel"}}<select data-field="method">{{selectOptions @root.craft.methods selected=recipe.method localize=true}}</select></label>
+        {{#if recipe.mundane}}
+        <label>{{localize "CRAWLSPACE.Craft.Size"}}<span class="recipe-inline"><select data-field="size">{{selectOptions @root.craft.sizes selected=recipe.size}}</select><a data-recipe-op="addJunk" data-tooltip="{{localize 'CRAWLSPACE.Craft.AddJunkHint'}}"><i class="fa-solid fa-dumpster"></i></a></span></label>
+        {{/if}}
+        <label>{{localize "CRAWLSPACE.Craft.BonusLevel"}}<input type="number" min="0" data-field="bonus.level" value="{{recipe.bonus.level}}"></label>
+        <label>{{localize "CRAWLSPACE.Craft.BonusKind"}}<select data-field="bonus.kind">{{selectOptions @root.craft.kinds selected=recipe.bonus.kind localize=true}}</select></label>
+        <label>{{localize "CRAWLSPACE.Craft.Difficulty"}}<input type="number" min="0" data-field="difficulty" value="{{crawlNumberOrBlank recipe.difficulty}}" placeholder="{{recipe.computedDifficulty}}"></label>
+        <label data-tooltip="{{localize 'CRAWLSPACE.Craft.MinutesHint'}}">{{localize "CRAWLSPACE.Craft.Minutes"}}<input type="number" min="0" data-field="minutes" value="{{crawlNumberOrBlank recipe.minutes}}" placeholder="{{recipe.computedTime}}"></label>
+        <label>{{localize "CRAWLSPACE.Craft.Makes"}}<input type="number" min="1" data-field="output.quantity" value="{{recipe.output.quantity}}"></label>
+        <label>{{localize "CRAWLSPACE.Craft.ApprovalLabel"}}<select data-field="approval">{{selectOptions @root.craft.approvals selected=recipe.approval localize=true}}</select></label>
+        <label class="check" data-tooltip="{{localize 'CRAWLSPACE.Craft.BatchHint'}}"><input type="checkbox" data-field="batch" {{checked recipe.batch}}> {{localize "CRAWLSPACE.Craft.Batchable"}}</label>
+        <label class="check" data-tooltip="{{localize 'CRAWLSPACE.Craft.AdvantageHint'}}"><input type="checkbox" data-field="advantage" {{checked recipe.advantage}}> {{localize "CRAWLSPACE.Craft.Advantage"}}</label>
+      </div>
+
+      <div class="recipe-columns">
+        <fieldset>
+          <legend><i class="fa-solid fa-cubes"></i> {{localize "CRAWLSPACE.Craft.Ingredients"}}</legend>
+          <div class="recipe-drop" data-recipe-drop="ingredients">
+            {{#each recipe.ingredients as |ingredient|}}
+            <div class="recipe-row">
+              {{#if ingredient.tag}}
+              <i class="fa-solid fa-tag"></i>
+              <input type="text" data-field="ingredients.{{@index}}.tag" value="{{ingredient.tag}}" data-tooltip="{{localize 'CRAWLSPACE.Craft.TagHint'}}">
+              {{else}}
+              <img src="{{#if ingredient.img}}{{ingredient.img}}{{else}}icons/svg/item-bag.svg{{/if}}" alt="">
+              <span class="recipe-row-name">{{ingredient.name}}</span>
+              {{/if}}
+              <input type="number" min="1" class="qty" data-field="ingredients.{{@index}}.quantity" value="{{ingredient.quantity}}">
+              <a data-recipe-op="remove" data-list="ingredients" data-row="{{@index}}"><i class="fa-solid fa-xmark"></i></a>
+            </div>
+            {{else}}<p class="recipe-drop-hint">{{localize "CRAWLSPACE.Craft.DropIngredients"}}</p>{{/each}}
+          </div>
+          <a class="recipe-add" data-recipe-op="addTag"><i class="fa-solid fa-tag"></i> {{localize "CRAWLSPACE.Craft.AddTagIngredient"}}</a>
+        </fieldset>
+
+        <fieldset>
+          <legend><i class="fa-solid fa-graduation-cap"></i> {{localize "CRAWLSPACE.Craft.Requires"}}</legend>
+          <div class="recipe-drop" data-recipe-drop="requires">
+            {{#each recipe.skills as |skill|}}
+            <div class="recipe-row"><i class="fa-solid fa-star"></i><span class="recipe-row-name">{{skill.name}}</span><label class="mini">{{localize "CRAWLSPACE.Item.Rank"}}<input type="number" min="0" class="qty" data-field="skills.{{@index}}.rank" value="{{skill.rank}}"></label><a data-recipe-op="remove" data-list="skills" data-row="{{@index}}"><i class="fa-solid fa-xmark"></i></a></div>
+            {{/each}}
+            {{#each recipe.tables as |table|}}
+            <div class="recipe-row table-row"><i class="fa-solid fa-table-cells-large"></i>
+              <select data-field="tables.{{@index}}.category">{{selectOptions @root.craft.categories selected=table.category}}</select>
+              <label class="mini">{{localize "CRAWLSPACE.Craft.Tier"}}<input type="number" min="1" max="10" class="qty" data-field="tables.{{@index}}.tier" value="{{table.tier}}"></label>
+              <input type="text" class="upgrades" data-field="tables.{{@index}}.upgrades" value="{{crawlJoin table.upgrades ', '}}" placeholder="{{localize 'CRAWLSPACE.Craft.UpgradesPlaceholder'}}">
+              <a data-recipe-op="remove" data-list="tables" data-row="{{@index}}"><i class="fa-solid fa-xmark"></i></a></div>
+            {{/each}}
+            {{#each recipe.tools as |tool|}}
+            <div class="recipe-row"><img src="{{#if tool.img}}{{tool.img}}{{else}}icons/svg/item-bag.svg{{/if}}" alt=""><span class="recipe-row-name">{{tool.name}}</span><span class="hint">{{localize "CRAWLSPACE.Craft.NotUsedUp"}}</span><a data-recipe-op="remove" data-list="tools" data-row="{{@index}}"><i class="fa-solid fa-xmark"></i></a></div>
+            {{/each}}
+            {{#unless (or recipe.skills.length recipe.tables.length recipe.tools.length)}}<p class="recipe-drop-hint">{{localize "CRAWLSPACE.Craft.DropRequires"}}</p>{{/unless}}
+          </div>
+          <a class="recipe-add" data-recipe-op="addTable"><i class="fa-solid fa-table-cells-large"></i> {{localize "CRAWLSPACE.Craft.AddTable"}}</a>
+        </fieldset>
+      </div>
+
+      <fieldset class="recipe-visibility">
+        <legend><i class="fa-solid fa-eye"></i> {{localize "CRAWLSPACE.Craft.WhoSees"}}</legend>
+        <div class="recipe-grid">
+          <label>{{localize "CRAWLSPACE.Craft.VisibilityLabel"}}<select data-field="visibility">{{selectOptions @root.craft.visibilities selected=recipe.visibility localize=true}}</select></label>
+          {{#if recipe.hidden}}
+          <label class="wide">{{localize "CRAWLSPACE.Craft.Hint"}}<input type="text" data-field="hint" value="{{recipe.hint}}" placeholder="{{localize 'CRAWLSPACE.Craft.HintPlaceholder'}}"></label>
+          {{/if}}
+        </div>
+        {{#if recipe.hidden}}
+        <div class="recipe-unlock">
+          <label>{{localize "CRAWLSPACE.Craft.UnlocksWhen"}}<select data-field="unlock.mode">{{selectOptions @root.craft.unlockModes selected=recipe.unlock.mode localize=true}}</select></label>
+          <div class="recipe-drop" data-recipe-drop="unlock">
+            {{#each recipe.unlock.conditions as |condition|}}
+            <div class="recipe-row">
+              <select data-field="unlock.conditions.{{@index}}.type">{{selectOptions @root.craft.unlockTypes selected=condition.type localize=true}}</select>
+              {{#if (or (eq condition.type "item") (eq condition.type "skill"))}}<input type="text" data-field="unlock.conditions.{{@index}}.name" value="{{condition.name}}" placeholder="{{localize 'CRAWLSPACE.Craft.NamePlaceholder'}}">{{/if}}
+              {{#if (eq condition.type "table")}}<select data-field="unlock.conditions.{{@index}}.name">{{selectOptions @root.craft.categories selected=condition.name}}</select>{{/if}}
+              {{#unless (or (eq condition.type "item") (eq condition.type "learned"))}}<input type="number" min="0" class="qty" data-field="unlock.conditions.{{@index}}.value" value="{{condition.value}}">{{/unless}}
+              <a data-recipe-op="remove" data-list="unlock.conditions" data-row="{{@index}}"><i class="fa-solid fa-xmark"></i></a>
+            </div>
+            {{else}}<p class="recipe-drop-hint">{{localize "CRAWLSPACE.Craft.DropUnlock"}}</p>{{/each}}
+          </div>
+          <a class="recipe-add" data-recipe-op="addCondition"><i class="fa-solid fa-plus"></i> {{localize "CRAWLSPACE.Craft.AddCondition"}}</a>
+        </div>
+        {{/if}}
+      </fieldset>
+    </article>
+    {{/each}}
+
+    <fieldset class="recipe-teaches">
+      <legend><i class="fa-solid fa-book"></i> {{localize "CRAWLSPACE.Craft.Teaches"}}</legend>
+      <p class="hint">{{localize "CRAWLSPACE.Craft.TeachesHint"}}</p>
+      <div class="recipe-drop" data-recipe-drop="teaches">
+        {{#each craft.teaches}}
+        <div class="recipe-row{{#if missing}} missing{{/if}}"><img src="{{img}}" alt=""><span class="recipe-row-name">{{name}}</span><a data-recipe-op="removeTeach" data-key="{{key}}"><i class="fa-solid fa-xmark"></i></a></div>
+        {{else}}<p class="recipe-drop-hint">{{localize "CRAWLSPACE.Craft.DropTeaches"}}</p>{{/each}}
+      </div>
+      {{#if craft.recipes.length}}<a class="recipe-add" data-recipe-op="teachOwn"><i class="fa-solid fa-book-medical"></i> {{localize "CRAWLSPACE.Craft.TeachOwn"}}</a>{{/if}}
+    </fieldset>
+  </div>
+</section>

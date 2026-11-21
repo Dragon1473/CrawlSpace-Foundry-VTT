@@ -1,0 +1,44 @@
+{
+  "name": "Misc. Junk",
+  "type": "material",
+  "img": "icons/environment/settlement/rubble-scrap-refuse-wood-metal.webp",
+  "system": {
+    "notes": "",
+    "source": {
+      "database": "homebrew",
+      "id": null,
+      "book": "",
+      "pages": ""
+    },
+    "quantity": 1,
+    "equipped": false,
+    "broken": false,
+    "tags": [
+      "junk"
+    ],
+    "rarity": "common",
+    "description": "<p>A drawer's worth of odds and ends you can't bring yourself to throw away. Most mundane crafting starts here.</p>",
+    "liquid": false,
+    "categories": []
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "craftingStarter": true
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_id": "X12H54rt3or8NRii",
+  "_key": "!items!X12H54rt3or8NRii",
+  "folder": "Z1QaPl51zVZjbJdD"
+}

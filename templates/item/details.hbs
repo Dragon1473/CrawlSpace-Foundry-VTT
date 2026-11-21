@@ -125,6 +125,20 @@
     <label class="check"><input type="checkbox" name="system.earthClass" {{checked systemSource.earthClass}}> {{localize "CRAWLSPACE.Build.EarthClassHint"}}</label>
     <label class="wide">{{localize "CRAWLSPACE.Build.Prerequisites"}}<textarea name="system.prerequisites">{{systemSource.prerequisites}}</textarea></label>
   {{/if}}
+  {{#if (eq type "material")}}
+    <label class="check" data-tooltip="{{localize 'CRAWLSPACE.Craft.LiquidHint'}}"><input type="checkbox" name="system.liquid" {{checked systemSource.liquid}}> {{localize "CRAWLSPACE.Craft.Liquid"}}</label>
+    <label class="wide">{{localize "CRAWLSPACE.Craft.UsedIn"}}<multi-select name="system.categories">{{selectOptions craftCategoryChoices selected=systemSource.categories}}</multi-select></label>
+  {{/if}}
+  {{#if (eq type "craftingTable")}}
+    <label>{{localize "CRAWLSPACE.Craft.Category"}}<select name="system.category">{{selectOptions craftCategoryChoices selected=systemSource.category}}</select></label>
+    <label>{{localize "CRAWLSPACE.Craft.Tier"}}<input type="number" name="system.tier" value="{{systemSource.tier}}" min="1" max="10"></label>
+    <label class="wide" data-tooltip="{{localize 'CRAWLSPACE.Craft.UpgradesHint'}}">{{localize "CRAWLSPACE.Craft.Upgrades"}}<input type="text" name="upgradesText" value="{{upgradesText}}" placeholder="{{localize 'CRAWLSPACE.Craft.UpgradesPlaceholder'}}"></label>
+    <label class="check" data-tooltip="{{localize 'CRAWLSPACE.Craft.AutoLevelHint'}}"><input type="checkbox" name="system.autoLevel" {{checked systemSource.autoLevel}}> {{localize "CRAWLSPACE.Craft.AutoLevel"}}</label>
+  {{/if}}
+  {{#if isPhysical}}
+    <label>{{localize "CRAWLSPACE.Craft.RarityLabel"}}<select name="system.rarity">{{selectOptions rarityChoices selected=systemSource.rarity localize=true}}</select></label>
+    <label class="wide" data-tooltip="{{localize 'CRAWLSPACE.Craft.TagsHint'}}">{{localize "CRAWLSPACE.Item.Tags"}}<input type="text" name="physicalTags" value="{{physicalTags}}"></label>
+  {{/if}}
   {{#if hasBenefits}}
     <label class="wide">{{localize "CRAWLSPACE.Item.Tags"}}<input type="text" name="system.tags" value="{{systemSource.tags}}"></label>
   {{/if}}

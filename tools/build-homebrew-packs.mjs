@@ -11,6 +11,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { convertRow } from '../src/import/convert.ts'
+import { CRAFT_CATEGORIES } from '../src/rules/crafting.ts'
 import { ROOT, ITEM_TYPE_LABELS, assertPacksClosed, compile, foldersFor, keyify, loadCrawlSpaceEnv, readContent, slug, stamp, writeSource } from './lib.mjs'
 
 const PACKS = ['homebrew-skills', 'homebrew-spells', 'homebrew-items']
@@ -100,6 +101,7 @@ const STARTING_RECORDS = [
 
 applyBuilderFixes()
 await writeBuilderBackgrounds(path.join(SRC, 'homebrew-items'))
+writeCraftingStarters(path.join(SRC, 'homebrew-items'))
 
 for (const pack of PACKS) {
   const src = path.join(SRC, pack)
@@ -152,6 +154,65 @@ async function writeBuilderBackgrounds(dir) {
   }
   for (const { file, doc } of existing) if (doc.flags?.crawlspace?.builderBackground && !keep.has(file)) fs.rmSync(path.join(dir, file))
   console.log(`homebrew-items: ${docs.length} builder backgrounds`)
+}
+
+/** What each starter table is for, in the system's own words. */
+const TABLE_USES = {
+  alchemy: 'Brew potions and poisons.',
+  arcanist: 'Bind a spell into an item.',
+  armorer: 'Make and improve armor.',
+  engineering: 'Build things with moving parts, fluids or chemicals, such as ammunition.',
+  metalworking: 'Forge and improve weapons.',
+  sappers: 'Make explosives, and keep their parts stable.',
+  writing: 'Write spell scrolls.',
+  tattoo: 'Ink magical tattoos.',
+  mundane: 'A sturdy workbench for everyday building.',
+}
+
+const TABLE_ICONS = {
+  alchemy: 'icons/skills/toxins/cauldron-pot-bubbles-green.webp',
+  arcanist: 'icons/skills/ranged/wand-attack-beam-blue.webp',
+  armorer: 'icons/skills/trades/smithing-anvil-silver-red.webp',
+  engineering: 'icons/tools/hand/wrench-adjustable-toothed.webp',
+  metalworking: 'icons/skills/trades/smithing-anvil-brown.webp',
+  sappers: 'icons/commodities/tech/smoke-bomb-red-yellow.webp',
+  writing: 'icons/tools/scribal/ink-quill-red.webp',
+  tattoo: 'icons/commodities/cloth/thread-and-needle.webp',
+  mundane: 'icons/tools/hand/wrench-adjustable.webp',
+}
+
+/**
+ * Crafting starters in homebrew-items/Crafting: Misc. Junk (the material most recipes use) and a tier-1 table for each
+ * crafting category, replacing the ones written last time. GMs put recipes on their own items.
+ */
+function writeCraftingStarters(dir) {
+  fs.mkdirSync(dir, { recursive: true })
+  const existing = fs.readdirSync(dir).map((file) => ({ file, doc: JSON.parse(fs.readFileSync(path.join(dir, file), 'utf8')) }))
+  const physical = { notes: '', source: { database: 'homebrew', id: null, book: '', pages: '' }, quantity: 1, equipped: false, broken: false, tags: [], rarity: '' }
+  const docs = [
+    {
+      name: 'Misc. Junk',
+      type: 'material',
+      img: 'icons/environment/settlement/rubble-scrap-refuse-wood-metal.webp',
+      system: { ...physical, description: '<p>A drawer\'s worth of odds and ends you can\'t bring yourself to throw away. Most mundane crafting starts here.</p>', tags: ['junk'], rarity: 'common', liquid: false, categories: [] },
+    },
+    ...CRAFT_CATEGORIES.map((category) => ({
+      name: `${category.label} Table`,
+      type: 'craftingTable',
+      img: TABLE_ICONS[category.id] ?? 'icons/tools/hand/wrench-adjustable.webp',
+      system: { ...physical, description: `<p>${TABLE_USES[category.id] ?? ''}</p>`, category: category.id, tier: 1, upgrades: [], autoLevel: true },
+    })),
+  ].map((doc) => keyify(stamp({ ...doc, effects: [], flags: { crawlspace: { craftingStarter: true } } }, version), 'items'))
+  const [folder] = foldersFor(docs, 'Item', () => 'Crafting', 'homebrew-items')
+  const keep = new Set()
+  for (const doc of [folder, ...docs]) {
+    const prefix = doc._key.startsWith('!folders!') ? '_folder_' : ''
+    const file = `${prefix}${slug(doc.name)}_${doc._id}.json`
+    keep.add(file)
+    write(path.join(dir, file), doc)
+  }
+  for (const { file, doc } of existing) if (doc.flags?.crawlspace?.craftingStarter && !keep.has(file)) fs.rmSync(path.join(dir, file))
+  console.log(`homebrew-items: ${docs.length} crafting starters`)
 }
 
 function applyBuilderFixes() {

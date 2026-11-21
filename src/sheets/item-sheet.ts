@@ -6,13 +6,19 @@ import { linkSpec, type BuildLink, type LinkKind } from '../rules/build-links'
 import { benefitTemplates, benefitTiers, createBuildEntry, detrimentTemplates, detrimentTiers, getRaceClassBuild } from '../crawlspace-shared/shared/raceClassRules'
 import { bindRulesEditor, rulesContext, rulesDatalists, ruleTypeChoices } from '../effects/rules'
 import { documentIds } from './ids'
+import { bindRecipeEditor, recipeEditorContext } from './recipe-editor'
+import { craftCategories } from '../actors/crafting'
+import { RARITIES } from '../rules/crafting'
 
 const { HandlebarsApplicationMixin } = foundry.applications.api
 const { ItemSheetV2 } = foundry.applications.sheets
 
 import { damageEffectSettings } from '../rules/damage-effects'
 
-const PHYSICAL = ['weapon', 'equipment', 'consumable', 'tattoo', 'loot']
+const PHYSICAL = ['weapon', 'equipment', 'consumable', 'tattoo', 'loot', 'material', 'craftingTable']
+
+/** Only the GM edits recipes, on things that can be crafted (or taught: books are loot). */
+const hasCrafting = (item: any) => game.user.isGM && PHYSICAL.includes(item.type)
 
 /** Array fields edited row by row on the sheet; the form sends them as index-keyed objects. */
 const ROW_LISTS = ['benefits', 'detriments', 'skillBonuses', 'spellBonuses', 'skillDetriments', 'statSkillDetriments', 'skills']
@@ -65,11 +71,12 @@ export class CrawlItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     details: { template: 'systems/crawlspace/templates/item/details.hbs', scrollable: [''] },
     build: { template: 'systems/crawlspace/templates/item/build.hbs', scrollable: [''] },
     rules: { template: 'systems/crawlspace/templates/item/effects.hbs', scrollable: [''] },
+    crafting: { template: 'systems/crawlspace/templates/item/crafting.hbs', scrollable: [''] },
   }
 
   static TABS = {
     primary: {
-      tabs: [{ id: 'description' }, { id: 'details' }, { id: 'build' }, { id: 'rules' }],
+      tabs: [{ id: 'description' }, { id: 'details' }, { id: 'build' }, { id: 'rules' }, { id: 'crafting' }],
       initial: 'description',
       labelPrefix: 'CRAWLSPACE.Tab',
     },
@@ -83,13 +90,15 @@ export class CrawlItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
   _configureRenderParts(options: any) {
     const parts = super._configureRenderParts(options)
     if (!isBuild(this.item)) delete parts.build
+    if (!hasCrafting(this.item)) delete parts.crafting
     return parts
   }
 
   _getTabsConfig(group: string) {
     const config = super._getTabsConfig(group)
-    if (!config || isBuild(this.item)) return config
-    return { ...config, tabs: config.tabs.filter((tab: any) => tab.id !== 'build') }
+    if (!config) return config
+    const drop = new Set([...(isBuild(this.item) ? [] : ['build']), ...(hasCrafting(this.item) ? [] : ['crafting'])])
+    return { ...config, tabs: config.tabs.filter((tab: any) => !drop.has(tab.id)) }
   }
 
   async _prepareContext(options: any) {
@@ -152,6 +161,10 @@ export class CrawlItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
       originChoices: { Earth: 'CRAWLSPACE.Build.Earth', Alien: 'CRAWLSPACE.Build.Alien' },
       speciesChoices: { human: 'CRAWLSPACE.Builder.Human', animal: 'CRAWLSPACE.Builder.Animal' },
       backgroundSkills: [0, 1, 2].map((index) => ({ index, value: item._source.system.skills?.[index] ?? '' })),
+      rarityChoices: Object.fromEntries([['', 'CRAWLSPACE.Craft.Rarity.none'], ...RARITIES.map((rarity) => [rarity, `CRAWLSPACE.Craft.Rarity.${rarity}`])]),
+      craftCategoryChoices: Object.fromEntries(craftCategories().map((category) => [category.id, category.label])),
+      physicalTags: (item._source.system.tags ?? []).join(', '),
+      upgradesText: (item._source.system.upgrades ?? []).join(', '),
     })
     return context
   }
@@ -174,6 +187,7 @@ export class CrawlItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
       if (system.isShield) add(game.i18n.localize('CRAWLSPACE.Item.IsShield'))
     }
     if (item.type === 'consumable') add(system.consumableType)
+    if (item.type === 'material' && system.liquid) add(game.i18n.localize('CRAWLSPACE.Craft.Liquid'))
     if (item.type === 'spell') add(game.i18n.localize(`CRAWLSPACE.Usage.${system.usage}`))
     if (item.type === 'skill' || item.type === 'spell') {
       add(system.checkType)
@@ -232,6 +246,11 @@ export class CrawlItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
         }
         if (item.type === 'ability') row('CRAWLSPACE.Item.Cooldown', system.cooldown)
         if (item.type === 'lootBox') row('CRAWLSPACE.Item.Tier', system.tier)
+        if (item.type === 'craftingTable') {
+          row('CRAWLSPACE.Craft.Category', context.craftCategoryChoices?.[system.category] ?? system.category)
+          row('CRAWLSPACE.Craft.Tier', system.tier)
+        }
+        if (system.rarity) row('CRAWLSPACE.Craft.RarityLabel', game.i18n.localize(`CRAWLSPACE.Craft.Rarity.${system.rarity}`))
         if (isBuild(item)) {
           const build = itemBuild(item)
           row('CRAWLSPACE.Build.Remaining', `${build.remaining} / ${build.base + build.extra}`)
@@ -250,6 +269,9 @@ export class CrawlItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
         break
       case 'build':
         Object.assign(context, await this.#buildContext())
+        break
+      case 'crafting':
+        context.craft = recipeEditorContext(item)
         break
       case 'rules':
         context.ids = documentIds(item)
@@ -273,6 +295,7 @@ export class CrawlItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     await super._onRender(context, options)
     bindRulesEditor(this.element, (id) => this.item.effects.get(id), this.isEditable)
     bindAreaEditor(this.element as HTMLElement, this.item, this.isEditable)
+    bindRecipeEditor(this, this.element as HTMLElement)
     if (this.isEditable)
       for (const zone of this.element.querySelectorAll('[data-drop-list]')) {
         zone.addEventListener('dragover', (event) => event.preventDefault())
@@ -322,6 +345,16 @@ export class CrawlItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
       foundry.utils.setProperty(data, 'system.damageEffect.skills', skills)
       delete data.damageEffectLink
       delete data.damageEffectAdd
+    }
+    // Comma lists typed on the sheet: tags, a table's upgrades, a material's crafting categories.
+    const list = (value: unknown) => String(value ?? '').split(',').map((entry) => entry.trim()).filter(Boolean)
+    if ('physicalTags' in data) {
+      foundry.utils.setProperty(data, 'system.tags', list(data.physicalTags))
+      delete data.physicalTags
+    }
+    if ('upgradesText' in data) {
+      foundry.utils.setProperty(data, 'system.upgrades', list(data.upgradesText))
+      delete data.upgradesText
     }
     const types = data.system?.damage?.typesText
     if (typeof types === 'string') {

@@ -40,6 +40,8 @@ import { CrawlItemSheet } from './sheets/item-sheet'
 import { CrawlEffectSheet } from './sheets/effect-sheet'
 import { DEBUFFS } from './rules/debuffs'
 import { registerSocket } from './socket'
+import { registerCraftSettings, registerCrafting } from './actors/crafting'
+import { CraftingApp } from './apps/crafting'
 import { registerChatHandlers } from './chat/cards'
 import { characterToActor } from './import/convert'
 import { fillActorDamage, fillDamageData } from './import/fill-damage'
@@ -141,6 +143,8 @@ Hooks.once('init', () => {
     background: items.BackgroundData,
     achievement: items.AchievementData,
     trap: items.TrapData,
+    material: items.MaterialData,
+    craftingTable: items.CraftingTableData,
   })
   // Auras and dreads: a Region behavior handing conditions to the tokens inside.
   CONFIG.RegionBehavior.dataModels.aura = createAuraBehavior()
@@ -236,8 +240,10 @@ Hooks.once('init', () => {
   registerMinimap()
   registerJournals()
   registerBestiary()
+  registerCraftSettings()
+  registerCrafting()
 
-  game.crawlspace = { config, startBossBattle, openParties, openHeadshotMaker: (actor: any) => HeadshotMakerApp.open(actor), openGrinding, openAwards, openBuilder, performUpkeep, openTime, advanceTime, settleTime, rest, importCharacter, importFile, openUpkeep, fillActorDamage, calibrateGrid, useAttack: useAttackRow, useAction: useActionRow, declareAttack: () => game.combat && promptDeclaration(game.combat), openTokenMaker: (actor: any, options?: { source?: string; foreground?: string; pixelArt?: boolean }) => TokenMakerApp.open(actor, options), openNeighborhoodBuilder: () => new NeighborhoodBuilder().render({ force: true }), createBlankJournal: createBlank, compileFieldGuide, bestiary: bestiaryApi, openBestiary: bestiaryApi.open }
+  game.crawlspace = { config, startBossBattle, openParties, openHeadshotMaker: (actor: any) => HeadshotMakerApp.open(actor), openGrinding, openAwards, openBuilder, performUpkeep, openTime, advanceTime, settleTime, rest, importCharacter, importFile, openUpkeep, fillActorDamage, calibrateGrid, useAttack: useAttackRow, useAction: useActionRow, declareAttack: () => game.combat && promptDeclaration(game.combat), openTokenMaker: (actor: any, options?: { source?: string; foreground?: string; pixelArt?: boolean }) => TokenMakerApp.open(actor, options), openNeighborhoodBuilder: () => new NeighborhoodBuilder().render({ force: true }), createBlankJournal: createBlank, compileFieldGuide, bestiary: bestiaryApi, openBestiary: bestiaryApi.open, openCrafting: (actor: any) => CraftingApp.open(actor ?? game.user.character) }
 })
 
 /** A new crawler's tokens are linked to it unless the creator said otherwise. */

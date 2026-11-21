@@ -179,6 +179,8 @@ const physical = () => {
     /** Broken gear: a broken shield can't Shield Block. The Repair skill (or the sheet) mends it. */
     broken: new fields.BooleanField(),
     tags: stringList(),
+    /** Crafting reads it for the GM-approval rule (rules/crafting.ts RARITIES); blank is unrated. */
+    rarity: text(),
   }
 }
 
@@ -416,6 +418,31 @@ export class TrapData extends foundry.abstract.TypeDataModel {
   [key: string]: any
   static defineSchema() {
     return { ...common(), trapType: text(), damage: damageSchema() }
+  }
+}
+
+/** A crafting ingredient (Misc. Junk, monster parts, ores…). Liquids can't be salvaged from a failed craft. */
+export class MaterialData extends foundry.abstract.TypeDataModel {
+  [key: string]: any
+  static defineSchema() {
+    const fields = f()
+    return { ...physical(), liquid: new fields.BooleanField(), categories: stringList() }
+  }
+}
+
+/** A crafting table: its category, tier (its bonus to crafting checks) and named upgrades. */
+export class CraftingTableData extends foundry.abstract.TypeDataModel {
+  [key: string]: any
+  static defineSchema() {
+    const fields = f()
+    return {
+      ...physical(),
+      category: text('alchemy'),
+      tier: integer(1, { min: 1, max: 10 }),
+      upgrades: stringList(),
+      /** It levels up by one each time its owner reaches a new floor (crafting.ts). */
+      autoLevel: new fields.BooleanField({ initial: true }),
+    }
   }
 }
 

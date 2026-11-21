@@ -1,0 +1,75 @@
+<div class="craft-review">
+  <section class="craft-review-ask">
+    <div class="craft-output">
+      <img src="{{#if desired.img}}{{desired.img}}{{else}}icons/svg/mystery-man.svg{{/if}}" alt="" {{#if desired.uuid}}data-action="openItem" data-uuid="{{desired.uuid}}" data-tooltip="{{localize 'CRAWLSPACE.Craft.OpenItem'}}"{{/if}}>
+      <div>
+        <p class="craft-meta">{{localize "CRAWLSPACE.Craft.Wants" actor=actor.name}}</p>
+        <h3>{{desired.name}}</h3>
+        <p class="craft-meta">{{#if category}}{{category}} · {{/if}}{{localize (concat "TYPES.Item." desired.type)}}{{#unless desired.uuid}} · {{localize "CRAWLSPACE.Craft.TypedIn"}}{{/unless}}</p>
+      </div>
+    </div>
+    {{#if desired.description}}<p class="craft-note">{{desired.description}}</p>{{/if}}
+    {{#if note}}<p class="craft-note"><i class="fa-solid fa-comment"></i> {{note}}</p>{{/if}}
+    <div class="craft-review-uses">
+      <div>
+        <h4>{{localize "CRAWLSPACE.Craft.Materials"}}</h4>
+        <ul class="craft-ingredients">{{#each materials}}<li><img src="{{img}}" alt=""><span>{{name}}</span><b>×{{quantity}}</b></li>{{else}}<li class="hint">—</li>{{/each}}</ul>
+      </div>
+      <div>
+        <h4>{{localize "CRAWLSPACE.Craft.SkillsSpells"}}</h4>
+        <ul class="craft-ingredients">{{#each abilities}}<li><img src="{{img}}" alt=""><span>{{name}}</span><b>{{rank}}</b></li>{{else}}<li class="hint">—</li>{{/each}}</ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="craft-review-check">
+    <h4><i class="fa-solid fa-dice-d20"></i> {{localize "CRAWLSPACE.Craft.CheckFirst"}}</h4>
+    <div class="craft-check-row">
+      <select name="checkSkill">{{selectOptions skillChoices selected=checkSkill}}</select>
+      <label>{{localize "CRAWLSPACE.Craft.Difficulty"}} <input type="number" name="checkDc" value="{{checkDc}}"></label>
+      <label>{{localize "CRAWLSPACE.Craft.TableBonusShort"}} <input type="number" name="checkBonus" value="{{checkBonus}}"></label>
+      <button type="button" data-action="roll"><i class="fa-solid fa-dice-d20"></i> {{localize "CRAWLSPACE.Craft.Roll"}}</button>
+    </div>
+    {{#if lastRoll}}<p class="craft-roll-result">{{localize "CRAWLSPACE.Craft.Rolled"}}: <b>{{lastRoll.total}}</b> — {{lastRoll.outcome}}</p>{{/if}}
+  </section>
+
+  <section class="craft-review-decide">
+    <div class="craft-outcomes">
+      {{#each outcomes}}
+      <button type="button" class="craft-outcome outcome-{{id}}{{#if active}} active{{/if}}" data-action="outcome" data-outcome="{{id}}"><i class="fa-solid {{icon}}"></i><span>{{label}}</span></button>
+      {{/each}}
+    </div>
+
+    {{#if (eq outcome "edit")}}
+    <div class="craft-outcome-body">
+      {{#if edited}}
+      <div class="craft-desired-item"><img src="{{edited.img}}" alt="" data-action="openItem" data-uuid="{{edited.uuid}}"><strong>{{edited.name}}</strong><span class="hint">{{localize "CRAWLSPACE.Craft.EditedHint"}}</span></div>
+      {{else}}
+      <button type="button" data-action="editCopy"><i class="fa-solid fa-pen-to-square"></i> {{localize "CRAWLSPACE.Craft.MakeEditable"}}</button>
+      {{/if}}
+    </div>
+    {{/if}}
+    {{#if (eq outcome "other")}}
+    <div class="craft-outcome-body craft-drop" data-other-drop>
+      {{#if other}}
+      <div class="craft-desired-item"><img src="{{other.img}}" alt="" data-action="openItem" data-uuid="{{other.uuid}}"><strong>{{other.name}}</strong><a data-action="clearOther"><i class="fa-solid fa-xmark"></i></a></div>
+      {{else}}<p class="craft-drop-hint"><i class="fa-solid fa-arrow-down"></i> {{localize "CRAWLSPACE.Craft.DropOtherHint"}}</p>{{/if}}
+    </div>
+    {{/if}}
+
+    <div class="craft-review-options">
+      {{#if (eq outcome "fail")}}
+      <label>{{localize "CRAWLSPACE.Craft.SalvageLabel"}} <select name="salvage">{{selectOptions salvageChoices selected=salvage}}</select></label>
+      {{else}}
+      <label>{{localize "CRAWLSPACE.Craft.Quantity"}} <input type="number" name="quantity" min="1" value="{{quantity}}"></label>
+      <label class="check"><input type="checkbox" name="saveRecipe" {{checked saveRecipe}}> {{localize "CRAWLSPACE.Craft.SaveRecipe"}}</label>
+      {{/if}}
+      <label class="check"><input type="checkbox" name="consume" {{checked consume}}> {{localize "CRAWLSPACE.Craft.UseMaterials"}}</label>
+    </div>
+    <label class="craft-review-note">{{localize "CRAWLSPACE.Craft.NoteToPlayer"}}<input type="text" name="note" value="{{reviewNote}}"></label>
+  </section>
+
+  <footer class="craft-actions">
+    <button type="button" class="craft-go" data-action="resolve" {{#if answered}}disabled{{/if}}><i class="fa-solid fa-gavel"></i> {{localize "CRAWLSPACE.Craft.Decide"}}</button>
+  </footer>
+</div>

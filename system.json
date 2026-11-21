@@ -52,7 +52,9 @@
       "class": { "htmlFields": ["description"] },
       "background": { "htmlFields": ["description"] },
       "achievement": { "htmlFields": ["description"] },
-      "trap": { "htmlFields": ["description"] }
+      "trap": { "htmlFields": ["description"] },
+      "material": { "htmlFields": ["description"] },
+      "craftingTable": { "htmlFields": ["description"] }
     },
     "RegionBehavior": {
       "aura": {}

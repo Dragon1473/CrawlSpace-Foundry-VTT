@@ -7,6 +7,8 @@ import { applyCondition, mayGive } from '../effects/use-conditions'
 import { debuffByName } from '../rules/debuffs'
 import { shieldBlockAllowed, shieldBlockFor } from '../rules/shield-block'
 import { promptRepair } from '../rules/repair'
+import { answerCraftRequest } from '../actors/crafting'
+import { ExperimentReview } from '../apps/craft-review'
 
 /** A row's own target, or (the "Selected tokens" row) the controlled tokens, then the card's recorded targets. */
 async function rowActors(button: HTMLElement, fallbackUuids: string[] = []) {
@@ -103,6 +105,12 @@ async function onAction(message: any, button: HTMLElement) {
     case 'upkeep-approve':
     case 'upkeep-decline':
       return answerUpkeepRequest(message, action === 'upkeep-approve')
+    case 'craft-approve':
+    case 'craft-decline':
+      return answerCraftRequest(message, action === 'craft-approve')
+    case 'craft-review':
+      if (game.user.isGM && !flags.answered) ExperimentReview.open(message)
+      return
     case 'apply-debuff': {
       const debuff = debuffByName(button.dataset.debuff ?? '')
       if (!debuff) return
@@ -166,7 +174,16 @@ async function renderFooter(message: any) {
 
 export function registerChatHandlers() {
   Hooks.on('renderChatMessageHTML', (message: any, html: HTMLElement) => {
-    if (message.flags?.crawlspace?.answered) html.querySelectorAll('[data-crawl-action^="upkeep-"]').forEach((button) => button.setAttribute('disabled', ''))
+    if (message.flags?.crawlspace?.answered) html.querySelectorAll('[data-crawl-action^="upkeep-"], [data-crawl-action^="craft-"]').forEach((button) => button.setAttribute('disabled', ''))
+    // Request cards a player sends the GM: only the GM gets their buttons.
+    if (!game.user.isGM) html.querySelectorAll('[data-gm-only]').forEach((element) => element.remove())
+    const answered = message.flags?.crawlspace?.answered
+    if (answered && ['craftRequest', 'craftExperiment'].includes(message.flags?.crawlspace?.kind)) {
+      const badge = document.createElement('p')
+      badge.className = `craft-answer craft-answer-${answered}`
+      badge.textContent = game.i18n.localize(`CRAWLSPACE.Craft.Answer.${answered}`)
+      html.querySelector('.craft-card')?.append(badge)
+    }
     if (message.flags?.crawlspace?.repaired) html.querySelector('[data-crawl-action="repair-item"]')?.setAttribute('disabled', '')
     if (message.flags?.crawlspace?.undone) html.querySelector('[data-crawl-action="undo"], [data-crawl-action="undo-award"]')?.setAttribute('disabled', '')
     // One delegated listener, so buttons added below (the footer) work too.

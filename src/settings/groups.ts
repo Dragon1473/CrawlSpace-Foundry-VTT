@@ -7,6 +7,7 @@ export const SETTING_GROUPS: readonly { id: string; keys: readonly string[] }[] 
   { id: 'combat', keys: ['autoAdvancePhase'] },
   { id: 'bosses', keys: ['autoBossBattle', 'bossHealthBar', 'bossBattleSound', 'soundBites'] },
   { id: 'upkeep', keys: ['upkeepAutomation', 'playerUpkeep'] },
+  { id: 'crafting', keys: ['craftApproval', 'craftRules', 'craftCategories'] },
   { id: 'compendiums', keys: ['homebrewCompendium'] },
 ]
 

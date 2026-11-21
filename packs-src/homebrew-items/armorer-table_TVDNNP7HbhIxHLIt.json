@@ -1,0 +1,44 @@
+{
+  "name": "Armorer Table",
+  "type": "craftingTable",
+  "img": "icons/skills/trades/smithing-anvil-silver-red.webp",
+  "system": {
+    "notes": "",
+    "source": {
+      "database": "homebrew",
+      "id": null,
+      "book": "",
+      "pages": ""
+    },
+    "quantity": 1,
+    "equipped": false,
+    "broken": false,
+    "tags": [],
+    "rarity": "",
+    "description": "<p>Make and improve armor.</p>",
+    "category": "armorer",
+    "tier": 1,
+    "upgrades": [],
+    "autoLevel": true
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "craftingStarter": true
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_id": "TVDNNP7HbhIxHLIt",
+  "_key": "!items!TVDNNP7HbhIxHLIt",
+  "folder": "Z1QaPl51zVZjbJdD"
+}

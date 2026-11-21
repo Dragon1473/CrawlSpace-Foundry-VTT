@@ -12,7 +12,9 @@ export function registerSettingsLayout() {
     if (!section || section.querySelector('.crawl-settings-group')) return
     const rows = new Map<string, HTMLElement>()
     for (const row of section.querySelectorAll<HTMLElement>(':scope > .form-group')) {
-      const name = row.querySelector<HTMLElement>(`[name^="${SETTING_PREFIX}"]`)?.getAttribute('name')
+      // Settings carry their key as the input's name; a menu (a button) carries it as data-key.
+      const name =
+        row.querySelector<HTMLElement>(`[name^="${SETTING_PREFIX}"]`)?.getAttribute('name') ?? row.querySelector<HTMLElement>(`[data-key^="${SETTING_PREFIX}"]`)?.dataset.key
       if (name) rows.set(name.slice(SETTING_PREFIX.length), row)
     }
     if (!rows.size) return

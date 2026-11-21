@@ -19,6 +19,7 @@ import { PaperDollApp } from '../apps/paper-doll-app'
 import { TokenMakerApp } from '../apps/token-maker'
 import { HeadshotMakerApp } from '../apps/headshot-maker'
 import { KillsApp } from '../apps/kills'
+import { CraftingApp } from '../apps/crafting'
 import { chooseSampleVehicle, ramWith } from '../actors/vehicles'
 import { moveInOrder } from '../rules/row-order'
 import { applyBackground, applyBuildItem, openBuildPacks, pickBackground } from '../apps/build-drop'
@@ -37,6 +38,7 @@ const INVENTORY_CATEGORIES = [
   { id: 'consumable', types: ['consumable'], subtypes: ['potion', 'scroll', 'ammunition', 'explosives', 'other'] },
   { id: 'tattoo', types: ['tattoo'], subtypes: [] },
   // Loot boxes aren't listed: the count beside the gold shows them, as in CrawlSpace.
+  { id: 'crafting', types: ['material', 'craftingTable'], subtypes: ['material', 'craftingTable'] },
   { id: 'other', types: ['loot'], subtypes: [] },
 ]
 const INVENTORY_TYPES = INVENTORY_CATEGORIES.flatMap((category) => category.types)
@@ -55,6 +57,9 @@ function inventorySubtype(item: any) {
       if (kind.includes('explos') || kind.includes('bomb') || kind.includes('grenade')) return 'explosives'
       return 'other'
     }
+    case 'material':
+    case 'craftingTable':
+      return item.type
     default:
       return ''
   }
@@ -518,6 +523,7 @@ export class CrawlerSheet extends CrawlActorSheet {
       browseActions: CrawlerSheet.#onBrowseActions,
       openBuildPack: CrawlerSheet.#onOpenBuildPack,
       openPaperDoll: CrawlerSheet.#onOpenPaperDoll,
+      openCrafting: CrawlerSheet.#onOpenCrafting,
       removeFromHotlist: CrawlerSheet.#onRemoveFromHotlist,
       castInherent: CrawlerSheet.#onCastInherent,
       openCompanion: CrawlerSheet.#onOpenCompanion,
@@ -905,6 +911,10 @@ export class CrawlerSheet extends CrawlActorSheet {
 
   static #onOpenPaperDoll(this: CrawlerSheet) {
     return PaperDollApp.open(this.actor)
+  }
+
+  static #onOpenCrafting(this: CrawlerSheet) {
+    return CraftingApp.open(this.actor)
   }
 
   static #onConfigureHotlist(this: CrawlerSheet) {

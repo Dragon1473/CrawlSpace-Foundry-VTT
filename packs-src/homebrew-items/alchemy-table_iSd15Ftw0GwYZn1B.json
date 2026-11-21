@@ -1,0 +1,44 @@
+{
+  "name": "Alchemy Table",
+  "type": "craftingTable",
+  "img": "icons/skills/toxins/cauldron-pot-bubbles-green.webp",
+  "system": {
+    "notes": "",
+    "source": {
+      "database": "homebrew",
+      "id": null,
+      "book": "",
+      "pages": ""
+    },
+    "quantity": 1,
+    "equipped": false,
+    "broken": false,
+    "tags": [],
+    "rarity": "",
+    "description": "<p>Brew potions and poisons.</p>",
+    "category": "alchemy",
+    "tier": 1,
+    "upgrades": [],
+    "autoLevel": true
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "craftingStarter": true
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_id": "iSd15Ftw0GwYZn1B",
+  "_key": "!items!iSd15Ftw0GwYZn1B",
+  "folder": "Z1QaPl51zVZjbJdD"
+}

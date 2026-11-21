@@ -45,6 +45,8 @@ export type CheckOptions = {
   targets?: any[]
   /** HTML under the title: a skill or spell's description, upgrades and conditions. */
   details?: string
+  /** Rolled with Advantage by the rules (an infusion); effects with Disadvantage cancel it. */
+  advantage?: boolean
 }
 
 const MODE_FORMULA: Record<RollModeName, string> = { normal: '1d20', advantage: '2d20kh', disadvantage: '2d20kl' }
@@ -145,6 +147,7 @@ async function promptCheck(options: CheckOptions, mode: RollModeName) {
 /** Roll a d20 check with toggled modifiers. Returns the evaluated Roll and the chosen mode. */
 export async function rollD20(actor: any, options: CheckOptions) {
   let mode = effectRollMode(actor, options.kind, options.sources, options.targets)
+  if (options.advantage) mode = mode === 'disadvantage' ? 'normal' : 'advantage'
   // A stat modifier lost for this kind of roll (Woozy: DEX on attacks) counts for nothing.
   const lostLabel = game.i18n.localize('CRAWLSPACE.Roll.ModLost')
   const kept = options.modifiers.map((modifier) =>
