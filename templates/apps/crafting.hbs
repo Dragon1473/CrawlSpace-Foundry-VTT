@@ -1,8 +1,8 @@
 <div class="craft-shell">
   <header class="craft-top">
     <nav class="craft-tabs">
-      <a class="{{#if (eq tab 'recipes')}}active{{/if}}" data-action="tab" data-tab="recipes"><i class="fa-solid fa-book-bookmark"></i> {{localize "CRAWLSPACE.Craft.Recipes"}}</a>
-      <a class="{{#if (eq tab 'experiment')}}active{{/if}}" data-action="tab" data-tab="experiment"><i class="fa-solid fa-flask-vial"></i> {{localize "CRAWLSPACE.Craft.Experiment"}}{{#if pending.length}} <span class="craft-count">{{pending.length}}</span>{{/if}}</a>
+      <a class="{{#if (eq tab 'recipes')}}active{{/if}}" data-action="craftTab" data-tab="recipes"><i class="fa-solid fa-book-bookmark"></i> {{localize "CRAWLSPACE.Craft.Recipes"}}</a>
+      <a class="{{#if (eq tab 'experiment')}}active{{/if}}" data-action="craftTab" data-tab="experiment"><i class="fa-solid fa-flask-vial"></i> {{localize "CRAWLSPACE.Craft.Experiment"}}{{#if pending.length}} <span class="craft-count">{{pending.length}}</span>{{/if}}</a>
     </nav>
     <span class="craft-approval" data-tooltip="{{localize 'CRAWLSPACE.Craft.ApprovalHint'}}"><i class="fa-solid fa-scale-balanced"></i> {{approval}}</span>
     {{#if gm}}<button type="button" class="icon" data-action="rules" data-tooltip="{{localize 'CRAWLSPACE.Craft.RulesTitle'}}"><i class="fa-solid fa-sliders"></i></button>{{/if}}

@@ -34,7 +34,7 @@ export class CraftingApp extends ActorPopup {
     position: { width: 1040, height: 700 },
     window: { resizable: true, icon: 'fa-solid fa-hammer' },
     actions: {
-      tab: CraftingApp.#onTab,
+      craftTab: CraftingApp.#onTab,
       category: CraftingApp.#onCategory,
       filter: CraftingApp.#onFilter,
       select: CraftingApp.#onSelect,
@@ -250,9 +250,11 @@ export class CraftingApp extends ActorPopup {
         this.render()
       })
     for (const field of html.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>('[data-desired-field]'))
-      field.addEventListener('change', () => {
+      // Kept as you type, without a re-render, so Send unlocks before you click it.
+      field.addEventListener('input', () => {
         ;(this.desired as any)[field.dataset.desiredField!] = field.value
-        this.render()
+        const send = html.querySelector<HTMLButtonElement>('[data-action="submitExperiment"]')
+        if (send) send.disabled = !(this.editable && this.bench.length && (this.desired.name.trim() || this.desired.uuid))
       })
     html.querySelector<HTMLSelectElement>('[data-bench-category]')?.addEventListener('change', (event) => (this.benchCategory = (event.target as HTMLSelectElement).value))
     html.querySelector<HTMLTextAreaElement>('[data-bench-note]')?.addEventListener('change', (event) => (this.benchNote = (event.target as HTMLTextAreaElement).value))
@@ -392,4 +394,78 @@ export class CraftingApp extends ActorPopup {
     const doc: any = await fromUuid(target.dataset.uuid ?? '')
     doc?.sheet?.render(true)
   }
+}
+
+const esc = (text: string) => foundry.utils.escapeHTML(String(text ?? ''))
+let lastPicked = ''
+
+/** Crawlers the GM can open crafting for: the players' own first, then the rest, by name. */
+function crafters() {
+  const played = (actor: any) => game.users.some((user: any) => !user.isGM && user.character?.id === actor.id)
+  const rank = (actor: any) => (played(actor) ? 0 : actor.hasPlayerOwner ? 1 : 2)
+  return game.actors.filter((actor: any) => actor.type === 'crawler' && actor.isOwner).sort((a: any, b: any) => rank(a) - rank(b) || a.name.localeCompare(b.name))
+}
+
+/**
+ * Open crafting without going through a sheet: the one selected token's actor, else the player's own crawler; the GM
+ * picks a crawler from a list.
+ */
+export async function openCraftingFor(actor?: any) {
+  if (actor) return CraftingApp.open(actor)
+  const controlled = (canvas?.tokens?.controlled ?? []).map((token: any) => token.actor).filter((owned: any) => owned?.isOwner)
+  if (controlled.length === 1) return CraftingApp.open(controlled[0])
+  const list = crafters()
+  if (!game.user.isGM) {
+    const own = game.user.character ?? list[0]
+    if (!own) return ui.notifications.warn(t('NoCrafter'))
+    return CraftingApp.open(own)
+  }
+  if (!list.length) return ui.notifications.warn(t('NoCrafter'))
+  if (list.length === 1) return CraftingApp.open(list[0])
+  const chosen = list.some((entry: any) => entry.id === lastPicked) ? lastPicked : list[0].id
+  const cards = list
+    .map((entry: any) => {
+      const player = game.users.find((user: any) => !user.isGM && user.character?.id === entry.id)
+      return `<label class="crawl-crafter-pick"><input type="radio" name="crafter" value="${entry.id}" ${entry.id === chosen ? 'checked' : ''}><img src="${esc(entry.img)}" alt=""><span>${esc(entry.name)}${player ? `<small>${esc(player.name)}</small>` : ''}</span></label>`
+    })
+    .join('')
+  const id = await foundry.applications.api.DialogV2.prompt({
+    window: { title: t('PickCrafter'), icon: 'fa-solid fa-hammer' },
+    classes: ['crawlspace', 'crawl-crafter-dialog'],
+    position: { width: 480 },
+    content: `<div class="crawl-crafter-list">${cards}</div>`,
+    ok: { label: t('Open'), icon: 'fa-solid fa-hammer', callback: (_event: Event, button: any) => button.form.elements.crafter.value },
+    rejectClose: false,
+  })
+  const picked = game.actors.get(id)
+  if (!picked) return
+  lastPicked = picked.id
+  return CraftingApp.open(picked)
+}
+
+/** A Crafting button among the token tools, for everyone, and at the foot of the Items directory for the GM. */
+export function registerCraftingControls() {
+  Hooks.on('getSceneControlButtons', (controls: any) => {
+    const tokens = controls.tokens
+    if (!tokens?.tools) return
+    tokens.tools.crawlCrafting = {
+      name: 'crawlCrafting',
+      order: Object.keys(tokens.tools).length + 1,
+      title: 'CRAWLSPACE.Craft.Title',
+      icon: 'fa-solid fa-hammer',
+      button: true,
+      visible: true,
+      onChange: () => openCraftingFor(),
+    }
+  })
+  Hooks.on('renderItemDirectory', (_app: any, html: HTMLElement) => {
+    if (!game.user.isGM || html.querySelector('[data-crawl-crafting]')) return
+    const footer = html.querySelector('.directory-footer') ?? html
+    const button = document.createElement('button')
+    button.type = 'button'
+    button.dataset.crawlCrafting = ''
+    button.innerHTML = `<i class="fa-solid fa-hammer"></i> ${t('Title')}`
+    button.addEventListener('click', () => openCraftingFor())
+    footer.append(button)
+  })
 }

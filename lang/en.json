@@ -977,7 +977,9 @@
       "UpgradesHint": "Table add-ons, comma separated. Recipes can require them.",
       "AutoLevel": "Levels up each floor",
       "AutoLevelHint": "Gains a tier each time its owner reaches a new floor (to tier 10).",
-      "TagsHint": "Comma separated. Recipes can ask for any item with a tag, and the approval rules can match tags."
+      "TagsHint": "Comma separated. Recipes can ask for any item with a tag, and the approval rules can match tags.",
+      "PickCrafter": "Whose crafting?",
+      "NoCrafter": "No crawler to craft with. Select a token or assign a character."
     },
     "Filter": {
       "Search": "Search…",
