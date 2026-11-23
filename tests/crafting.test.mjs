@@ -2,6 +2,8 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import {
   autoApproved,
+  benchMatches,
+  benchSignature,
   checkSkills,
   craftDifficulty,
   craftMinutes,
@@ -191,4 +193,28 @@ test('approval: always auto, always the GM, or auto only for the listed types, t
 test('a recipe can override the world setting either way', () => {
   assert.equal(autoApproved('gm', {}, { type: 'loot', tags: [] }, 'auto'), true)
   assert.equal(autoApproved('auto', {}, { type: 'loot', tags: [] }, 'gm'), false)
+})
+
+test('the same bench items give the same signature in any order; quantities and items change it', () => {
+  const a = benchSignature([{ name: 'Misc. Junk', source: 'Compendium.x.Item.junk', quantity: 4 }, { name: 'Glowing Moss', source: '', quantity: 1 }])
+  const b = benchSignature([{ name: 'glowing moss', source: '', quantity: 1 }, { name: 'Junk (renamed)', source: 'Compendium.x.Item.junk', quantity: 4 }])
+  assert.equal(a, b)
+  assert.notEqual(a, benchSignature([{ name: 'Misc. Junk', source: 'Compendium.x.Item.junk', quantity: 5 }, { name: 'Glowing Moss', source: '', quantity: 1 }]))
+  assert.notEqual(a, benchSignature([{ name: 'Misc. Junk', source: 'Compendium.x.Item.junk', quantity: 4 }]))
+})
+
+test('a bench matches a recipe when it holds every ingredient (enough of each) and nothing else', () => {
+  const ingredients = [
+    { name: 'Misc. Junk', uuid: 'Compendium.x.Item.junk', quantity: 4 },
+    { tag: 'herb', quantity: 2 },
+  ]
+  const junk = { name: 'Misc. Junk', source: 'Compendium.x.Item.junk', tags: ['junk'], quantity: 4 }
+  const mint = { name: 'Mint', source: '', tags: ['Herb'], quantity: 3 }
+  assert.equal(benchMatches(ingredients, [mint, junk]), true)
+  assert.equal(benchMatches(ingredients, [junk, { ...mint, quantity: 1 }]), false, 'too little')
+  assert.equal(benchMatches(ingredients, [junk]), false, 'missing one')
+  assert.equal(benchMatches(ingredients, [junk, mint, { name: 'Rock', source: '', tags: [], quantity: 1 }]), false, 'something extra')
+  assert.equal(benchMatches([], []), false)
+  // Matched by name when the ingredient has no source.
+  assert.equal(benchMatches([{ name: 'Mint', quantity: 1 }], [mint]), true)
 })

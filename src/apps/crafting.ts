@@ -17,12 +17,15 @@ import {
   studyBook,
   availableTables,
   categoryOf,
+  sourceOf,
+  tagsOf,
+  FAILED_FLAG,
   HELD_FLAG,
   TEACHES_FLAG,
   type RecipeEntry,
 } from '../actors/crafting'
 import { cancelExperiment, submitExperiment, type BenchEntry, type Desired } from './craft-review'
-import { ITEM_SIZES } from '../rules/crafting'
+import { ITEM_SIZES, benchMatches, benchSignature } from '../rules/crafting'
 
 const t = (key: string, data?: Record<string, unknown>) => (data ? game.i18n.format(`CRAWLSPACE.Craft.${key}`, data) : game.i18n.localize(`CRAWLSPACE.Craft.${key}`))
 
@@ -49,6 +52,7 @@ export class CraftingApp extends ActorPopup {
       submitExperiment: CraftingApp.#onSubmit,
       cancelExperiment: CraftingApp.#onCancel,
       openItem: CraftingApp.#onOpenItem,
+      useRecipe: CraftingApp.#onUseRecipe,
     },
   }
 
@@ -65,6 +69,7 @@ export class CraftingApp extends ActorPopup {
   desired: Desired = { name: '', type: 'loot', img: '', uuid: '', description: '' }
   benchCategory = ''
   benchNote = ''
+  benchTable = ''
   #entries: RecipeEntry[] = []
 
   static open(actor: any, options: { tab?: 'recipes' | 'experiment' } = {}) {
@@ -123,6 +128,13 @@ export class CraftingApp extends ActorPopup {
         const keys: string[] = item.getFlag('crawlspace', TEACHES_FLAG) ?? []
         return { id: item.id, name: item.name, img: item.img, count: keys.length, fresh: keys.filter((key) => !ctx.learned.has(key)).length }
       })
+    // The experiment bench: a recipe the crawler knows that uses exactly these items, or a mix that failed before.
+    const benchItems = this.#benchItems()
+    const known = benchItems.length ? rows.find((row) => row.check.state.unlocked && benchMatches(row.entry.recipe.ingredients, benchItems)) : undefined
+    const signature = benchItems.length ? benchSignature(benchItems) : ''
+    const failed = signature ? (actor.getFlag('crawlspace', FAILED_FLAG) ?? []).find((entry: any) => entry.signature === signature) : undefined
+    const tables = availableTables(actor)
+    if (!tables.some((table: any) => table.id === this.benchTable)) this.benchTable = ''
     const held: Record<string, any> = actor.getFlag('crawlspace', HELD_FLAG) ?? {}
     const pending = Object.keys(held).map((id) => {
       const message = game.messages.find((entry: any) => entry.flags?.crawlspace?.experimentId === id)
@@ -143,7 +155,15 @@ export class CraftingApp extends ActorPopup {
       search: this.search,
       recipes: recipes.map((recipe) => ({ ...recipe, selected: recipe.key === this.selected })),
       detail: chosen ? this.#detail(chosen.entry, chosen.check, ctx) : null,
-      tables: availableTables(actor).map((table: any) => ({ ...table, label: categoryOf(table.category).label, icon: categoryOf(table.category).icon })),
+      tables: tables.map((table: any) => ({ ...table, label: categoryOf(table.category).label, icon: categoryOf(table.category).icon })),
+      benchTables: Object.fromEntries([
+        ['', t('NoTableUsed')],
+        ...tables.map((table: any) => [table.id, `${table.name} · ${t('TierShort', { tier: table.tier })}${table.found ? ` · ${t('FoundHere')}` : ''}`]),
+      ]),
+      hasTables: tables.length > 0,
+      benchTable: this.benchTable,
+      known: known ? { key: known.entry.key, name: known.entry.output.name, img: known.entry.output.img, recipeName: known.entry.recipe.name } : null,
+      failed: failed ? { name: failed.name || t('Experiment'), img: failed.img } : null,
       books,
       pending,
       bench: this.bench,
@@ -256,6 +276,12 @@ export class CraftingApp extends ActorPopup {
         const send = html.querySelector<HTMLButtonElement>('[data-action="submitExperiment"]')
         if (send) send.disabled = !(this.editable && this.bench.length && (this.desired.name.trim() || this.desired.uuid))
       })
+    html.querySelector<HTMLSelectElement>('[data-bench-table]')?.addEventListener('change', (event) => {
+      this.benchTable = (event.target as HTMLSelectElement).value
+      const table = availableTables(this.actor).find((entry: any) => entry.id === this.benchTable)
+      if (table && !this.benchCategory) this.benchCategory = table.category
+      this.render()
+    })
     html.querySelector<HTMLSelectElement>('[data-bench-category]')?.addEventListener('change', (event) => (this.benchCategory = (event.target as HTMLSelectElement).value))
     html.querySelector<HTMLTextAreaElement>('[data-bench-note]')?.addEventListener('change', (event) => (this.benchNote = (event.target as HTMLTextAreaElement).value))
   }
@@ -278,6 +304,11 @@ export class CraftingApp extends ActorPopup {
     html.querySelector<HTMLElement>('[data-craft-empty]')?.toggleAttribute('hidden', shown > 0)
   }
 
+  /** The bench's materials, as the matching rules read them. */
+  #benchItems() {
+    return this.bench.filter((entry) => entry.kind === 'item').map((entry) => ({ name: entry.name, source: entry.source ?? '', tags: entry.tags ?? [], quantity: entry.quantity }))
+  }
+
   async #onBenchDrop(event: DragEvent) {
     const { data, item } = await droppedItem(event)
     if (!item) return
@@ -295,7 +326,7 @@ export class CraftingApp extends ActorPopup {
     if (!max) return ui.notifications.warn(t('NoneFree', { name: item.name }))
     const existing = this.bench.find((entry) => entry.kind === 'item' && entry.id === item.id)
     if (existing) existing.quantity = Math.min(max, existing.quantity + 1)
-    else this.bench.push({ kind: 'item', name: item.name, img: item.img, uuid: item.uuid, id: item.id, quantity: 1, max })
+    else this.bench.push({ kind: 'item', name: item.name, img: item.img, uuid: item.uuid, id: item.id, quantity: 1, max, source: sourceOf(item), tags: tagsOf(item.system) })
     void data
     return this.render()
   }
@@ -378,7 +409,15 @@ export class CraftingApp extends ActorPopup {
 
   static async #onSubmit(this: CraftingApp) {
     if (!this.bench.length || !(this.desired.name || this.desired.uuid)) return
-    const sent = await submitExperiment(this.actor, { bench: this.bench, desired: this.desired, category: this.benchCategory, note: this.benchNote })
+    const table = availableTables(this.actor).find((entry: any) => entry.id === this.benchTable)
+    const sent = await submitExperiment(this.actor, {
+      bench: this.bench,
+      desired: this.desired,
+      category: this.benchCategory,
+      note: this.benchNote,
+      signature: benchSignature(this.#benchItems()),
+      table: table ? { name: table.name, category: table.category, tier: table.tier, upgrades: table.upgrades, found: !!table.found } : null,
+    })
     if (!sent) return
     this.bench = []
     this.desired = { name: '', type: 'loot', img: '', uuid: '', description: '' }
@@ -388,6 +427,15 @@ export class CraftingApp extends ActorPopup {
 
   static async #onCancel(this: CraftingApp, _event: Event, target: HTMLElement) {
     await cancelExperiment(this.actor, target.dataset.id ?? '')
+  }
+
+  /** The bench matches a known recipe: show that recipe, ready to craft. */
+  static #onUseRecipe(this: CraftingApp, _event: Event, target: HTMLElement) {
+    this.selected = target.dataset.key ?? ''
+    this.tab = 'recipes'
+    this.category = ''
+    this.filter = 'all'
+    this.render()
   }
 
   static async #onOpenItem(this: CraftingApp, _event: Event, target: HTMLElement) {

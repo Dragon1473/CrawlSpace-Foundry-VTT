@@ -1175,7 +1175,19 @@
       "AutoLevelHint": "Gains a tier each time its owner reaches a new floor (to tier 10).",
       "TagsHint": "Comma separated. Recipes can ask for any item with a tag, and the approval rules can match tags.",
       "PickCrafter": "Whose crafting?",
-      "NoCrafter": "No crawler to craft with. Select a token or assign a character."
+      "NoCrafter": "No crawler to craft with. Select a token or assign a character.",
+      "WorkAt": "Work at",
+      "NoTableUsed": "No table",
+      "NoTableHere": "No table to work at.",
+      "FoundHere": "found here",
+      "FoundTableHint": "A table found in the dungeon ({where}): use it while you are close by. It never teaches recipes.",
+      "AtTable": "At a {name} (tier {tier})",
+      "KnownMatch": "You know a recipe for exactly this.",
+      "UseRecipe": "Use the recipe",
+      "FailedBefore": "You tried this mix before, hoping for {name}, and it failed.",
+      "FailedBeforeGm": "This crawler tried this same mix before and it failed.",
+      "SavesRecipe": "The recipe is saved on the item",
+      "SavesRecipeHint": "Granting saves this mix as a recipe on the item given (an editable copy if it came from a compendium), and the crawler learns it."
     },
     "Filter": {
       "Search": "Search…",

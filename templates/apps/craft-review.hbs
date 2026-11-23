@@ -10,6 +10,8 @@
     </div>
     {{#if desired.description}}<p class="craft-note">{{desired.description}}</p>{{/if}}
     {{#if note}}<p class="craft-note"><i class="fa-solid fa-comment"></i> {{note}}</p>{{/if}}
+    {{#if table}}<p class="craft-note"><i class="fa-solid fa-table-cells-large"></i> {{localize "CRAWLSPACE.Craft.AtTable" name=table.name tier=table.tier}}{{#if table.found}} · {{localize "CRAWLSPACE.Craft.FoundHere"}}{{/if}}</p>{{/if}}
+    {{#if failedBefore}}<p class="craft-note craft-warn"><i class="fa-solid fa-triangle-exclamation"></i> {{localize "CRAWLSPACE.Craft.FailedBeforeGm"}}</p>{{/if}}
     <div class="craft-review-uses">
       <div>
         <h4>{{localize "CRAWLSPACE.Craft.Materials"}}</h4>
@@ -62,7 +64,7 @@
       <label>{{localize "CRAWLSPACE.Craft.SalvageLabel"}} <select name="salvage">{{selectOptions salvageChoices selected=salvage}}</select></label>
       {{else}}
       <label>{{localize "CRAWLSPACE.Craft.Quantity"}} <input type="number" name="quantity" min="1" value="{{quantity}}"></label>
-      <label class="check"><input type="checkbox" name="saveRecipe" {{checked saveRecipe}}> {{localize "CRAWLSPACE.Craft.SaveRecipe"}}</label>
+      <span class="hint" data-tooltip="{{localize 'CRAWLSPACE.Craft.SavesRecipeHint'}}"><i class="fa-solid fa-book-medical"></i> {{localize "CRAWLSPACE.Craft.SavesRecipe"}}</span>
       {{/if}}
       <label class="check"><input type="checkbox" name="consume" {{checked consume}}> {{localize "CRAWLSPACE.Craft.UseMaterials"}}</label>
     </div>

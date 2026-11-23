@@ -3,20 +3,22 @@
  * The GM gets a card and a review window to grant it, edit it first, give something else, or let it fail.
  * The bench's materials are set aside (not usable for other crafts) until the GM answers.
  */
-import { categoryOf, giveItem, HELD_FLAG, learnRecipes, RECIPES_FLAG, sourceOf, spendTakes } from '../actors/crafting'
+import { categoryOf, FAILED_FLAG, giveItem, HELD_FLAG, learnRecipes, RECIPES_FLAG, sourceOf, spendTakes } from '../actors/crafting'
 import { rollCheck } from '../dice/rolls'
-import { randomId, recipeKey } from '../rules/crafting'
+import { benchSignature, normalizeRecipe, randomId, recipeKey } from '../rules/crafting'
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api
 const t = (key: string, data?: Record<string, unknown>) => (data ? game.i18n.format(`CRAWLSPACE.Craft.${key}`, data) : game.i18n.localize(`CRAWLSPACE.Craft.${key}`))
 const esc = (value: unknown) => foundry.utils.escapeHTML(String(value ?? ''))
 
-export type BenchEntry = { kind: 'item' | 'skill' | 'spell'; name: string; img: string; uuid: string; id: string; quantity: number; rank?: number; max?: number }
+export type BenchEntry = { kind: 'item' | 'skill' | 'spell'; name: string; img: string; uuid: string; id: string; quantity: number; rank?: number; max?: number; source?: string; tags?: string[] }
+/** The crafting table an experiment was made at. */
+export type BenchTable = { name: string; category: string; tier: number; upgrades: string[]; found: boolean }
 export type Desired = { name: string; type: string; img: string; uuid: string; description: string }
 
 const gmIds = () => game.users.filter((user: any) => user.isGM).map((user: any) => user.id)
 
-export async function submitExperiment(actor: any, data: { bench: BenchEntry[]; desired: Desired; category: string; note: string }) {
+export async function submitExperiment(actor: any, data: { bench: BenchEntry[]; desired: Desired; category: string; note: string; signature: string; table: BenchTable | null }) {
   if (!game.users.activeGM) {
     ui.notifications.warn(game.i18n.localize('CRAWLSPACE.Warn.NeedGM'))
     return false
@@ -32,6 +34,7 @@ export async function submitExperiment(actor: any, data: { bench: BenchEntry[]; 
     <div class="craft-card-output"><img src="${esc(data.desired.img || 'icons/svg/mystery-man.svg')}" alt=""><span>${esc(data.desired.name)}</span></div>
     ${data.category ? `<p class="craft-card-meta">${esc(categoryOf(data.category).label)}</p>` : ''}
     <ul class="craft-card-list">${used}</ul>
+    ${data.table ? `<p class="craft-card-meta"><i class="fa-solid fa-table-cells-large"></i> ${t('AtTable', { name: esc(data.table.name), tier: data.table.tier })}</p>` : ''}
     ${data.note ? `<p class="craft-card-note">${esc(data.note)}</p>` : ''}
     <div class="card-buttons" data-gm-only><button type="button" data-crawl-action="craft-review"><i class="fa-solid fa-magnifying-glass"></i> ${t('Review')}</button></div>
   </div>`
@@ -39,7 +42,7 @@ export async function submitExperiment(actor: any, data: { bench: BenchEntry[]; 
     content,
     speaker: ChatMessage.getSpeaker({ actor }),
     whisper: gmIds(),
-    flags: { crawlspace: { kind: 'craftExperiment', experimentId: id, actorUuid: actor.uuid, bench: data.bench, desired: data.desired, category: data.category, note: data.note } },
+    flags: { crawlspace: { kind: 'craftExperiment', experimentId: id, actorUuid: actor.uuid, bench: data.bench, desired: data.desired, category: data.category, note: data.note, signature: data.signature, table: data.table } },
   })
   ui.notifications.info(t('ExperimentSent'))
   return !!message
@@ -93,6 +96,53 @@ async function itemFromWish(desired: Desired) {
   })
 }
 
+/** What the bench's materials were, by the item each came from (read before any are used up). */
+function benchMaterials(actor: any, bench: BenchEntry[]) {
+  return bench
+    .filter((entry) => entry.kind === 'item')
+    .map((entry) => ({ name: entry.name, img: entry.img, source: entry.source || sourceOf(actor.items.get(entry.id)), quantity: Math.floor(entry.quantity) }))
+}
+
+/** A failed mix is remembered on the crawler, so the same items on the bench later warn them. */
+async function rememberFailure(actor: any, flags: any) {
+  const signature = flags.signature || benchSignature(benchMaterials(actor, flags.bench ?? []))
+  if (!signature) return
+  const failed = (actor.getFlag('crawlspace', FAILED_FLAG) ?? []).filter((entry: any) => entry.signature !== signature)
+  await actor.setFlag('crawlspace', FAILED_FLAG, [...failed, { signature, name: flags.desired?.name ?? '', img: flags.desired?.img ?? '' }])
+}
+
+/**
+ * Whatever the GM granted (the wish, an edited copy or another item) gets the experiment as a recipe, which the
+ * crawler now knows. A compendium item gets a world copy to carry it. The same mix already on the item is not added twice.
+ */
+async function saveExperimentRecipe(actor: any, source: any, flags: any, quantity: number) {
+  let host = source
+  if (source.pack) host = await itemFromWish({ ...flags.desired, uuid: source.uuid })
+  const materials = benchMaterials(actor, flags.bench ?? [])
+  const signature = benchSignature(materials)
+  const existing = (host.getFlag('crawlspace', RECIPES_FLAG) ?? []).map(normalizeRecipe)
+  const same = existing.find(
+    (recipe: any) => benchSignature(recipe.ingredients.map((entry: any) => ({ name: entry.name ?? entry.tag ?? '', source: entry.uuid ?? '', quantity: entry.quantity }))) === signature,
+  )
+  if (same) return learnRecipes(actor, [recipeKey(host.uuid, same.id)])
+  const table: BenchTable | null = flags.table ?? null
+  const recipe = {
+    id: randomId(),
+    category: flags.category || table?.category || 'mundane',
+    visibility: 'hidden',
+    ingredients: materials.map((entry) => ({ name: entry.name, img: entry.img, uuid: entry.source, quantity: entry.quantity })),
+    skills: (flags.bench as BenchEntry[]).filter((entry) => entry.kind !== 'item').map((entry) => ({ name: entry.name, rank: 0 })),
+    tables: table ? [{ category: table.category, tier: 1, upgrades: [] }] : [],
+    output: { quantity },
+    hint: '',
+  }
+  await host.setFlag('crawlspace', RECIPES_FLAG, [...existing, recipe])
+  await learnRecipes(actor, [recipeKey(host.uuid, recipe.id)])
+  // It worked this time: forget any earlier failure with the same mix.
+  const failed = actor.getFlag('crawlspace', FAILED_FLAG) ?? []
+  if (failed.some((entry: any) => entry.signature === signature)) await actor.setFlag('crawlspace', FAILED_FLAG, failed.filter((entry: any) => entry.signature !== signature))
+}
+
 /** Carry out the GM's decision on an experiment card. */
 export async function resolveExperiment(message: any, decision: Decision) {
   const flags = message.flags?.crawlspace
@@ -108,6 +158,7 @@ export async function resolveExperiment(message: any, decision: Decision) {
     if (decision.consume) await spendTakes(actor, takes.map((take) => ({ id: take.id, quantity: take.quantity - kept(take.quantity) })))
     lines.push(t('ExperimentFailed'))
     if (decision.consume) lines.push(t(`Salvage.${decision.salvage}`))
+    await rememberFailure(actor, flags)
   } else {
     let source: any = decision.itemUuid ? await fromUuid(decision.itemUuid) : null
     if (!source) source = await itemFromWish(flags.desired)
@@ -117,25 +168,8 @@ export async function resolveExperiment(message: any, decision: Decision) {
     await giveItem(actor, source.toObject(), quantity, source.uuid)
     lines.push(t('ExperimentGranted', { name: esc(source.name), quantity }))
     // Keep the recipe: it goes on the item (a world copy if it came from a compendium) and the crawler knows it.
-    if (decision.saveRecipe) {
-      let host = source
-      if (source.pack) host = await itemFromWish({ ...flags.desired, uuid: source.uuid })
-      const recipe = {
-        id: randomId(),
-        category: flags.category || 'mundane',
-        visibility: 'hidden',
-        ingredients: (flags.bench as BenchEntry[])
-          .filter((entry) => entry.kind === 'item')
-          .map((entry) => {
-            const owned = actor.items.get(entry.id)
-            return { name: entry.name, img: entry.img, uuid: sourceOf(owned), quantity: entry.quantity }
-          }),
-        skills: (flags.bench as BenchEntry[]).filter((entry) => entry.kind !== 'item').map((entry) => ({ name: entry.name, rank: 0 })),
-        output: { quantity },
-        hint: '',
-      }
-      await host.setFlag('crawlspace', RECIPES_FLAG, [...(host.getFlag('crawlspace', RECIPES_FLAG) ?? []), recipe])
-      await learnRecipes(actor, [recipeKey(host.uuid, recipe.id)])
+    if (decision.saveRecipe !== false) {
+      await saveExperimentRecipe(actor, source, flags, quantity)
       lines.push(t('RecipeSaved'))
     }
   }
@@ -177,11 +211,11 @@ export class ExperimentReview extends HandlebarsApplicationMixin(ApplicationV2) 
   quantity = 1
   consume = true
   salvage: Decision['salvage'] = 'half'
-  saveRecipe = false
+  saveRecipe = true
   note = ''
   checkSkill = ''
   checkDc = 15
-  checkBonus = 0
+  checkBonus: number | null = null
   lastRoll: { total: number; outcome: string } | null = null
 
   constructor(message: any, options: any = {}) {
@@ -208,6 +242,8 @@ export class ExperimentReview extends HandlebarsApplicationMixin(ApplicationV2) 
     const edited: any = this.editedUuid ? fromUuidSync(this.editedUuid) : null
     const skills = actor ? actor.items.filter((item: any) => item.type === 'skill' || item.type === 'spell') : []
     if (!this.checkSkill) this.checkSkill = bench.find((entry) => entry.kind !== 'item')?.name ?? ''
+    if (this.checkBonus === null) this.checkBonus = Math.floor(Number(flags.table?.tier) || 0)
+    const failedBefore = !!flags.signature && !!actor && (actor.getFlag('crawlspace', FAILED_FLAG) ?? []).some((entry: any) => entry.signature === flags.signature)
     return {
       actor,
       bench,
@@ -216,6 +252,8 @@ export class ExperimentReview extends HandlebarsApplicationMixin(ApplicationV2) 
       desired: flags.desired,
       category: flags.category ? categoryOf(flags.category).label : '',
       note: flags.note,
+      table: flags.table,
+      failedBefore,
       answered: flags.answered,
       outcomes: (['grant', 'edit', 'other', 'fail'] as const).map((id) => ({ id, label: t(`Outcome.${id}`), icon: { grant: 'fa-gift', edit: 'fa-pen-to-square', other: 'fa-right-left', fail: 'fa-burst' }[id], active: this.outcome === id })),
       outcome: this.outcome,

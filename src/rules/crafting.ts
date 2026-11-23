@@ -304,3 +304,34 @@ export function autoApproved(mode: string, rules: ApprovalRules, output: { type:
     (!!output.rarity && rarities.includes(low(output.rarity)))
   )
 }
+
+/** An item on the experiment bench: what it is (the item it came from, else its name), its tags and how many. */
+export type BenchItem = { name: string; source: string; tags?: string[]; quantity: number }
+
+const benchId = (item: { name: string; source: string }) => (str(item.source) || low(item.name)).toLowerCase()
+
+/** The same items in the same amounts give the same signature, in any order (how failed experiments are remembered). */
+export function benchSignature(items: { name: string; source: string; quantity: number }[]) {
+  return items
+    .map((item) => `${benchId(item)}×${Math.max(1, Math.floor(item.quantity))}`)
+    .sort()
+    .join('|')
+}
+
+/** The bench holds a recipe's ingredients, enough of each, and nothing else. Tagged ingredients are matched last. */
+export function benchMatches(ingredients: Ingredient[], bench: BenchItem[]) {
+  if (!ingredients.length || ingredients.length !== bench.length) return false
+  const used = new Set<number>()
+  const ordered = [...ingredients].sort((a, b) => Number(!!a.tag) - Number(!!b.tag))
+  for (const ingredient of ordered) {
+    const need = Math.max(1, Math.floor(ingredient.quantity))
+    const fits = (item: BenchItem) =>
+      ingredient.tag
+        ? (item.tags ?? []).some((tag) => low(tag) === low(ingredient.tag))
+        : (!!ingredient.uuid && str(item.source) === ingredient.uuid) || (!!ingredient.name && low(item.name) === low(ingredient.name))
+    const index = bench.findIndex((item, i) => !used.has(i) && Math.floor(item.quantity) >= need && fits(item))
+    if (index < 0) return false
+    used.add(index)
+  }
+  return true
+}

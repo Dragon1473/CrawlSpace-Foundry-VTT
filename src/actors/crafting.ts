@@ -28,6 +28,8 @@ import { spaceTables } from './personal-space'
 
 export const RECIPES_FLAG = 'recipes'
 export const TEACHES_FLAG = 'teaches'
+/** Bench mixes the GM failed, on the crawler: { signature, name, img } (rules/crafting.ts benchSignature). */
+export const FAILED_FLAG = 'failedExperiments'
 export const LEARNED_FLAG = 'learnedRecipes'
 export const HELD_FLAG = 'heldForCrafting'
 
@@ -55,7 +57,7 @@ export function sourceOf(item: any): string {
   return item?._stats?.compendiumSource ?? item?._stats?.duplicateSource ?? item?.flags?.core?.sourceId ?? item?.flags?.crawlspace?.craftedFrom ?? ''
 }
 
-const tagsOf = (system: any) => (Array.isArray(system?.tags) ? system.tags : String(system?.tags ?? '').split(',')).map((tag: string) => tag.trim()).filter(Boolean)
+export const tagsOf = (system: any) => (Array.isArray(system?.tags) ? system.tags : String(system?.tags ?? '').split(',')).map((tag: string) => tag.trim()).filter(Boolean)
 
 /** Quantities set aside for experiments the GM hasn't answered yet. */
 function heldQuantities(actor: any) {
@@ -73,7 +75,41 @@ export function availableTables(actor: any) {
   const own = actor.items
     .filter((item: any) => item.type === 'craftingTable' && !item.system.broken && (Number(item.system.quantity) || 0) > 0)
     .map((item: any) => ({ id: item.id, name: item.name, category: item.system.category, tier: Math.floor(Number(item.system.tier) || 1), upgrades: item.system.upgrades ?? [] }))
-  return [...own, ...spaceTables(actor)]
+  return [...own, ...spaceTables(actor), ...foundTables(actor)]
+}
+
+/** How close a crawler's token must be to a table found in the dungeon to use it. */
+const FOUND_REACH_FT = 10
+
+/**
+ * Tables found in the dungeon: a token on the crawler's scene (not a crawler or a Personal Space) whose actor carries
+ * crafting tables, within reach of one of the crawler's tokens. They count for crafting (requirements and the table
+ * bonus) and experiments, never for unlocking recipes: craftContext leaves them out.
+ */
+export function foundTables(actor: any) {
+  const scene = canvas?.scene
+  if (!scene || actor?.type !== 'crawler') return []
+  const mine = actor.getActiveTokens?.(false, true) ?? []
+  const here = mine.filter((token: any) => token.parent === scene)
+  if (!here.length) return []
+  const tables: any[] = []
+  for (const token of scene.tokens) {
+    const holder = token.actor
+    if (!holder || holder === actor || ['crawler', 'personalSpace'].includes(holder.type)) continue
+    const items = holder.items.filter((item: any) => item.type === 'craftingTable' && !item.system.broken && (Number(item.system.quantity) || 0) > 0)
+    if (!items.length) continue
+    const near = here.some((own: any) => {
+      try {
+        return canvas.grid.measurePath([own.object?.center ?? own, token.object?.center ?? token]).distance <= FOUND_REACH_FT + Math.max(0, (Math.max(token.width, token.height) - 1) * canvas.grid.distance)
+      } catch {
+        return false
+      }
+    })
+    if (!near) continue
+    for (const item of items)
+      tables.push({ id: `found-${token.id}-${item.id}`, name: item.name, category: item.system.category, tier: Math.floor(Number(item.system.tier) || 1), upgrades: item.system.upgrades ?? [], found: true, where: token.name })
+  }
+  return tables
 }
 
 export function craftContext(actor: any): CraftContext {

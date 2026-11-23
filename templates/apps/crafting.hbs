@@ -19,7 +19,7 @@
       <section class="craft-rail-box">
         <h4><i class="fa-solid fa-table-cells-large"></i> {{localize "CRAWLSPACE.Craft.YourTables"}}</h4>
         {{#each tables}}
-        <div class="craft-table-chip"><i class="{{icon}}"></i> {{label}} <span class="craft-tier">{{localize "CRAWLSPACE.Craft.TierShort" tier=tier}}</span></div>
+        <div class="craft-table-chip{{#if found}} found{{/if}}" {{#if found}}data-tooltip="{{localize 'CRAWLSPACE.Craft.FoundTableHint' where=where}}"{{/if}}><i class="{{#if found}}fa-solid fa-dungeon{{else}}{{icon}}{{/if}}"></i> {{label}} <span class="craft-tier">{{localize "CRAWLSPACE.Craft.TierShort" tier=tier}}</span></div>
         {{else}}<p class="hint">{{localize "CRAWLSPACE.Craft.NoTables"}}</p>{{/each}}
       </section>
       {{#if books.length}}
@@ -138,10 +138,21 @@
         <p class="craft-drop-hint"><i class="fa-solid fa-hand-holding-droplet"></i> {{localize "CRAWLSPACE.Craft.BenchHint"}}</p>
         {{/each}}
       </div>
+      {{#if failed}}<p class="craft-failed-note"><i class="fa-solid fa-triangle-exclamation"></i> {{localize "CRAWLSPACE.Craft.FailedBefore" name=failed.name}}</p>{{/if}}
+      <label class="craft-bench-table"><span><i class="fa-solid fa-table-cells-large"></i> {{localize "CRAWLSPACE.Craft.WorkAt"}}</span>
+        {{#if hasTables}}<select data-bench-table>{{selectOptions benchTables selected=benchTable}}</select>{{else}}<span class="hint">{{localize "CRAWLSPACE.Craft.NoTableHere"}}</span>{{/if}}
+      </label>
     </section>
     <section class="craft-bench-col">
       <h3><i class="fa-solid fa-wand-magic-sparkles"></i> {{localize "CRAWLSPACE.Craft.Hoping"}}</h3>
       <div class="craft-drop craft-desired" data-desired-drop>
+        {{#if known}}
+        <div class="craft-known">
+          <img src="{{known.img}}" alt="">
+          <div><strong>{{known.name}}</strong><span><i class="fa-solid fa-book-bookmark"></i> {{localize "CRAWLSPACE.Craft.KnownMatch"}}</span></div>
+          <button type="button" class="craft-mini" data-action="useRecipe" data-key="{{known.key}}"><i class="fa-solid fa-hammer"></i> {{localize "CRAWLSPACE.Craft.UseRecipe"}}</button>
+        </div>
+        {{/if}}
         {{#if desired.uuid}}
         <div class="craft-desired-item">
           <img src="{{desired.img}}" alt="" data-action="openItem" data-uuid="{{desired.uuid}}">
