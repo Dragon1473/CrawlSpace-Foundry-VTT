@@ -4,6 +4,7 @@
       <h3><i class="fa-solid fa-hammer"></i> {{localize "CRAWLSPACE.Craft.RecipesForThis"}}</h3>
       <button type="button" data-recipe-op="add"><i class="fa-solid fa-plus"></i> {{localize "CRAWLSPACE.Craft.AddRecipe"}}</button>
     </div>
+    {{#if craft.host}}<p class="hint recipe-host"><i class="fa-solid fa-link"></i> {{localize "CRAWLSPACE.Craft.RecipesLiveOn" name=craft.host.name}} <a data-open-host>{{localize "CRAWLSPACE.Craft.OpenItem"}}</a></p>{{/if}}
     {{#unless craft.recipes.length}}<p class="hint">{{localize "CRAWLSPACE.Craft.NoRecipesHere"}}</p>{{/unless}}
 
     {{#each craft.recipes as |recipe|}}

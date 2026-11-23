@@ -162,6 +162,8 @@ export async function resolveExperiment(message: any, decision: Decision) {
   } else {
     let source: any = decision.itemUuid ? await fromUuid(decision.itemUuid) : null
     if (!source) source = await itemFromWish(flags.desired)
+    // The recipe can't go on a compendium item: give a world copy instead, so the crawler's item points at it.
+    if (source.pack && decision.saveRecipe !== false) source = await itemFromWish({ ...flags.desired, uuid: source.uuid })
     if (decision.consume) await spendTakes(actor, takes)
     const quantity = Math.max(1, Math.floor(decision.quantity) || 1)
     granted = source

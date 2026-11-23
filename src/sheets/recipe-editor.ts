@@ -2,7 +2,7 @@
  * The item sheet's Crafting tab (GM only): the recipes that make this item, and the recipes the item teaches when
  * a crawler studies it (a recipe book or blueprint). Drag items, materials, skills and spells onto the drop zones.
  */
-import { craftCategories, RECIPES_FLAG, TEACHES_FLAG } from '../actors/crafting'
+import { craftCategories, RECIPES_FLAG, sourceOf, TEACHES_FLAG } from '../actors/crafting'
 import { BONUS_KINDS, CRAFT_METHODS, craftDifficulty, craftMinutes, formatMinutes, ITEM_SIZES, normalizeRecipe, randomId, recipeKey, UNLOCK_TYPES, VISIBILITIES } from '../rules/crafting'
 
 const t = (key: string) => game.i18n.localize(`CRAWLSPACE.Craft.${key}`)
@@ -12,11 +12,29 @@ function recipesOf(item: any) {
   return (item.getFlag('crawlspace', RECIPES_FLAG) ?? []).map(normalizeRecipe)
 }
 
+/**
+ * Where an item's recipes live. A crawler's copy carries none (giveItem leaves them off), so its recipes are the ones
+ * on the item it was made or taken from: the item it was crafted from first, then its source. Locked compendium
+ * items can't take edits, so they only count when they already hold recipes.
+ */
+export function recipeHost(item: any) {
+  if (!item?.parent || recipesOf(item).length) return item
+  const candidates = [item.flags?.crawlspace?.craftedFrom, sourceOf(item)]
+    .filter(Boolean)
+    .map((uuid: string) => fromUuidSync(uuid))
+    .filter((doc: any) => doc?.documentName === 'Item' && !doc.parent)
+  const withRecipes = candidates.find((doc: any) => (doc.flags?.crawlspace?.[RECIPES_FLAG] ?? []).length)
+  if (withRecipes) return withRecipes
+  return candidates.find((doc: any) => !doc.pack || !doc.compendium?.locked) ?? item
+}
+
 export function recipeEditorContext(item: any) {
   const categories = Object.fromEntries(craftCategories().map((category) => [category.id, category.label]))
   const teaches: string[] = item.getFlag('crawlspace', TEACHES_FLAG) ?? []
+  const host = recipeHost(item)
   return {
-    recipes: recipesOf(item).map((recipe: any, index: number) => ({
+    host: host === item ? null : { name: host.name, uuid: host.uuid, pack: !!host.pack },
+    recipes: recipesOf(host).map((recipe: any, index: number) => ({
       ...recipe,
       index,
       computedDifficulty: craftDifficulty({ ...recipe, difficulty: null }),
@@ -59,11 +77,15 @@ export function bindRecipeEditor(sheet: any, html: HTMLElement) {
   const item = sheet.document
   const root = html.querySelector<HTMLElement>('[data-recipe-editor]')
   if (!root || !game.user.isGM) return
+  // Recipe edits go to the item that holds them (the source of a crawler's copy); teaching stays on this item.
+  const host = recipeHost(item)
   const update = async (mutate: (recipes: any[]) => void) => {
-    const recipes = recipesOf(item)
+    const recipes = recipesOf(host)
     mutate(recipes)
-    await saveRecipes(item, recipes)
+    await saveRecipes(host, recipes)
+    if (host !== item) sheet.render()
   }
+  root.querySelector<HTMLElement>('[data-open-host]')?.addEventListener('click', () => host.sheet?.render(true))
 
   root.addEventListener('change', (event) => {
     const input = event.target as HTMLInputElement
@@ -113,7 +135,7 @@ export function bindRecipeEditor(sheet: any, html: HTMLElement) {
         return item.setFlag('crawlspace', TEACHES_FLAG, (item.getFlag('crawlspace', TEACHES_FLAG) ?? []).filter((entry: string) => entry !== key))
       }
       case 'teachOwn': {
-        const own = recipesOf(item).map((recipe: any) => recipeKey(item.uuid, recipe.id))
+        const own = recipesOf(host).map((recipe: any) => recipeKey(host.uuid, recipe.id))
         return item.setFlag('crawlspace', TEACHES_FLAG, [...new Set([...(item.getFlag('crawlspace', TEACHES_FLAG) ?? []), ...own])])
       }
     }
