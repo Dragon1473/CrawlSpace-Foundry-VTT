@@ -1,0 +1,13 @@
+{{!-- Party screen header (apps/party-screen.ts): the party's name (the leader or GM can change it), then the tabs. --}}
+<header class="party-head">
+  {{#if canLead}}
+  <input class="party-name-input" type="text" name="partyName" value="{{partyName}}" placeholder="{{fallback}}" maxlength="80" aria-label="{{localize 'CRAWLSPACE.PartyScreen.PartyName'}}" data-tooltip="{{localize 'CRAWLSPACE.PartyScreen.PartyNameHint'}}">
+  {{else}}
+  <h2 class="party-name">{{partyLabel}}</h2>
+  {{/if}}
+  <nav class="tabs pf-tabs" data-group="primary">
+    {{#each tabList as |tab|}}
+    <a class="{{tab.cssClass}}" data-action="tab" data-group="{{tab.group}}" data-tab="{{tab.id}}">{{localize tab.label}}</a>
+    {{/each}}
+  </nav>
+</header>

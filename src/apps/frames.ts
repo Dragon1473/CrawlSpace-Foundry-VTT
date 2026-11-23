@@ -11,6 +11,7 @@ import { openParties, partyCrawlers, playerPartyLabel } from '../actors/party'
 import { crawlerMarks, framePlayers } from '../rules/crawler-marks'
 import { healthColor } from '../rules/boss-bar'
 import { openPartyScreen, refreshPartyScreen, registerPartyScreen } from './party-screen'
+import { titledNameOf } from '../actors/party-leader'
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api
 
@@ -112,6 +113,7 @@ class CrawlerFrames extends HandlebarsApplicationMixin(ApplicationV2) {
       return {
         uuid: actor.uuid,
         name: actor.name,
+        displayName: game.settings.get('crawlspace', 'crawlerFrameTitles') ? titledNameOf(actor) : actor.name,
         players: framePlayers(players, !!game.settings.get('crawlspace', 'crawlerFramePlayers')),
         ...marksOf(actor),
         pct,

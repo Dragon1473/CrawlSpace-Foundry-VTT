@@ -1987,6 +1987,23 @@
       "MembershipHint": "Put a crawler in a party with Choose Party… in the Actors list's right-click menu."
     },
     "PartyScreen": {
+      "PartyName": "Party name",
+      "PartyNameHint": "The party leader (or the GM) names the party.",
+      "SetTitle": "Set title…",
+      "TitleLabel": "Party title",
+      "TitleHint": "Princess, the Destroyer…",
+      "TitlePosition": "Shows",
+      "Position": {
+        "before": "Before the name",
+        "after": "After the name"
+      },
+      "TitleFor": "Party title: {name}",
+      "Save": "Save",
+      "NoGM": "A GM needs to be logged in to make that change.",
+      "LeaderSetting": "Party leader names the party",
+      "LeaderSettingHint": "The party leader's players can rename the party and give party crawlers titles. Off: only the GM can.",
+      "FrameTitlesSetting": "Party titles in crawler frames",
+      "FrameTitlesSettingHint": "Show each crawler's party title with its name in the crawler frames. Off: just the name.",
       "Title": "Party",
       "Open": "Party screen",
       "KeybindHint": "Opens the party screen.",

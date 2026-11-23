@@ -4269,7 +4269,7 @@
   .crawl-party-screen h4 { margin: 0 0 3px; font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--hud-cyan); }
   .crawl-party-screen .trait-chip { display: inline-block; margin: 0 3px 3px 0; padding: 0 6px; border: 1px solid var(--dcc-blue-light); border-radius: 2px; background: var(--btn-bg); font-size: 11px; }
   .crawl-party-screen .none { opacity: 0.6; }
-  .crawl-party-screen .member-columns { display: grid; grid-template-columns: minmax(0, 300px) 1fr; gap: 12px; align-items: start; }
+  .crawl-party-screen .member-columns { display: grid; grid-template-columns: minmax(0, 400px) 1fr; gap: 12px; align-items: start; }
   .crawl-party-screen .member-doll .crawl-paper-doll { margin: 0; }
   .crawl-party-screen .member-lists ul { margin: 0 0 8px; padding: 0; list-style: none; }
   .crawl-party-screen .member-lists li { display: flex; align-items: center; gap: 6px; padding: 2px 4px; border-bottom: 1px solid rgb(131 223 255 / 20%); background: var(--row-bg); }
@@ -4522,4 +4522,17 @@
   .crawl-crafter-pick img { width: 36px; height: 36px; flex: none; border: none; border-radius: 6px; object-fit: cover; }
   .crawl-crafter-pick span { display: flex; flex-direction: column; min-width: 0; font-weight: 700; line-height: 1.2; }
   .crawl-crafter-pick small { font-weight: 400; opacity: 0.7; }
+}
+
+/* Party screen header: the party's name beside the tabs; party titles on the cards. */
+@layer system {
+  .crawl-party-screen .party-head { display: flex; flex: none; align-items: center; gap: 12px; margin: 8px 10px 0; }
+  .crawl-party-screen .party-head nav.tabs { flex: 1; margin: 0; }
+  .crawl-party-screen .party-head .party-name-input { flex: 0 1 320px; min-width: 120px; height: 32px; font-size: 16px; font-weight: 700; }
+  .crawl-party-screen .party-head .party-name { flex: 0 1 320px; margin: 0; border: none; font-size: 18px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .crawl-party-screen .member-title { color: var(--hud-cyan); font-weight: 400; font-style: italic; }
+  .crawl-party-screen .member-title-fields { display: flex; flex-wrap: wrap; gap: 6px 12px; }
+  .crawl-party-screen .window-content .member-title-fields label { display: flex; flex-direction: row; align-items: center; gap: 6px; }
+  .crawl-party-screen .member-title-fields input { width: 220px; }
+  .crawl-title-dialog { display: flex; flex-direction: column; gap: 8px; }
 }

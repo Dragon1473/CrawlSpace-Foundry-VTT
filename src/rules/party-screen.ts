@@ -1,7 +1,7 @@
 /**
  * The party screen's numbers, kept free of Foundry so they can be tested: each crawler's unenhanced stat points,
  * who leads the party (the most unenhanced stat points), and the party's skills and spells (each once, at the
- * best rank anyone has, with everyone who has it).
+ * best rank anyone has, with everyone who has it), and party titles.
  */
 
 /** The base scores (before enhancements) added up, rounded down; blank stats count 0. */
@@ -11,10 +11,51 @@ export function unenhancedTotal(attributes: Record<string, { value?: number | nu
   return total
 }
 
-/** The ids of the party's leaders: the most unenhanced stat points (all of them on a tie, none when nobody has any). */
-export function partyLeaders(members: { id: string; unenhanced: number }[]) {
-  const best = Math.max(0, ...members.map((member) => member.unenhanced))
-  return new Set(best > 0 ? members.filter((member) => member.unenhanced === best).map((member) => member.id) : [])
+/** The stat totals (after enhancements) added up, rounded down; blank stats count 0. */
+export function enhancedTotal(attributes: Record<string, { total?: number | null } | undefined> | null | undefined) {
+  let total = 0
+  for (const stat of Object.values(attributes ?? {})) total += Math.floor(Number(stat?.total) || 0)
+  return total
+}
+
+export interface LeaderCandidate {
+  id: string
+  name: string
+  unenhanced: number
+  enhanced: number
+  evade: number
+}
+
+/**
+ * The party leader's id: the most unenhanced stat points, then the highest enhanced score, then the highest
+ * Evade, then the name alphabetically. Null for an empty party.
+ */
+export function partyLeader(members: LeaderCandidate[]): string | null {
+  const num = (value: number) => (Number.isFinite(value) ? value : 0)
+  const ranked = [...members].sort(
+    (a, b) => num(b.unenhanced) - num(a.unenhanced) || num(b.enhanced) - num(a.enhanced) || num(b.evade) - num(a.evade) || a.name.localeCompare(b.name) || a.id.localeCompare(b.id),
+  )
+  return ranked[0]?.id ?? null
+}
+
+/** A crawler's party title (flags.crawlspace.partyTitle): its text, and whether it goes before or after the name. */
+export type TitlePosition = 'before' | 'after'
+export interface PartyTitle {
+  text: string
+  position: TitlePosition
+}
+export const TITLE_LIMIT = 60
+
+export function cleanTitle(title: unknown): PartyTitle {
+  const raw: any = title && typeof title === 'object' ? title : {}
+  return { text: String(raw.text ?? '').trim().slice(0, TITLE_LIMIT), position: raw.position === 'before' ? 'before' : 'after' }
+}
+
+/** "Princess Donut" or "Carl the Destroyer"; just the name without a title. */
+export function titledName(name: string, title: unknown) {
+  const { text, position } = cleanTitle(title)
+  if (!text) return name
+  return position === 'before' ? `${text} ${name}` : `${name} ${text}`
 }
 
 export const signedRank = (rank: number) => (rank >= 0 ? `+${rank}` : `${rank}`)

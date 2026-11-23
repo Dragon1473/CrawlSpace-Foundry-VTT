@@ -9,7 +9,7 @@
         <div class="member-body">
           <h3 class="member-name">
             {{#if member.leader}}<i class="fa-solid fa-crown member-crown" data-tooltip="{{localize 'CRAWLSPACE.PartyScreen.Leader'}}" aria-label="{{localize 'CRAWLSPACE.PartyScreen.Leader'}}"></i>{{/if}}
-            <a data-action="toggleMember" data-tooltip="{{#if member.expanded}}{{localize 'CRAWLSPACE.PartyScreen.HideDetails'}}{{else}}{{localize 'CRAWLSPACE.PartyScreen.ShowDetails'}}{{/if}}" aria-expanded="{{#if member.expanded}}true{{else}}false{{/if}}">{{member.name}} <i class="fa-solid fa-chevron-{{#if member.expanded}}up{{else}}down{{/if}}"></i></a>
+            <a data-action="toggleMember" data-tooltip="{{#if member.expanded}}{{localize 'CRAWLSPACE.PartyScreen.HideDetails'}}{{else}}{{localize 'CRAWLSPACE.PartyScreen.ShowDetails'}}{{/if}}" aria-expanded="{{#if member.expanded}}true{{else}}false{{/if}}">{{#if member.title.before}}<span class="member-title">{{member.title.text}}</span> {{/if}}{{member.name}}{{#if member.title.after}} <span class="member-title">{{member.title.text}}</span>{{/if}} <i class="fa-solid fa-chevron-{{#if member.expanded}}up{{else}}down{{/if}}"></i></a>
             {{#if member.marks.length}}<span class="frame-marks" data-tooltip="{{member.marksTooltip}}" aria-label="{{member.marksLabel}}">{{#each member.marks as |mark|}}<span class="frame-mark mark-{{mark.tier}}"><i class="fa-solid fa-{{mark.icon}}"></i><b>x{{mark.count}}</b></span>{{/each}}</span>{{/if}}
           </h3>
           <div class="member-line">
@@ -34,6 +34,12 @@
       {{> crawlPartyBadges effects=member.effects}}
       {{#if member.details}}
       <div class="member-details">
+        {{#if @root.canLead}}
+        <div class="member-title-fields">
+          <label><span>{{localize "CRAWLSPACE.PartyScreen.TitleLabel"}}</span><input type="text" name="titles.{{member.id}}.text" value="{{member.title.text}}" maxlength="60" placeholder="{{localize 'CRAWLSPACE.PartyScreen.TitleHint'}}"></label>
+          <label><span>{{localize "CRAWLSPACE.PartyScreen.TitlePosition"}}</span><select name="titles.{{member.id}}.position"><option value="before" {{#if (crawlEq member.title.position "before")}}selected{{/if}}>{{localize "CRAWLSPACE.PartyScreen.Position.before"}}</option><option value="after" {{#if (crawlEq member.title.position "after")}}selected{{/if}}>{{localize "CRAWLSPACE.PartyScreen.Position.after"}}</option></select></label>
+        </div>
+        {{/if}}
         <div class="member-facts">
           <span>{{localize "CRAWLSPACE.Crawler.AiFavor"}} <b>{{member.details.aiFavor}}</b></span>
           <span>{{localize "CRAWLSPACE.PartyScreen.Popularity"}} <b>{{member.details.popularity}}</b></span>

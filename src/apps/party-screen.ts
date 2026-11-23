@@ -13,12 +13,13 @@
  *   mobs, bosses, traps, items, achievements, rewards and NPCs into theirs or adds them from a list of the
  *   world's and the compendiums'.
  */
-import { partyCrawlers, playerPartyLabel } from '../actors/party'
+import { partyCrawlers, playerPartyLabel, playerPartyName } from '../actors/party'
+import { canLead, leaderActor, registerPartyLeader, setPartyName, setPartyTitle, titleOf } from '../actors/party-leader'
 import { conditionsOf, followerFrames, marksOf } from './frames'
 import { paperDollContext } from '../sheets/paper-doll'
 import { healthColor } from '../rules/boss-bar'
 import { STAT_KEYS, STATS } from '../config'
-import { partyLeaders, partySkills, signedRank, unenhancedTotal, type PartySkillKind } from '../rules/party-screen'
+import { partySkills, signedRank, unenhancedTotal, type PartySkillKind } from '../rules/party-screen'
 import {
   acceptsLink,
   cleanQuests,
@@ -126,6 +127,25 @@ async function pickLinks(key: QuestLinkKey, taken: Set<string>): Promise<QuestLi
   return Array.isArray(picked) ? picked.map((index) => open[index]).filter(Boolean).map(({ uuid, name, img }) => ({ uuid, name, img })) : []
 }
 
+/** Ask for a crawler's party title and where it goes. */
+async function promptTitle(actor: any) {
+  if (!actor || !canLead()) return
+  const title = titleOf(actor)
+  const content = document.createElement('div')
+  content.innerHTML = `<div class="crawl-title-dialog">
+    <label class="crawl-dialog-field"><span>${esc(t('TitleLabel'))}</span><input type="text" name="text" value="${esc(title.text)}" maxlength="60" placeholder="${esc(t('TitleHint'))}" autofocus></label>
+    <label class="crawl-dialog-field"><span>${esc(t('TitlePosition'))}</span><select name="position">${['before', 'after'].map((position) => `<option value="${position}" ${position === title.position ? 'selected' : ''}>${esc(t(`Position.${position}`))}</option>`).join('')}</select></label>
+  </div>`
+  const picked = await DialogV2.prompt({
+    classes: ['crawlspace'],
+    window: { title: t('TitleFor', { name: actor.name }), icon: 'fa-solid fa-signature' },
+    content,
+    ok: { label: t('Save'), callback: (_event: Event, button: any) => ({ text: button.form.elements.text.value, position: button.form.elements.position.value }) },
+    rejectClose: false,
+  })
+  if (picked) await setPartyTitle(actor, picked)
+}
+
 class PartyScreen extends HandlebarsApplicationMixin(ApplicationV2) {
   static DEFAULT_OPTIONS: any = {
     id: APP_ID,
@@ -150,7 +170,7 @@ class PartyScreen extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   static PARTS = {
-    tabs: { template: 'systems/crawlspace/templates/sheets/pf-tabs.hbs' },
+    tabs: { template: 'systems/crawlspace/templates/apps/party-tabs.hbs' },
     overview: { template: 'systems/crawlspace/templates/apps/party-overview.hbs', scrollable: [''] },
     quests: { template: 'systems/crawlspace/templates/apps/party-quests.hbs', scrollable: ['.quest-list', '.quest-detail'] },
   }
@@ -171,7 +191,8 @@ class PartyScreen extends HandlebarsApplicationMixin(ApplicationV2) {
     context = await super._preparePartContext(partId, context, options)
     if (context.tabs?.[partId]) context.tab = context.tabs[partId]
     context.gm = game.user.isGM
-    if (partId === 'tabs') context.tabList = Object.values(context.tabs ?? {})
+    context.canLead = canLead()
+    if (partId === 'tabs') Object.assign(context, { tabList: Object.values(context.tabs ?? {}), partyName: playerPartyName(), partyLabel: playerPartyLabel(), fallback: game.i18n.localize('CRAWLSPACE.Frames.Title') })
     if (partId === 'overview') Object.assign(context, this.#overviewContext())
     if (partId === 'quests') Object.assign(context, await this.#questsContext())
     return context
@@ -186,10 +207,12 @@ class PartyScreen extends HandlebarsApplicationMixin(ApplicationV2) {
       const skills = rankedItems(actor, 'skill')
       const spells = rankedItems(actor, 'spell')
       const expanded = this.#expanded.has(actor.id)
+      const title = titleOf(actor)
       return {
         id: actor.id,
         uuid: actor.uuid,
         name: actor.name,
+        title: { ...title, before: !!title.text && title.position === 'before', after: !!title.text && title.position === 'after' },
         img: actor.prototypeToken?.texture?.src || actor.img,
         canOpen: !!actor.visible,
         ...marksOf(actor),
@@ -210,8 +233,8 @@ class PartyScreen extends HandlebarsApplicationMixin(ApplicationV2) {
         spells,
       }
     })
-    const leaders = partyLeaders(members)
-    for (const member of members as any[]) member.leader = leaders.has(member.id)
+    const leader = leaderActor(actors)
+    for (const member of members as any[]) member.leader = member.id === leader?.id
     const skills = partySkills(members.map((member: any) => ({ name: member.name, skills: [...member.skills, ...member.spells] }))).map((skill) => ({
       ...skill,
       tooltip: `<strong>${esc(skill.name)}</strong><br>${skill.holders.map((holder) => `${esc(holder.name)}: ${esc(signedRank(holder.rank))}`).join('<br>')}`,
@@ -258,6 +281,24 @@ class PartyScreen extends HandlebarsApplicationMixin(ApplicationV2) {
     }
   }
 
+  _onFirstRender(context: any, options: any) {
+    super._onFirstRender(context, options)
+    // Right-click anywhere on a crawler's card: the leader (or GM) gives it a title.
+    new foundry.applications.ux.ContextMenu.implementation(
+      this.element,
+      '.party-member',
+      [
+        {
+          label: 'CRAWLSPACE.PartyScreen.SetTitle',
+          icon: '<i class="fa-solid fa-signature"></i>',
+          visible: () => canLead(),
+          onClick: (_event: Event, target: HTMLElement) => promptTitle(game.actors.get(target.closest<HTMLElement>('[data-member-id]')?.dataset.memberId)),
+        },
+      ],
+      { jQuery: false, fixed: true },
+    )
+  }
+
   _onRender(context: any, options: any) {
     super._onRender(context, options)
     if (!game.user.isGM) return
@@ -279,8 +320,8 @@ class PartyScreen extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   /** Re-render only what changed, so the GM's open editors in the other tab are left alone. */
-  refreshPart(part: 'overview' | 'quests') {
-    if (this.rendered) this.render({ parts: [part] })
+  refreshPart(...parts: ('tabs' | 'overview' | 'quests')[]) {
+    if (this.rendered) this.render({ parts })
   }
 
   async #onDropLink(event: DragEvent, key: QuestLinkKey) {
@@ -303,8 +344,16 @@ class PartyScreen extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   static async #onSubmit(this: PartyScreen, _event: Event, _form: HTMLFormElement, formData: any) {
-    if (!game.user.isGM) return
     const data = foundry.utils.expandObject(formData.object)
+    if (canLead()) {
+      if (typeof data.partyName === 'string' && data.partyName.trim() !== playerPartyName()) await setPartyName(data.partyName)
+      for (const [id, title] of Object.entries<any>(data.titles ?? {})) {
+        const actor = game.actors.get(id)
+        const current = titleOf(actor)
+        if (actor && (String(title?.text ?? '').trim() !== current.text || (title?.position ?? current.position) !== current.position)) await setPartyTitle(actor, { ...current, ...title })
+      }
+    }
+    if (!game.user.isGM) return
     const id = data.questId
     const changes = data.quest
     if (!id || !changes) return
@@ -404,10 +453,11 @@ export function openPartyScreen() {
 
 /** The party changed (an actor, its items or effects): redraw the overview if it's open. */
 export function refreshPartyScreen() {
-  screen()?.refreshPart('overview')
+  screen()?.refreshPart('tabs', 'overview')
 }
 
 export function registerPartyScreen() {
+  registerPartyLeader()
   game.settings.register('crawlspace', 'quests', { scope: 'world', config: false, type: Array, default: [], onChange: () => screen()?.refreshPart('quests') })
   game.keybindings.register('crawlspace', 'partyScreen', {
     name: 'CRAWLSPACE.PartyScreen.Open',

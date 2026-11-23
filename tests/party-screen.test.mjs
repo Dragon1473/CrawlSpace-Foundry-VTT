@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { partyLeaders, partySkills, signedRank, unenhancedTotal } from '../src/rules/party-screen.ts'
+import { cleanTitle, enhancedTotal, partyLeader, partySkills, signedRank, titledName, unenhancedTotal } from '../src/rules/party-screen.ts'
 import { acceptsLink, cleanQuests, QUEST_LINK_SECTIONS, questsFor, questSections } from '../src/rules/quests.ts'
 
 test('unenhanced stat points add up the base scores, rounded down, blanks counting 0', () => {
@@ -8,11 +8,35 @@ test('unenhanced stat points add up the base scores, rounded down, blanks counti
   assert.equal(unenhancedTotal(undefined), 0)
 })
 
-test('the crawler with the most unenhanced stat points leads the party; ties share the crown', () => {
-  assert.deepEqual([...partyLeaders([{ id: 'a', unenhanced: 20 }, { id: 'b', unenhanced: 24 }, { id: 'c', unenhanced: 3 }])], ['b'])
-  assert.deepEqual([...partyLeaders([{ id: 'a', unenhanced: 24 }, { id: 'b', unenhanced: 24 }])], ['a', 'b'])
-  assert.deepEqual([...partyLeaders([{ id: 'a', unenhanced: 0 }])], [])
-  assert.deepEqual([...partyLeaders([])], [])
+test('the crawler with the most unenhanced stat points leads the party', () => {
+  const member = (id, name, unenhanced, enhanced = 0, evade = 0) => ({ id, name, unenhanced, enhanced, evade })
+  assert.equal(partyLeader([member('a', 'Carl', 20), member('b', 'Donut', 24), member('c', 'Katia', 3)]), 'b')
+  assert.equal(partyLeader([]), null)
+  assert.equal(partyLeader([member('a', 'Carl', 0)]), 'a')
+})
+
+test('ties go to the highest enhanced score, then the highest Evade, then the name', () => {
+  const member = (id, name, unenhanced, enhanced = 0, evade = 0) => ({ id, name, unenhanced, enhanced, evade })
+  assert.equal(partyLeader([member('a', 'Carl', 24, 30), member('b', 'Donut', 24, 33)]), 'b')
+  assert.equal(partyLeader([member('a', 'Carl', 24, 30, 2), member('b', 'Donut', 24, 30, 5)]), 'b')
+  assert.equal(partyLeader([member('b', 'Donut', 24, 30, 5), member('a', 'Carl', 24, 30, 5)]), 'a')
+  assert.equal(partyLeader([member('a', 'Carl', 24, Number.NaN, Number.NaN), member('b', 'Donut', 24, 1, 0)]), 'b')
+})
+
+test('enhanced scores add up the stat totals, blanks counting 0', () => {
+  assert.equal(enhancedTotal({ str: { total: 9 }, int: { total: null }, dex: { total: 4.5 } }), 13)
+  assert.equal(enhancedTotal(null), 0)
+})
+
+test('a title sits before or after the name; a blank title leaves the name alone', () => {
+  assert.equal(titledName('Donut', { text: ' Princess ', position: 'before' }), 'Princess Donut')
+  assert.equal(titledName('Carl', { text: 'the Destroyer', position: 'after' }), 'Carl the Destroyer')
+  assert.equal(titledName('Carl', { text: 'the Destroyer' }), 'Carl the Destroyer')
+  assert.equal(titledName('Carl', { text: '  ', position: 'before' }), 'Carl')
+  assert.equal(titledName('Carl', null), 'Carl')
+  assert.deepEqual(cleanTitle({ text: ' Princess ', position: 'before' }), { text: 'Princess', position: 'before' })
+  assert.deepEqual(cleanTitle({ text: 'x'.repeat(80), position: 'sideways' }), { text: 'x'.repeat(60), position: 'after' })
+  assert.deepEqual(cleanTitle(undefined), { text: '', position: 'after' })
 })
 
 test('ranks read with a sign', () => {
