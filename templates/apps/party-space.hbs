@@ -1,0 +1,73 @@
+{{!-- Party screen, Conjoined Space tab (apps/party-space.ts): each conjoined Personal Space of the party, read-only. --}}
+<section class="tab party-space {{tab.cssClass}}" data-group="{{tab.group}}" data-tab="{{tab.id}}">
+  {{#each spaces as |space|}}
+  <article class="party-space-card" data-uuid="{{space.uuid}}">
+    <header class="party-space-head">
+      <img src="{{space.img}}" alt="">
+      <div class="party-space-title">
+        <h3>{{#if space.canOpen}}<a data-action="openSheet" data-tooltip="{{localize 'CRAWLSPACE.PartyScreen.OpenSheet'}}">{{space.name}}</a>{{else}}{{space.name}}{{/if}}</h3>
+        <div class="member-line">
+          <span class="party-space-level">{{localize "CRAWLSPACE.PartyScreen.SpaceLevel" level=space.level}}</span>
+          {{#if space.levels}}<span>{{localize "CRAWLSPACE.PartyScreen.SpaceFrom" list=space.levels}}</span>{{/if}}
+          {{#if space.locked}}<span data-tooltip="{{localize 'CRAWLSPACE.PartyScreen.SpaceLocked'}}"><i class="fa-solid fa-lock"></i></span>{{/if}}
+        </div>
+        <div class="member-line hint">
+          {{#if space.conjoined}}<span>{{space.conjoined}}</span>{{/if}}
+          <span>{{space.levelHint}}</span>
+        </div>
+      </div>
+    </header>
+
+    {{#if space.benefits.length}}
+    <h4 class="pf-section">{{localize "CRAWLSPACE.Space.Benefits"}}</h4>
+    <ul class="party-space-benefits">{{#each space.benefits}}<li>{{this}}</li>{{/each}}</ul>
+    {{/if}}
+
+    <h4 class="pf-section">{{localize "CRAWLSPACE.Space.Members"}}</h4>
+    <ul class="party-space-members">
+      {{#each space.members as |member|}}
+      <li class="{{#if member.here}}here{{/if}}">
+        <img src="{{member.img}}" alt="">
+        <span class="party-space-name">{{member.name}}</span>
+        <small>{{member.role}}{{#if member.brought}} · {{member.brought}}{{/if}}</small>
+        {{#if member.here}}<span class="space-here active"><i class="fa-solid fa-house-user"></i> {{localize "CRAWLSPACE.Space.Here"}}</span>{{/if}}
+      </li>
+      {{/each}}
+    </ul>
+
+    <h4 class="pf-section">{{localize "CRAWLSPACE.Space.Upgrades"}}</h4>
+    <ol class="party-space-items">
+      {{#each space.upgrades as |item|}}
+      <li class="{{#unless item.installed}}uninstalled{{/unless}}" data-item-id="{{item.id}}">
+        <img src="{{item.img}}" alt="">
+        <div class="party-space-name">
+          <a data-action="editItem">{{item.name}}</a>
+          <small>{{item.tier}}{{#if item.category}} · {{item.category}}{{/if}}{{#if item.homebrew}} · {{localize "CRAWLSPACE.Space.Homebrew"}}{{/if}}{{#if item.attachedTo}} · {{localize "CRAWLSPACE.PartyScreen.SpaceOnTable" table=item.attachedTo}}{{/if}}{{#unless item.installed}} · {{localize "CRAWLSPACE.PartyScreen.SpaceUninstalled"}}{{/unless}}</small>
+          {{#if item.summary}}<small class="hint">{{item.summary}}</small>{{/if}}
+        </div>
+        <small class="party-space-owner">{{localize "CRAWLSPACE.PartyScreen.SpaceOwner" name=item.owner}}</small>
+      </li>
+      {{else}}<li class="empty hint">{{localize "CRAWLSPACE.PartyScreen.SpaceNoUpgrades"}}</li>{{/each}}
+    </ol>
+
+    <h4 class="pf-section">{{localize "CRAWLSPACE.Space.Tables"}} ({{space.tableCount}})</h4>
+    <ol class="party-space-items">
+      {{#each space.tables as |item|}}
+      <li data-item-id="{{item.id}}">
+        <img src="{{item.img}}" alt="">
+        <div class="party-space-name">
+          <a data-action="editItem">{{item.name}}</a>
+          <small>{{item.tier}}{{#if item.category}} · {{item.category}}{{/if}}{{#if item.broken}} · {{localize "CRAWLSPACE.Space.Broken"}}{{/if}}{{#each item.upgrades}} · <span class="pf-tag">{{this}}</span>{{/each}}</small>
+        </div>
+        <small class="party-space-owner">{{localize "CRAWLSPACE.PartyScreen.SpaceOwner" name=item.owner}}</small>
+      </li>
+      {{else}}<li class="empty hint">{{localize "CRAWLSPACE.PartyScreen.SpaceNoTables"}}</li>{{/each}}
+    </ol>
+
+    {{#if space.description}}
+    <h4 class="pf-section">{{localize "CRAWLSPACE.Item.Description"}}</h4>
+    <div class="party-space-description">{{{space.description}}}</div>
+    {{/if}}
+  </article>
+  {{/each}}
+</section>

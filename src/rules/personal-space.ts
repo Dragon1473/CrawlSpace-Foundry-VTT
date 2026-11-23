@@ -24,7 +24,8 @@ export type UpgradeKind = (typeof UPGRADE_KINDS)[number]
 
 export const MEMBER_ROLES = ['owner', 'member', 'guest'] as const
 export type MemberRole = (typeof MEMBER_ROLES)[number]
-export type Member = { uuid: string; role: MemberRole }
+/** `spaceLevel`: for an owner, the Level of the space they brought when it was conjoined (0: not recorded). */
+export type Member = { uuid: string; role: MemberRole; spaceLevel?: number }
 
 /** What an installed upgrade changes while a crawler is in the space. Zero (or null) leaves the rule alone. */
 export type UpgradeAutomation = {
@@ -122,6 +123,25 @@ export function conjoinUnions(members: Member[]) {
   return Math.max(0, members.filter((member) => member.role === 'owner').length - 1)
 }
 
+/**
+ * The Level of conjoined spaces (house rule), from the Level each space had on its own. It is at least the highest of
+ * them. Two spaces at that highest Level add 1; one space at it joined with two or more lower ones adds 1; three or
+ * more spaces at it add 2. Never above Level 5. Null when fewer than two spaces are joined.
+ */
+export function conjoinedLevel(levels: number[]) {
+  const joined = levels.map((level) => Math.min(5, whole(level))).filter((level) => level > 0)
+  if (joined.length < 2) return null
+  const top = Math.max(...joined)
+  const atTop = joined.filter((level) => level === top).length
+  const below = joined.length - atTop
+  const bonus = atTop >= 3 ? 2 : atTop === 2 || below >= 2 ? 1 : 0
+  return Math.min(5, top + bonus)
+}
+
+/** The Levels of the spaces conjoined here: one per owner who recorded the space they brought. */
+export const ownerLevels = (members: Member[]) =>
+  members.filter((member) => member.role === 'owner' && (member.spaceLevel ?? 0) > 0).map((member) => member.spaceLevel as number)
+
 /** Members cleaned up: known roles, one entry per crawler, the first owner kept first. */
 export function normalizeMembers(raw: unknown): Member[] {
   const seen = new Set<string>()
@@ -130,7 +150,9 @@ export function normalizeMembers(raw: unknown): Member[] {
     const uuid = String(entry?.uuid ?? '').trim()
     if (!uuid || seen.has(uuid)) continue
     seen.add(uuid)
-    out.push({ uuid, role: MEMBER_ROLES.includes(entry?.role) ? entry.role : 'member' })
+    const role: MemberRole = MEMBER_ROLES.includes(entry?.role) ? entry.role : 'member'
+    const spaceLevel = Math.min(5, whole(entry?.spaceLevel))
+    out.push(role === 'owner' && spaceLevel ? { uuid, role, spaceLevel } : { uuid, role })
   }
   return out
 }

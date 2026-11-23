@@ -4,11 +4,13 @@ import fs from 'node:fs'
 import path from 'node:path'
 import {
   conjoinUnions,
+  conjoinedLevel,
   extraSlotsHealth,
   leavingWith,
   legacySpace,
   levelFromText,
   normalizeMembers,
+  ownerLevels,
   partyLongRestHours,
   spaceBenefits,
   tableLevelUp,
@@ -142,4 +144,24 @@ test('space tables level once per new floor and never count a floor twice', () =
   assert.equal(tableLevelUp(3, 6, 5), null)
   assert.deepEqual(tableLevelUp(9, 6, 9), { tier: 10, floor: 9 })
   assert.equal(tableLevelUp(1, null, 0), null)
+})
+
+test('conjoined Level: the highest, +1 for a pair or two lower spaces, +2 for three or more at the top', () => {
+  assert.equal(conjoinedLevel([3]), null)
+  assert.equal(conjoinedLevel([3, 0]), null)
+  assert.equal(conjoinedLevel([3, 2]), 3)
+  assert.equal(conjoinedLevel([3, 3]), 4)
+  assert.equal(conjoinedLevel([3, 2, 1]), 4)
+  assert.equal(conjoinedLevel([3, 3, 2]), 4)
+  assert.equal(conjoinedLevel([3, 3, 2, 2]), 4)
+  assert.equal(conjoinedLevel([3, 3, 3]), 5)
+  assert.equal(conjoinedLevel([2, 2, 2, 2]), 4)
+  assert.equal(conjoinedLevel([5, 5]), 5)
+  assert.equal(conjoinedLevel([4, 4, 4]), 5)
+})
+
+test('owners keep the Level of the space they brought', () => {
+  const members = normalizeMembers([{ uuid: 'a', role: 'owner', spaceLevel: 3 }, { uuid: 'b', role: 'owner', spaceLevel: 9 }, { uuid: 'c', role: 'member', spaceLevel: 3 }, { uuid: 'd', role: 'owner' }])
+  assert.deepEqual(members, [{ uuid: 'a', role: 'owner', spaceLevel: 3 }, { uuid: 'b', role: 'owner', spaceLevel: 5 }, { uuid: 'c', role: 'member' }, { uuid: 'd', role: 'owner' }])
+  assert.deepEqual(ownerLevels(members), [3, 5])
 })

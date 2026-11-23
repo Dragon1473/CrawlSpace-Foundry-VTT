@@ -1,6 +1,6 @@
 /**
  * The party screen: everyone can open it (crawler frames header, the token controls, or
- * game.crawlspace.openPartyScreen()). Two tabs:
+ * game.crawlspace.openPartyScreen()). Two tabs, and a third while the party has a conjoined Personal Space:
  *
  * - Overview: a bigger crawler frame for each party crawler (the frames' own members, conditions, pets, mounts and
  *   minions), with its token, stars and skulls, race, class, Evade, DR, enhanced stats and unenhanced stat points.
@@ -12,6 +12,7 @@
  *   completed) quests by name and reward and read the summary; the GM sees and edits every section, and drags
  *   mobs, bosses, traps, items, achievements, rewards and NPCs into theirs or adds them from a list of the
  *   world's and the compendiums'.
+ * - Conjoined Space (apps/party-space.ts): the conjoined space's Level, members, upgrades, tables and description.
  */
 import { partyCrawlers, playerPartyLabel, playerPartyName } from '../actors/party'
 import { canLead, leaderActor, registerPartyLeader, setPartyName, setPartyTitle, titleOf } from '../actors/party-leader'
@@ -19,6 +20,7 @@ import { conditionsOf, followerFrames, marksOf } from './frames'
 import { paperDollContext } from '../sheets/paper-doll'
 import { healthColor } from '../rules/boss-bar'
 import { STAT_KEYS, STATS } from '../config'
+import { conjoinedSpacesOf, spaceOverview } from './party-space'
 import { partySkills, signedRank, unenhancedTotal, type PartySkillKind } from '../rules/party-screen'
 import {
   acceptsLink,
@@ -173,15 +175,39 @@ class PartyScreen extends HandlebarsApplicationMixin(ApplicationV2) {
     tabs: { template: 'systems/crawlspace/templates/apps/party-tabs.hbs' },
     overview: { template: 'systems/crawlspace/templates/apps/party-overview.hbs', scrollable: [''] },
     quests: { template: 'systems/crawlspace/templates/apps/party-quests.hbs', scrollable: ['.quest-list', '.quest-detail'] },
+    space: { template: 'systems/crawlspace/templates/apps/party-space.hbs', scrollable: [''] },
   }
 
   static TABS = {
-    primary: { tabs: [{ id: 'overview' }, { id: 'quests' }], initial: 'overview', labelPrefix: 'CRAWLSPACE.PartyScreen.Tab' },
+    primary: { tabs: [{ id: 'overview' }, { id: 'quests' }, { id: 'space' }], initial: 'overview', labelPrefix: 'CRAWLSPACE.PartyScreen.Tab' },
   }
 
   /** Members whose details are open, and the quest being read. */
   #expanded = new Set<string>()
   #questId: string | null = null
+
+  /** The Conjoined Space tab is there only while a party crawler is in a conjoined space. */
+  _configureRenderParts(options: any) {
+    const parts = super._configureRenderParts(options)
+    if (!conjoinedSpacesOf(partyCrawlers()).length) {
+      delete parts.space
+      // A part left out of a render stays in the window, so take a stale one out.
+      this.element?.querySelector('.party-space')?.remove()
+    }
+    return parts
+  }
+
+  _getTabsConfig(group: string) {
+    const config = super._getTabsConfig(group)
+    if (!config || group !== 'primary') return config
+    const spaces = conjoinedSpacesOf(partyCrawlers())
+    if (!spaces.length) {
+      if (this.tabGroups.primary === 'space') this.tabGroups.primary = 'overview'
+      return { ...config, tabs: config.tabs.filter((tab: any) => tab.id !== 'space') }
+    }
+    // One space: its tab carries its name.
+    return { ...config, tabs: config.tabs.map((tab: any) => (tab.id === 'space' && spaces.length === 1 ? { ...tab, label: spaces[0].name } : tab)) }
+  }
 
   get title() {
     return `${game.i18n.localize('CRAWLSPACE.PartyScreen.Title')}: ${playerPartyLabel()}`
@@ -195,6 +221,7 @@ class PartyScreen extends HandlebarsApplicationMixin(ApplicationV2) {
     if (partId === 'tabs') Object.assign(context, { tabList: Object.values(context.tabs ?? {}), partyName: playerPartyName(), partyLabel: playerPartyLabel(), fallback: game.i18n.localize('CRAWLSPACE.Frames.Title') })
     if (partId === 'overview') Object.assign(context, this.#overviewContext())
     if (partId === 'quests') Object.assign(context, await this.#questsContext())
+    if (partId === 'space') context.spaces = await Promise.all(conjoinedSpacesOf(partyCrawlers()).map((space: any) => spaceOverview(space)))
     return context
   }
 
@@ -320,8 +347,12 @@ class PartyScreen extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   /** Re-render only what changed, so the GM's open editors in the other tab are left alone. */
-  refreshPart(...parts: ('tabs' | 'overview' | 'quests')[]) {
-    if (this.rendered) this.render({ parts })
+  refreshPart(...parts: ('tabs' | 'overview' | 'quests' | 'space')[]) {
+    if (!this.rendered) return
+    // The space tab can come or go with the party's spaces: then redraw it all.
+    const hasSpace = !!this.element.querySelector('.party-space')
+    if (hasSpace !== conjoinedSpacesOf(partyCrawlers()).length > 0) return this.render()
+    this.render({ parts: hasSpace ? parts : parts.filter((part) => part !== 'space') })
   }
 
   async #onDropLink(event: DragEvent, key: QuestLinkKey) {
@@ -453,7 +484,7 @@ export function openPartyScreen() {
 
 /** The party changed (an actor, its items or effects): redraw the overview if it's open. */
 export function refreshPartyScreen() {
-  screen()?.refreshPart('tabs', 'overview')
+  screen()?.refreshPart('tabs', 'overview', 'space')
 }
 
 export function registerPartyScreen() {

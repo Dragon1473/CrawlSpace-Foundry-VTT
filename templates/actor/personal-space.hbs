@@ -5,9 +5,11 @@
       <input class="pf-name" type="text" name="name" value="{{actor.name}}" {{#unless editable}}disabled{{/unless}}>
       <div class="pf-actor-fields">
         <label><span>{{localize "CRAWLSPACE.Space.Level"}}</span>
-          <select name="system.level" {{#unless editable}}disabled{{/unless}}>{{#each levels}}<option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}</select>
+          <select name="system.level" {{#unless editable}}disabled{{/unless}} {{#if levelFromOwners}}disabled{{/if}}>{{#each levels}}<option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}</select>
         </label>
         <span class="hint">{{localize "CRAWLSPACE.Space.LevelHint" price=levelPrice tables=tableLimit}}</span>
+        {{#if conjoined}}<span class="hint">{{conjoinedHint}}</span>
+        {{#if isGM}}<label class="space-lock" data-tooltip="{{localize 'CRAWLSPACE.Space.LevelLockedHint'}}"><input type="checkbox" name="system.levelLocked" {{#if system.levelLocked}}checked{{/if}}> {{localize "CRAWLSPACE.Space.LevelLocked"}}</label>{{/if}}{{/if}}
         {{#if unions}}<span class="pf-tag">{{localize "CRAWLSPACE.Space.Conjoined" unions=unions cost=unionCost}}</span>{{/if}}
       </div>
       {{#if (or systemSource.legacy.tier systemSource.legacy.size)}}<p class="hint">{{localize "CRAWLSPACE.Space.Legacy" tier=systemSource.legacy.tier size=systemSource.legacy.size}}</p>{{/if}}
@@ -30,6 +32,7 @@
         <img src="{{img}}" alt="">
         <a class="space-name" data-action="openMember">{{name}}</a>
         <select data-member-role {{#unless @root.editable}}disabled{{/unless}}>{{#each roles}}<option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}</select>
+        {{#if owner}}<select data-member-level data-tooltip="{{localize 'CRAWLSPACE.Space.BroughtHint'}}" {{#unless @root.editable}}disabled{{/unless}}>{{#each spaceLevels}}<option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}</select>{{/if}}
         {{#if canToggle}}<a class="space-here {{#if here}}active{{/if}}" data-action="toggleHere" data-tooltip="{{localize 'CRAWLSPACE.Space.HereHint'}}"><i class="fa-solid fa-house-user"></i> {{#if here}}{{localize "CRAWLSPACE.Space.Here"}}{{else}}{{localize "CRAWLSPACE.Space.Away"}}{{/if}}</a>
         {{else}}{{#if here}}<span class="space-here active"><i class="fa-solid fa-house-user"></i> {{localize "CRAWLSPACE.Space.Here"}}</span>{{/if}}{{/if}}
         {{#if (and library @root.editable)}}<a data-action="installLibrary" data-tooltip="{{localize 'CRAWLSPACE.Space.InstallLibrary'}}"><i class="fa-solid fa-box-open"></i> {{library}}</a>{{/if}}

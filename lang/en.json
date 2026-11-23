@@ -2216,7 +2216,8 @@
       "KeybindHint": "Opens the party screen.",
       "Tab": {
         "overview": "Overview",
-        "quests": "Quests"
+        "quests": "Quests",
+        "space": "Conjoined Space"
       },
       "NoMembers": "No crawlers in the party yet. The GM adds them from the Actors list's right-click menu.",
       "OpenSheet": "Open sheet",
@@ -2283,7 +2284,15 @@
       "WrongKind": "{name} doesn't belong in {section}.",
       "Missing": "That entry no longer exists.",
       "DeleteTitle": "Delete quest",
-      "DeleteConfirm": "Delete {name}? This can't be undone."
+      "DeleteConfirm": "Delete {name}? This can't be undone.",
+      "SpaceLevel": "Level {level}",
+      "SpaceFrom": "Conjoined from spaces of Level {list}",
+      "SpaceLocked": "The GM set this Level by hand.",
+      "SpaceNoUpgrades": "No upgrades yet.",
+      "SpaceNoTables": "No crafting tables yet.",
+      "SpaceUninstalled": "Not installed",
+      "SpaceOnTable": "On {table}",
+      "SpaceOwner": "Owner: {name}"
     },
     "Bestiary": {
       "Title": "Bestiary",
@@ -2501,7 +2510,7 @@
       "RemovedNothing": "{name} left. They owned nothing here.",
       "Installed": "Installed",
       "HasLibrary": "{name} has upgrades kept from another space. Use the box button on their row to install them.",
-      "DropCrawler": "Drop a crawler here. The first one owns the space.",
+      "DropCrawler": "Drop a crawler here. The first one owns the space. The GM can drop another space here to conjoin it.",
       "Upgrades": "Upgrades",
       "OpenCatalog": "Open the Personal Space Upgrades compendium",
       "DropUpgrade": "Drop upgrades from the Personal Space Upgrades compendium.",
@@ -2562,7 +2571,18 @@
       "Hours": "{hours} hours",
       "TrainingResult": "+{hours} grinding hour(s) from {list}.",
       "TimeToggle": "In their Personal Space (rest and grinding bonuses)",
-      "LibraryInstalled": "Installed {count} kept upgrade(s) from {name}."
+      "LibraryInstalled": "Installed {count} kept upgrade(s) from {name}.",
+      "ConjoinedLevel": "Conjoined Level {level} (spaces of Level {list}).",
+      "LevelLocked": "Set by hand",
+      "LevelLockedHint": "Keep the Level chosen above instead of working it out from the conjoined spaces.",
+      "BroughtN": "Brought Level {level}",
+      "BroughtNone": "Brought no space",
+      "BroughtHint": "The Level of the space this owner brought when it was conjoined. Two or more of these set the Level.",
+      "ConjoinGM": "Only the GM can conjoin spaces.",
+      "ConjoinTitle": "Conjoin Personal Spaces",
+      "ConjoinHint": "Conjoin {source} into {target}? Its members, upgrades and tables move here, keeping their owners, and {source} is deleted. The join costs {cost} gold.",
+      "ConjoinDone": "{source} is conjoined. The space is now Level {level}.",
+      "ConjoinedLevelDrop": "This space is conjoined: the owner whose space it upgrades drops it, or the GM raises that owner's Level in the members list."
     },
     "Elite": {
       "Reveal": "Reveal as Elite",

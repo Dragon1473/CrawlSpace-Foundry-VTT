@@ -4570,6 +4570,30 @@
 .crawlspace.personal-space .hint.warning { color: var(--color-level-warning, #c9593f); }
 .crawlspace .time-actor { display: inline-flex; align-items: center; gap: 0.25rem; margin-right: 0.6rem; }
 .crawlspace .time-space { display: inline-flex; align-items: center; gap: 0.15rem; }
+.crawlspace.personal-space .space-lock { display: inline-flex; align-items: center; gap: 0.2rem; white-space: nowrap; }
+
+/* Party screen, Conjoined Space tab (apps/party-space.ts). */
+.crawl-party-screen .party-space { padding: 8px 10px; }
+.crawl-party-screen .party-space-card + .party-space-card { margin-top: 1rem; border-top: 1px solid var(--color-border-light-tertiary, #8884); padding-top: 0.8rem; }
+.crawl-party-screen .party-space-head { display: flex; gap: 0.8rem; align-items: center; }
+.crawl-party-screen .party-space-head > img { width: 72px; height: 72px; border: none; object-fit: cover; flex: none; }
+.crawl-party-screen .party-space-title { flex: 1; min-width: 0; }
+.crawl-party-screen .party-space-title h3 { margin: 0 0 0.2rem; border: none; }
+.crawl-party-screen .party-space-level { font-weight: 700; font-size: 1.1em; }
+.crawl-party-screen .party-space .member-line { display: flex; flex-wrap: wrap; gap: 0.3rem 0.8rem; align-items: center; }
+.crawl-party-screen .party-space-benefits { margin: 0.2rem 0; padding-left: 1.2rem; }
+.crawl-party-screen .party-space-members,
+.crawl-party-screen .party-space-items { list-style: none; margin: 0; padding: 0; }
+.crawl-party-screen .party-space-members { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; }
+.crawl-party-screen .party-space-members li,
+.crawl-party-screen .party-space-items li { display: flex; align-items: center; gap: 0.5rem; padding: 0.2rem 0.3rem; }
+.crawl-party-screen .party-space-members img,
+.crawl-party-screen .party-space-items img { width: 28px; height: 28px; border: none; flex: none; object-fit: cover; }
+.crawl-party-screen .party-space-name { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.crawl-party-screen .party-space-members .party-space-name { flex: none; }
+.crawl-party-screen .party-space-owner { white-space: nowrap; opacity: 0.8; }
+.crawl-party-screen .party-space-items li.uninstalled { opacity: 0.55; }
+.crawl-party-screen .party-space .space-here { white-space: nowrap; font-weight: bold; }
 
 /* Party screen header: the party's name beside the tabs; party titles on the cards. */
 @layer system {

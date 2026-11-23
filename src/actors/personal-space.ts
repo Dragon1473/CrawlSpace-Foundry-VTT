@@ -6,7 +6,7 @@
  * A crawler is "in" a space only while their own toggle says so (`flags.crawlspace.inPersonalSpace` = the space's
  * actor id). The toggle sits on the space's sheet (each member) and on the GM's rest and grinding panel.
  */
-import { extraSlotsHealth, tableLevelUp, leavingWith, legacySpace, levelFromText, normalizeMembers, partyLongRestHours, spaceBenefits, type LegacySpace, type Member } from '../rules/personal-space'
+import { extraSlotsHealth, tableLevelUp, leavingWith, legacySpace, levelFromText, normalizeMembers, ownerLevels, partyLongRestHours, spaceBenefits, type LegacySpace, type Member } from '../rules/personal-space'
 import { HEALTH_MAX } from '../config'
 
 export const SPACE_PACKS = ['homebrew-personal-space', 'homebrew-space-tables']
@@ -98,6 +98,19 @@ const upgradesOf = (space: any) =>
 /** What the crawler's current space does for them (nothing outside one). */
 export function benefitsFor(crawler: any) {
   return spaceBenefits(upgradesOf(currentSpace(crawler)))
+}
+
+/** What a space does for a crawler inside, one line per benefit with the upgrades that give it. */
+export function benefitLinesOf(space: any) {
+  const benefits = spaceBenefits(upgradesOf(space))
+  const line = (key: string, data: Record<string, unknown>) => game.i18n.format(`CRAWLSPACE.Space.${key}`, data)
+  const lines: string[] = []
+  const { sources } = benefits
+  if (benefits.longRestHours !== null) lines.push(line('BenefitLongRest', { hours: benefits.longRestHours, list: sources.longRestHours.join(', ') }))
+  if (benefits.goodSleepHours) lines.push(line('BenefitGoodSleep', { hours: benefits.goodSleepHours, list: sources.goodSleepHours.join(', ') }))
+  if (benefits.shortRestSlots) lines.push(line('BenefitShortRest', { slots: benefits.shortRestSlots, list: sources.shortRestSlots.join(', ') }))
+  if (benefits.trainingHours > 1) lines.push(line('BenefitTraining', { hours: benefits.trainingHours, list: sources.trainingHours.join(', ') }))
+  return lines
 }
 
 /** Seconds a rest takes for these crawlers: a Long Rest is as short as the slowest of them allows. */
@@ -211,9 +224,58 @@ export async function removeMember(space: any, uuid: string) {
     await crawler.setFlag('crawlspace', LIBRARY, library)
   }
   if (going.length) await space.deleteEmbeddedDocuments('Item', going.map(({ item }: any) => item.id))
-  await space.update({ 'system.members': membersOf(space).filter((member) => member.uuid !== uuid) })
+  const members = membersOf(space).filter((member) => member.uuid !== uuid)
+  const update: Record<string, unknown> = { 'system.members': members }
+  // Down to one space of its own: the space is that one's Level again.
+  const levels = ownerLevels(members)
+  if (levels.length === 1 && ownerLevels(membersOf(space)).length > 1) update['system.level'] = levels[0]
+  await space.update(update)
   if (crawler && crawler.getFlag('crawlspace', IN_SPACE) === space.id) await setInSpace(crawler, null)
   return going.map(({ item }: any) => item.name)
+}
+
+/** Owners as they enter a conjoined space: each records the Level of the space they bring (a lone owner: that space's). */
+function ownersWithLevels(space: any) {
+  const members = membersOf(space)
+  if (!members.some((member) => member.role === 'owner') && members.length) members[0].role = 'owner'
+  const owners = members.filter((member) => member.role === 'owner')
+  if (!ownerLevels(members).length && owners.length) owners[0].spaceLevel = Math.min(5, Math.max(1, Math.floor(Number(space._source.system.level) || 1)))
+  return members
+}
+
+/**
+ * Conjoin `source` into `target` (GM): its members, upgrades and tables move over, each item keeping its owner (what
+ * belonged to a one-owner space now belongs to that owner, so it leaves with them), crawlers inside move too, and the
+ * source space is deleted. The target's Level then comes from the owners' levels.
+ */
+export async function conjoinSpaces(target: any, source: any) {
+  if (!game.user.isGM || !isSpace(target) || !isSpace(source) || target === source) return
+  const members = ownersWithLevels(target)
+  const incoming = ownersWithLevels(source)
+  for (const member of incoming) {
+    const existing = members.find((entry) => entry.uuid === member.uuid)
+    if (!existing) members.push(member)
+    else if (member.role === 'owner' && existing.role !== 'owner') Object.assign(existing, member)
+  }
+  const sourceOwners = incoming.filter((member) => member.role === 'owner')
+  const heir = sourceOwners.length === 1 ? sourceOwners[0].uuid : ''
+  const ids = new Map<string, string>()
+  for (const item of source.items) ids.set(item.id, target.items.has(item.id) ? foundry.utils.randomID() : item.id)
+  const data = source.items.contents.map((item: any) => {
+    const copy = item.toObject()
+    copy._id = ids.get(item.id)
+    if (copy.type === 'spaceUpgrade') {
+      if (!copy.system.owner && heir) copy.system.owner = heir
+      if (copy.system.attachedTo) copy.system.attachedTo = ids.get(copy.system.attachedTo) ?? ''
+    } else if (copy.type === 'craftingTable' && heir && !foundry.utils.getProperty(copy, 'flags.crawlspace.spaceOwner'))
+      foundry.utils.setProperty(copy, 'flags.crawlspace.spaceOwner', heir)
+    return copy
+  })
+  const inside = incoming.map((member) => fromUuidSync(member.uuid)).filter((crawler: any) => crawler?.getFlag('crawlspace', IN_SPACE) === source.id)
+  await target.update({ 'system.members': members })
+  if (data.length) await target.createEmbeddedDocuments('Item', data, { keepId: true })
+  await source.delete()
+  for (const crawler of inside) await setInSpace(crawler, target)
 }
 
 /** The crawler's library of upgrades and tables kept from spaces they left. */

@@ -2,7 +2,7 @@
  * Data models for Personal Spaces (rules/personal-space.ts): the `personalSpace` actor and its `spaceUpgrade` items.
  * Its crafting tables are ordinary `craftingTable` items (data/items.ts), their owner in `flags.crawlspace.spaceOwner`.
  */
-import { MEMBER_ROLES, UPGRADE_KINDS } from '../rules/personal-space'
+import { MEMBER_ROLES, UPGRADE_KINDS, conjoinedLevel, normalizeMembers, ownerLevels } from '../rules/personal-space'
 
 const f = () => foundry.data.fields
 const text = (initial = '') => new (f().StringField)({ required: true, blank: true, initial })
@@ -15,12 +15,17 @@ export class PersonalSpaceData extends foundry.abstract.TypeDataModel {
   static defineSchema() {
     const fields = f()
     return {
+      /** The space's own Level. Conjoined spaces work theirs out from their owners' levels (see prepareDerivedData). */
       level: integer(1, { min: 1, max: 5 }),
+      /** The GM keeps the Level set by hand even when the space is conjoined. */
+      levelLocked: new fields.BooleanField({ initial: false }),
       /** Crawlers who use the space. Owners brought a space of their own into it (conjoined); members and guests didn't. */
       members: new fields.ArrayField(
         new fields.SchemaField({
           uuid: new fields.StringField({ required: true, blank: false }),
           role: new fields.StringField({ required: true, initial: 'owner', choices: [...MEMBER_ROLES] }),
+          /** An owner's: the Level of the space they brought when it was conjoined (0: not recorded). */
+          spaceLevel: integer(0, { min: 0, max: 5 }),
         }),
       ),
       /** Scene the GM uses for the space's interior (optional; presence is the crawler's own toggle). */
@@ -30,6 +35,13 @@ export class PersonalSpaceData extends foundry.abstract.TypeDataModel {
       /** Text carried over from the character sheet's old Personal Space fields. */
       legacy: new fields.SchemaField({ tier: text(), size: text() }),
     }
+  }
+
+  /** While two or more owners' spaces are conjoined, the Level comes from theirs (unless the GM locked it). */
+  prepareDerivedData() {
+    const joined = conjoinedLevel(ownerLevels(normalizeMembers(this.members)))
+    this.conjoinedLevel = joined
+    if (joined !== null && !this.levelLocked) this.level = joined
   }
 }
 

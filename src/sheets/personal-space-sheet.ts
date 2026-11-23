@@ -2,8 +2,8 @@
  * The Personal Space sheet: level, members (owners, members, guests) with their "here now" toggle, installed
  * upgrades with their owners, crafting tables with tiers and attachments, and what the space does for a crawler.
  */
-import { CONJOIN_COST, LEVEL_INFO, MEMBER_ROLES, SPACE_LEVELS, conjoinUnions, spaceBenefits } from '../rules/personal-space'
-import { attachTo, currentSpace, installLibrary, libraryOf, membersOf, ownerOf, removeMember, setInSpace } from '../actors/personal-space'
+import { CONJOIN_COST, LEVEL_INFO, MEMBER_ROLES, SPACE_LEVELS, conjoinUnions, ownerLevels } from '../rules/personal-space'
+import { attachTo, benefitLinesOf, conjoinSpaces, currentSpace, installLibrary, libraryOf, membersOf, ownerOf, removeMember, setInSpace } from '../actors/personal-space'
 import { craftCategories } from '../actors/crafting'
 
 const { HandlebarsApplicationMixin } = foundry.applications.api
@@ -47,13 +47,8 @@ export class PersonalSpaceSheet extends HandlebarsApplicationMixin(ActorSheetV2)
     const items = actor.items.contents
     const tables = items.filter((item: any) => item.type === 'craftingTable')
     const upgrades = items.filter((item: any) => item.type === 'spaceUpgrade')
-    const benefits = spaceBenefits(upgrades.map((item: any) => ({ name: item.name, installed: item.system.installed, rest: item.system.rest, training: item.system.training })))
     const info = LEVEL_INFO[system.level] ?? LEVEL_INFO[1]
-    const benefitLines: string[] = []
-    if (benefits.longRestHours !== null) benefitLines.push(t('BenefitLongRest', { hours: benefits.longRestHours, list: benefits.sources.longRestHours.join(', ') }))
-    if (benefits.goodSleepHours) benefitLines.push(t('BenefitGoodSleep', { hours: benefits.goodSleepHours, list: benefits.sources.goodSleepHours.join(', ') }))
-    if (benefits.shortRestSlots) benefitLines.push(t('BenefitShortRest', { slots: benefits.shortRestSlots, list: benefits.sources.shortRestSlots.join(', ') }))
-    if (benefits.trainingHours > 1) benefitLines.push(t('BenefitTraining', { hours: benefits.trainingHours, list: benefits.sources.trainingHours.join(', ') }))
+    const benefitLines = benefitLinesOf(actor)
     return Object.assign(context, {
       actor,
       system,
@@ -64,6 +59,9 @@ export class PersonalSpaceSheet extends HandlebarsApplicationMixin(ActorSheetV2)
       levelPrice: gold(info.price),
       tableLimit: info.tables,
       tablesOver: tables.length > info.tables,
+      conjoined: system.conjoinedLevel !== null,
+      levelFromOwners: system.conjoinedLevel !== null && !system.levelLocked,
+      conjoinedHint: system.conjoinedLevel !== null ? t('ConjoinedLevel', { level: system.conjoinedLevel, list: ownerLevels(members).sort((a, b) => b - a).join(' + ') }) : '',
       unions: conjoinUnions(members),
       unionCost: gold(conjoinUnions(members) * CONJOIN_COST),
       members: members.map((member, index) => {
@@ -78,6 +76,8 @@ export class PersonalSpaceSheet extends HandlebarsApplicationMixin(ActorSheetV2)
           canToggle: !!crawler?.isOwner,
           library: libraryOf(crawler).length,
           roles: MEMBER_ROLES.map((role) => ({ value: role, label: t(`Role.${role}`), selected: role === member.role })),
+          owner: member.role === 'owner',
+          spaceLevels: [0, ...SPACE_LEVELS].map((level) => ({ value: level, label: level ? t('BroughtN', { level }) : t('BroughtNone'), selected: level === (member.spaceLevel ?? 0) })),
         }
       }),
       upgrades: await Promise.all(
@@ -122,6 +122,9 @@ export class PersonalSpaceSheet extends HandlebarsApplicationMixin(ActorSheetV2)
     for (const input of this.element.querySelectorAll('[data-member-role]')) {
       input.addEventListener('change', (event: Event) => this.#onMemberRole(event))
     }
+    for (const input of this.element.querySelectorAll('[data-member-level]')) {
+      input.addEventListener('change', (event: Event) => this.#onMemberLevel(event))
+    }
   }
 
   async #onItemField(event: Event) {
@@ -147,14 +150,39 @@ export class PersonalSpaceSheet extends HandlebarsApplicationMixin(ActorSheetV2)
     await this.actor.update({ 'system.members': members })
   }
 
+  async #onMemberLevel(event: Event) {
+    event.stopPropagation()
+    const input = event.currentTarget as HTMLSelectElement
+    const index = Number(input.closest<HTMLElement>('[data-member]')?.dataset.member)
+    const members = membersOf(this.actor)
+    if (!members[index] || !this.isEditable) return
+    members[index].spaceLevel = Math.floor(Number(input.value) || 0)
+    await this.actor.update({ 'system.members': members })
+  }
+
   /** Drop a crawler to add them: the first one owns the space, later ones join as members. */
   async _onDropActor(_event: DragEvent, actor: any) {
+    if (this.isEditable && actor?.type === 'personalSpace' && actor !== this.actor) return this.#conjoin(actor)
     if (!this.isEditable || actor?.type !== 'crawler') return
     const members = membersOf(this.actor)
     if (members.some((member) => member.uuid === actor.uuid)) return
     members.push({ uuid: actor.uuid, role: members.length ? 'member' : 'owner' })
     await this.actor.update({ 'system.members': members })
     if (libraryOf(actor).length) ui.notifications.info(t('HasLibrary', { name: actor.name }))
+  }
+
+  /** Drop another space on this one (GM) to conjoin them: it moves in here and is deleted. */
+  async #conjoin(source: any) {
+    if (!game.user.isGM) return ui.notifications.warn(t('ConjoinGM'))
+    const confirmed = await foundry.applications.api.DialogV2.confirm({
+      window: { title: t('ConjoinTitle') },
+      content: `<p>${t('ConjoinHint', { source: foundry.utils.escapeHTML(source.name), target: foundry.utils.escapeHTML(this.actor.name), cost: gold(CONJOIN_COST) })}</p>`,
+      rejectClose: false,
+    })
+    if (!confirmed) return
+    const name = source.name
+    await conjoinSpaces(this.actor, source)
+    ui.notifications.info(t('ConjoinDone', { source: name, level: this.actor.system.level }))
   }
 
   /**
@@ -168,6 +196,19 @@ export class PersonalSpaceSheet extends HandlebarsApplicationMixin(ActorSheetV2)
       return null
     }
     if (item.parent === this.actor) return super._onDropItem(event, item)
+    if (item.type === 'spaceUpgrade' && item.system.spaceLevel && this.actor.system.conjoinedLevel !== null && !this.actor.system.levelLocked) {
+      // Conjoined: the level item upgrades the dropping owner's own space, and the joined Level follows.
+      const members = membersOf(this.actor)
+      const mine = members.find((member) => member.role === 'owner' && member.uuid === game.user.character?.uuid)
+      if (!mine) {
+        ui.notifications.warn(t('ConjoinedLevelDrop'))
+        return null
+      }
+      mine.spaceLevel = Math.max(mine.spaceLevel ?? 0, item.system.spaceLevel)
+      await this.actor.update({ 'system.members': members })
+      ui.notifications.info(t('LevelRaised', { level: this.actor.system.level }))
+      return null
+    }
     if (item.type === 'spaceUpgrade' && item.system.spaceLevel) {
       const level = Math.max(this.actor.system.level, item.system.spaceLevel)
       await this.actor.update({ 'system.level': level })
