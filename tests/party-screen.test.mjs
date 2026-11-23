@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { cleanTitle, enhancedTotal, partyLeader, partySkills, signedRank, titledName, unenhancedTotal } from '../src/rules/party-screen.ts'
+import { bestStat, cleanTitle, enhancedTotal, partyLeader, partySkills, signedRank, titledName, unenhancedTotal } from '../src/rules/party-screen.ts'
 import { acceptsLink, cleanQuests, QUEST_LINK_SECTIONS, questsFor, questSections } from '../src/rules/quests.ts'
 
 test('unenhanced stat points add up the base scores, rounded down, blanks counting 0', () => {
@@ -8,24 +8,35 @@ test('unenhanced stat points add up the base scores, rounded down, blanks counti
   assert.equal(unenhancedTotal(undefined), 0)
 })
 
+const member = (id, name, unenhanced, { bestUnenhanced = 0, enhanced = 0, bestEnhanced = 0, evade = 0 } = {}) => ({ id, name, unenhanced, bestUnenhanced, enhanced, bestEnhanced, evade })
+
 test('the crawler with the most unenhanced stat points leads the party', () => {
-  const member = (id, name, unenhanced, enhanced = 0, evade = 0) => ({ id, name, unenhanced, enhanced, evade })
   assert.equal(partyLeader([member('a', 'Carl', 20), member('b', 'Donut', 24), member('c', 'Katia', 3)]), 'b')
   assert.equal(partyLeader([]), null)
   assert.equal(partyLeader([member('a', 'Carl', 0)]), 'a')
 })
 
-test('ties go to the highest enhanced score, then the highest Evade, then the name', () => {
-  const member = (id, name, unenhanced, enhanced = 0, evade = 0) => ({ id, name, unenhanced, enhanced, evade })
-  assert.equal(partyLeader([member('a', 'Carl', 24, 30), member('b', 'Donut', 24, 33)]), 'b')
-  assert.equal(partyLeader([member('a', 'Carl', 24, 30, 2), member('b', 'Donut', 24, 30, 5)]), 'b')
-  assert.equal(partyLeader([member('b', 'Donut', 24, 30, 5), member('a', 'Carl', 24, 30, 5)]), 'a')
-  assert.equal(partyLeader([member('a', 'Carl', 24, Number.NaN, Number.NaN), member('b', 'Donut', 24, 1, 0)]), 'b')
+test('ties go to the best single unenhanced stat, the enhanced total, the best single enhanced stat, Evade, then the name', () => {
+  // The best single unenhanced stat beats a higher enhanced total.
+  assert.equal(partyLeader([member('a', 'Carl', 21, { bestUnenhanced: 6, enhanced: 30 }), member('b', 'Donut', 21, { bestUnenhanced: 8, enhanced: 23 })]), 'b')
+  // Then the enhanced total beats a higher best enhanced stat.
+  assert.equal(partyLeader([member('a', 'Carl', 21, { bestUnenhanced: 6, enhanced: 25, bestEnhanced: 7 }), member('b', 'Donut', 21, { bestUnenhanced: 6, enhanced: 24, bestEnhanced: 12 })]), 'a')
+  // Then the best single enhanced stat beats Evade.
+  assert.equal(partyLeader([member('a', 'Carl', 21, { enhanced: 23, bestEnhanced: 7, evade: 9 }), member('b', 'Donut', 21, { enhanced: 23, bestEnhanced: 8, evade: 2 })]), 'b')
+  assert.equal(partyLeader([member('a', 'Carl', 24, { evade: 2 }), member('b', 'Donut', 24, { evade: 5 })]), 'b')
+  assert.equal(partyLeader([member('b', 'Donut', 24, { evade: 5 }), member('a', 'Carl', 24, { evade: 5 })]), 'a')
+  assert.equal(partyLeader([member('a', 'Carl', 24, { enhanced: Number.NaN, evade: Number.NaN }), member('b', 'Donut', 24, { enhanced: 1 })]), 'b')
 })
 
 test('enhanced scores add up the stat totals, blanks counting 0', () => {
   assert.equal(enhancedTotal({ str: { total: 9 }, int: { total: null }, dex: { total: 4.5 } }), 13)
   assert.equal(enhancedTotal(null), 0)
+})
+
+test('the best single stat, unenhanced or enhanced, rounded down; blanks count 0', () => {
+  assert.equal(bestStat({ str: { value: 5 }, int: { value: 8.9 }, con: { value: null } }, 'value'), 8)
+  assert.equal(bestStat({ str: { total: 7 }, cha: { total: 11 } }, 'total'), 11)
+  assert.equal(bestStat(undefined, 'value'), 0)
 })
 
 test('a title sits before or after the name; a blank title leaves the name alone', () => {

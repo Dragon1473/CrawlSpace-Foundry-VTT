@@ -18,23 +18,40 @@ export function enhancedTotal(attributes: Record<string, { total?: number | null
   return total
 }
 
+/** The highest single stat, base ('value') or enhanced ('total'), rounded down; blank stats count 0. */
+export function bestStat(attributes: Record<string, { value?: number | null; total?: number | null } | undefined> | null | undefined, key: 'value' | 'total') {
+  let best = 0
+  for (const stat of Object.values(attributes ?? {})) best = Math.max(best, Math.floor(Number(stat?.[key]) || 0))
+  return best
+}
+
 export interface LeaderCandidate {
   id: string
   name: string
+  /** Unenhanced stat points added up, and the highest single one. */
   unenhanced: number
+  bestUnenhanced: number
+  /** Enhanced stat totals added up, and the highest single one. */
   enhanced: number
+  bestEnhanced: number
   evade: number
 }
 
 /**
- * The party leader's id: the most unenhanced stat points, then the highest enhanced score, then the highest
- * Evade, then the name alphabetically. Null for an empty party.
+ * The party leader's id: the most unenhanced stat points, then the highest single unenhanced stat, then the
+ * highest enhanced score, then the highest single enhanced stat, then the highest Evade, then the name
+ * alphabetically. Null for an empty party.
  */
 export function partyLeader(members: LeaderCandidate[]): string | null {
   const num = (value: number) => (Number.isFinite(value) ? value : 0)
-  const ranked = [...members].sort(
-    (a, b) => num(b.unenhanced) - num(a.unenhanced) || num(b.enhanced) - num(a.enhanced) || num(b.evade) - num(a.evade) || a.name.localeCompare(b.name) || a.id.localeCompare(b.id),
-  )
+  const keys = ['unenhanced', 'bestUnenhanced', 'enhanced', 'bestEnhanced', 'evade'] as const
+  const ranked = [...members].sort((a, b) => {
+    for (const key of keys) {
+      const diff = num(b[key]) - num(a[key])
+      if (diff) return diff
+    }
+    return a.name.localeCompare(b.name) || a.id.localeCompare(b.id)
+  })
   return ranked[0]?.id ?? null
 }
 

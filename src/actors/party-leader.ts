@@ -1,6 +1,6 @@
 /**
- * The party leader and party titles. The leader is the party crawler with the most unenhanced stat points (ties:
- * highest enhanced score, then Evade, then name; rules/party-screen.ts). Its players may rename the party and give
+ * The party leader and party titles. The leader is the party crawler with the most unenhanced stat points (ties: highest single unenhanced stat, enhanced score, highest single enhanced stat,
+ * Evade, then name; rules/party-screen.ts). Its players may rename the party and give
  * each party crawler a title, unless the GM turned that off; the GM always can. A title is kept on the crawler
  * (flags.crawlspace.partyTitle) with whether it goes before or after the name.
  *
@@ -8,7 +8,7 @@
  * socket and the active GM's client checks it (still the leader, still allowed, still in the party) and makes it.
  */
 import { partyCrawlers } from './party'
-import { cleanTitle, enhancedTotal, partyLeader, titledName, unenhancedTotal, type PartyTitle } from '../rules/party-screen'
+import { bestStat, cleanTitle, enhancedTotal, partyLeader, titledName, unenhancedTotal, type PartyTitle } from '../rules/party-screen'
 
 const CHANNEL = 'system.crawlspace'
 
@@ -19,7 +19,9 @@ export function leaderActor(members: any[] = partyCrawlers()): any | null {
       id: actor.id,
       name: actor.name,
       unenhanced: unenhancedTotal(actor.system.attributes),
+      bestUnenhanced: bestStat(actor.system.attributes, 'value'),
       enhanced: enhancedTotal(actor.system.attributes),
+      bestEnhanced: bestStat(actor.system.attributes, 'total'),
       evade: Number(actor.system.evade?.total) || 0,
     })),
   )
