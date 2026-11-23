@@ -4552,7 +4552,8 @@
 }
 
 /* Personal Space sheet (sheets/personal-space-sheet.ts). */
-.crawlspace.personal-space .space-sheet { display: flex; flex-direction: column; gap: 0.6rem; padding: 0.5rem; }
+.crawlspace.personal-space .space-sheet { display: flex; flex-direction: column; gap: 0.6rem; padding: 0.5rem; flex: 1; min-height: 0; overflow-y: auto; }
+.crawlspace.personal-space .space-sheet > * { flex: none; }
 .crawlspace.personal-space .space-header { display: flex; gap: 0.75rem; align-items: flex-start; }
 .crawlspace.personal-space .space-img { width: 72px; height: 72px; object-fit: cover; border: none; cursor: pointer; flex: none; }
 .crawlspace.personal-space .space-header .pf-actor-title { flex: 1; display: flex; flex-direction: column; gap: 0.3rem; }
