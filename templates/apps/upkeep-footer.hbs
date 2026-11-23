@@ -1,0 +1,6 @@
+{{!-- Party Upkeep's action buttons (apps/upkeep.ts). --}}
+<footer class="form-footer">
+  {{#each buttons as |button|}}
+  <button type="button" data-action="upkeep" data-kind="{{button.kind}}" {{#if button.tooltip}}data-tooltip="{{button.tooltip}}"{{/if}}>{{button.label}}</button>
+  {{/each}}
+</footer>

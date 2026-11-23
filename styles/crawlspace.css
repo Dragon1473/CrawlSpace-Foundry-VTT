@@ -2887,6 +2887,20 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 2px 12px;
   }
+  .application.crawlspace.upkeep-dialog .upkeep-body { display: flex; flex-direction: column; gap: 6px; }
+  .application.crawlspace.upkeep-dialog .upkeep-body > .hint { margin: 0; }
+  .application.crawlspace.upkeep-dialog .upkeep-roster { display: flex; flex-direction: column; gap: 6px; }
+  .application.crawlspace.upkeep-dialog .upkeep-party { margin: 0; padding: 4px 8px 6px; }
+  .application.crawlspace.upkeep-dialog .upkeep-party legend { display: flex; align-items: center; gap: 4px; padding: 0 4px; }
+  .application.crawlspace.upkeep-dialog .upkeep-party-name { font-weight: bold; }
+  .application.crawlspace.upkeep-dialog button.icon { flex: 0 0 auto; width: 22px; height: 22px; min-height: 0; padding: 0; line-height: 1; font-size: 0.8rem; }
+  .application.crawlspace.upkeep-dialog .upkeep-participant { gap: 4px; min-width: 0; }
+  .application.crawlspace.upkeep-dialog .upkeep-participant label { display: flex; flex-direction: row; justify-content: flex-start; align-items: center; gap: 6px; flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .application.crawlspace.upkeep-dialog .upkeep-participant label input { flex: 0 0 auto; width: 16px; margin: 0; }
+  .application.crawlspace.upkeep-dialog .upkeep-participant .upkeep-remove { opacity: 0.5; }
+  .application.crawlspace.upkeep-dialog .upkeep-participant:hover .upkeep-remove { opacity: 1; }
+  .application.crawlspace.upkeep-dialog .upkeep-drop-hint { margin: 0; font-size: 0.8rem; }
+  .application.crawlspace.upkeep-dialog .form-footer { margin-top: 6px; }
   #scene-controls-layers .crawlspace-separator {
     height: 0;
     margin: 4px 6px;

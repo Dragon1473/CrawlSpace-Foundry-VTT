@@ -1,6 +1,6 @@
 /**
  * The Encounter Tuner (GM): pick a threat and a party size (the players' party by default) and it shows how many mobs
- * to use, with the whole table for other party sizes. Opened from the token controls or
+ * to use, with the whole table for other party sizes. Opened from the CarlRPG controls or
  * game.crawlspace.encounter.open(). The CrawlSpace Atlas module uses game.crawlspace.encounter to size the groups its
  * Place Mobs puts in each room. The `encounterTuner` setting turns the tool off.
  */
@@ -89,18 +89,5 @@ export function registerEncounterTuner() {
     type: Boolean,
     default: true,
     onChange: () => ui.controls?.render?.({ reset: true }),
-  })
-  Hooks.on('getSceneControlButtons', (controls: any) => {
-    const tokens = controls.tokens
-    if (!tokens?.tools || !game.user.isGM || !encounterTunerOn()) return
-    tokens.tools.crawlEncounterTuner = {
-      name: 'crawlEncounterTuner',
-      order: Object.keys(tokens.tools).length + 1,
-      title: 'CRAWLSPACE.Encounter.Title',
-      icon: 'fa-solid fa-scale-balanced',
-      button: true,
-      visible: game.user.isGM,
-      onChange: () => openEncounterTuner(),
-    }
   })
 }

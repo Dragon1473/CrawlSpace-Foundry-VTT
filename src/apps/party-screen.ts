@@ -1,5 +1,5 @@
 /**
- * The party screen: everyone can open it (crawler frames header, the token controls, or
+ * The party screen: everyone can open it (crawler frames header, the CarlRPG controls, or
  * game.crawlspace.openPartyScreen()). Two tabs, and a third while the party has a conjoined Personal Space:
  *
  * - Overview: a bigger crawler frame for each party crawler (the frames' own members, conditions, pets, mounts and
@@ -498,19 +498,6 @@ export function registerPartyScreen() {
       openPartyScreen()
       return true
     },
-  })
-  Hooks.on('getSceneControlButtons', (controls: any) => {
-    const tokens = controls.tokens
-    if (!tokens?.tools) return
-    tokens.tools.crawlPartyScreen = {
-      name: 'crawlPartyScreen',
-      order: Object.keys(tokens.tools).length + 1,
-      title: 'CRAWLSPACE.PartyScreen.Open',
-      icon: 'fa-solid fa-users-viewfinder',
-      button: true,
-      visible: true,
-      onChange: () => openPartyScreen(),
-    }
   })
   Hooks.once('ready', () => {
     if (game.crawlspace) game.crawlspace.openPartyScreen = openPartyScreen

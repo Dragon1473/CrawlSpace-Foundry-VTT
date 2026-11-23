@@ -254,17 +254,4 @@ export class RaceApp extends HandlebarsApplicationMixin(ApplicationV2) {
 
 export function registerRace() {
   game.settings.register('crawlspace', 'raceState', { scope: 'world', config: false, type: Object, default: null, onChange: () => foundry.applications.instances.get('crawl-race')?.render() })
-  Hooks.on('getSceneControlButtons', (controls: any) => {
-    const tokens = controls.tokens
-    if (!tokens?.tools || !game.user.isGM) return
-    tokens.tools.crawlRace = {
-      name: 'crawlRace',
-      order: Object.keys(tokens.tools).length + 1,
-      title: 'CRAWLSPACE.Race.Title',
-      icon: 'fa-solid fa-flag-checkered',
-      button: true,
-      visible: game.user.isGM,
-      onChange: () => RaceApp.open(),
-    }
-  })
 }

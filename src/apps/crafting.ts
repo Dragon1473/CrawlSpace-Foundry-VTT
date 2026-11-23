@@ -491,21 +491,8 @@ export async function openCraftingFor(actor?: any) {
   return CraftingApp.open(picked)
 }
 
-/** A Crafting button among the token tools, for everyone, and at the foot of the Items directory for the GM. */
+/** Crafting at the foot of the Items directory for the GM; everyone has it in the CarlRPG controls (carl-controls.ts). */
 export function registerCraftingControls() {
-  Hooks.on('getSceneControlButtons', (controls: any) => {
-    const tokens = controls.tokens
-    if (!tokens?.tools) return
-    tokens.tools.crawlCrafting = {
-      name: 'crawlCrafting',
-      order: Object.keys(tokens.tools).length + 1,
-      title: 'CRAWLSPACE.Craft.Title',
-      icon: 'fa-solid fa-hammer',
-      button: true,
-      visible: true,
-      onChange: () => openCraftingFor(),
-    }
-  })
   Hooks.on('renderItemDirectory', (_app: any, html: HTMLElement) => {
     if (!game.user.isGM || html.querySelector('[data-crawl-crafting]')) return
     const footer = html.querySelector('.directory-footer') ?? html

@@ -38,6 +38,7 @@
     }
   },
   "CRAWLSPACE": {
+    "CarlControls": "CarlRPG",
     "Tab": {
       "skills": "Skills",
       "spells": "Spells",
@@ -783,9 +784,9 @@
       "PlayerSetting": "Allow player upkeep without time skips",
       "PlayerSettingHint": "Players may run upkeep for crawlers they own. Only the GM can advance the clock.",
       "Actions": {
-        "short": "Short Rest - 2 hours",
-        "long": "Long Rest - 8 hours",
-        "full": "Full Rest - 30 hours",
+        "short": "Short Rest",
+        "long": "Long Rest",
+        "full": "Full Rest",
         "hourly": "Hourly Recovery",
         "safeRoom": "Enter Safe Room",
         "session": "End Session",
@@ -821,7 +822,19 @@
       "Automate": "Automate",
       "DontAutomate": "Don't automate",
       "Manual": "Not automated: apply any changes by hand.",
-      "ManualHint": "Your choice goes to the GM, who decides whether to automate it."
+      "ManualHint": "Your choice goes to the GM, who decides whether to automate it.",
+      "RestTime": {
+        "short": "Takes 2 hours. Personal Space upgrades can change this.",
+        "long": "Takes 8 hours. Personal Space upgrades can change this: time skips only as long as the slowest crawler resting needs.",
+        "full": "Takes 30 hours. Personal Space upgrades can change this."
+      },
+      "SelectParty": "Select the whole party",
+      "DeselectParty": "Deselect the whole party",
+      "RemoveParty": "Take this party off the list",
+      "RemoveCrawler": "Take off the list",
+      "NoCrawlers": "No crawlers on the list.",
+      "DropHint": "Drag crawlers (or a folder of them) from the Actors list to add them.",
+      "DropCrawlers": "Only crawlers can join Party Upkeep."
     },
     "Import": {
       "Character": "Import",

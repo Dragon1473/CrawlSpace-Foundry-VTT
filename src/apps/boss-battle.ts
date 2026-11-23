@@ -1,5 +1,5 @@
 /**
- * Boss battle intro. The GM presses the button in the token controls (or calls game.crawlspace.startBossBattle);
+ * Boss battle intro. The GM presses the button in the CarlRPG controls (or calls game.crawlspace.startBossBattle);
  * every client dims the screen, shows the crawlers' headshots grouped under their party banners facing the
  * enemies' across a "VS.", and plays the sound bite set in the system settings (nothing plays while it is blank).
  *
@@ -212,19 +212,6 @@ export function registerBossBattle() {
   // The GM who starts an encounter with a boss in it starts the boss battle for everyone.
   Hooks.on('updateCombat', (combat: any, changes: any, _options: any, userId: string) => {
     if (userId === game.user.id && game.user.isGM && splashExpected(combat, changes)) startBossBattle({ auto: true })
-  })
-  Hooks.on('getSceneControlButtons', (controls: any) => {
-    const tokens = controls.tokens
-    if (!tokens?.tools || !game.user.isGM) return
-    tokens.tools.crawlBossBattle = {
-      name: 'crawlBossBattle',
-      order: Object.keys(tokens.tools).length + 1,
-      title: 'CRAWLSPACE.BossBattle.Button',
-      icon: 'fa-solid fa-skull-crossbones',
-      button: true,
-      visible: game.user.isGM,
-      onChange: () => startBossBattle(),
-    }
   })
   Hooks.once('ready', () => {
     game.socket.on(CHANNEL, (message: any) => {

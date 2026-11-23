@@ -3,7 +3,7 @@
  * keeps the Top Ten (any names, or crawlers picked from the world) and the crawlers left on each floor; both can be
  * filled from the books and then edited however the GM likes (rules/leaderboard.ts). Players see the leaderboard only
  * once the GM shows it. When the party reaches a new floor, the GM's client announces how many crawlers remain, as
- * the books do at floor transitions. Opened from the token controls or game.crawlspace.leaderboard.open().
+ * the books do at floor transitions. Opened from the CarlRPG controls or game.crawlspace.leaderboard.open().
  */
 import { partyCrawlers } from '../actors/party'
 import {
@@ -211,19 +211,6 @@ export function registerLeaderboard() {
   game.settings.register('crawlspace', 'population', { scope: 'world', config: false, type: Object, default: {}, onChange: rerender })
   game.settings.register('crawlspace', 'populationAnnounced', { scope: 'world', config: false, type: Number, default: 0, onChange: rerender })
   game.settings.register('crawlspace', 'populationAutoAnnounce', { scope: 'world', config: false, type: Boolean, default: true })
-  Hooks.on('getSceneControlButtons', (controls: any) => {
-    const tokens = controls.tokens
-    if (!tokens?.tools || !leaderboardToolsOn() || (!game.user.isGM && !board().visible)) return
-    tokens.tools.crawlLeaderboard = {
-      name: 'crawlLeaderboard',
-      order: Object.keys(tokens.tools).length + 1,
-      title: 'CRAWLSPACE.Leaderboard.Title',
-      icon: 'fa-solid fa-ranking-star',
-      button: true,
-      visible: true,
-      onChange: () => openLeaderboard(),
-    }
-  })
   // Floor transitions: when a party crawler first reaches a deeper floor, announce the crawlers left there.
   Hooks.on('updateActor', (actor: any, changes: any) => {
     if (!game.user.isActiveGM || !leaderboardToolsOn() || !game.settings.get('crawlspace', 'populationAutoAnnounce')) return

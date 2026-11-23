@@ -52,6 +52,7 @@ import { openCraftingFor, registerCraftingControls } from './apps/crafting'
 import { registerChatHandlers } from './chat/cards'
 import { characterToActor } from './import/convert'
 import { fillActorDamage, fillDamageData } from './import/fill-damage'
+import { registerCarlControls } from './apps/carl-controls'
 import { registerUpkeep, openUpkeep, rest, performUpkeep } from './apps/upkeep'
 import { migrateShieldLoss } from './rules/repair'
 import { PersonalSpaceData, SpaceUpgradeData } from './data/personal-space'
@@ -251,6 +252,7 @@ Hooks.once('init', () => {
   registerGridCalibration()
   registerAreas()
   registerUpkeep()
+  registerCarlControls()
   registerLootTools()
   registerRewardTables()
   registerHotlistUpkeep()

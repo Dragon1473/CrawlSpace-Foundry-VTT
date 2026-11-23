@@ -11,7 +11,8 @@ import { startRegenCollect, stopRegenCollect } from '../effects/regen-collector'
 import { recoveryRow } from '../rules/upkeep-summary'
 import { restSeconds } from '../rules/time'
 import { afterSpaceRest, restSecondsFor } from '../actors/personal-space'
-import { openTime } from './time'
+import { inParty, otherParties, partyCrawlers, playerPartyLabel } from '../actors/party'
+import { PLAYERS, rosterGroups, toggleGroup } from '../rules/upkeep-roster'
 import { STATS, STAT_KEYS } from '../config'
 import { debuffByName } from '../rules/debuffs'
 import { advancementCheck, advances, canAssignStats, pendingStatPoints, recoverCrawler, type AdvancementKind, type RecoveryKind } from '../rules/upkeep'
@@ -266,37 +267,147 @@ export async function answerUpkeepRequest(message: any, approve: boolean) {
   if (user) await ChatMessage.create({ content: `<p>${game.i18n.format(approve ? 'CRAWLSPACE.Upkeep.Approved' : 'CRAWLSPACE.Upkeep.Declined', { action: game.i18n.localize(`CRAWLSPACE.Upkeep.Actions.${flags.upkeep}`) })}</p>`, whisper: [user.id] })
 }
 
-export async function openUpkeep(actor?: any) {
-  const gm = game.user.isGM
-  const actors = (actor ? [actor] : game.actors.filter((entry: any) => entry.type === 'crawler')).sort((a: any, b: any) => a.name.localeCompare(b.name))
-  const esc = foundry.utils.escapeHTML
-  const labels = ['short', 'long', 'full', 'hourly', 'safeRoom', 'session', 'floor', 'grinding', 'assign', ...(gm ? ['level', 'awards', 'autoLoot', 'generator'] : [])]
-  const request = !gm && !game.settings.get('crawlspace', 'playerUpkeep')
-  const hint = gm ? 'Hint' : !upkeepAutomated() ? 'ManualHint' : request ? 'RequestHint' : 'NoTime'
-  const content = `<p>${game.i18n.localize(`CRAWLSPACE.Upkeep.${hint}`)}</p>
-    <div class="upkeep-participants">${actors.map((entry: any) => `<label class="upkeep-participant"><input type="checkbox" name="actor" value="${esc(entry.uuid)}" checked> ${esc(entry.name)}</label>`).join('')}</div>`
-  const answer = await foundry.applications.api.DialogV2.wait({
-    window: { title: game.i18n.localize('CRAWLSPACE.Upkeep.Party') }, position: { width: 560 }, content, rejectClose: false,
+const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api
+
+/** The party key a crawler stands with: 'players', another party's id, or '' (Solo). */
+const partyKeyOf = (actor: any) => (inParty(actor) ? PLAYERS : String(actor.getFlag('crawlspace', 'partyId') ?? ''))
+
+/**
+ * Party Upkeep. It lists the players' party, checked; the GM drops more crawlers (or a folder of them) onto it.
+ * Crawlers are grouped by party, a party's button checks or clears all of it, and crawlers or whole parties can be
+ * taken off the list. The window stays open after an action, so the list is kept until it closes.
+ */
+class UpkeepApp extends HandlebarsApplicationMixin(ApplicationV2) {
+  static DEFAULT_OPTIONS: any = {
+    tag: 'form',
     classes: ['crawlspace', 'upkeep-dialog'],
-    buttons: labels.map((kind) => ({ action: kind, label: game.i18n.localize(`CRAWLSPACE.Upkeep.Actions.${kind}`), callback: (_event: Event, button: any) => ({ kind, uuids: [...button.form.querySelectorAll('[name=actor]:checked')].map((input: any) => input.value) }) })),
-  })
-  if (!answer) return
-  if (answer.kind === 'generator') return openItemGenerator()
-  const chosen = actors.filter((entry: any) => answer.uuids.includes(entry.uuid))
-  if (!chosen.length) return ui.notifications.warn(game.i18n.localize('CRAWLSPACE.Time.SelectActors'))
-  try {
-    if (answer.kind === 'awards') return openAwards(chosen)
-    if (answer.kind === 'autoLoot') return openAutoLoot(chosen)
-    if (answer.kind === 'assign') { for (const entry of chosen) await assignStats(entry); return }
-    // Only the actions that take hours ask for them.
-    let hours = 1
-    if (answer.kind === 'hourly' || answer.kind === 'grinding') {
-      const picked = await askHours(game.i18n.localize(`CRAWLSPACE.Upkeep.Actions.${answer.kind}`))
-      if (picked === null) return
-      hours = picked
+    position: { width: 560, height: 'auto' },
+    window: { title: 'CRAWLSPACE.Upkeep.Party', icon: 'fa-solid fa-campground', resizable: true },
+    actions: {
+      upkeep: UpkeepApp.#onUpkeep,
+      toggleParty: UpkeepApp.#onToggleParty,
+      removeCrawler: UpkeepApp.#onRemoveCrawler,
+      removeParty: UpkeepApp.#onRemoveParty,
+    },
+  }
+
+  static PARTS = {
+    main: { template: 'systems/crawlspace/templates/apps/upkeep.hbs' },
+    footer: { template: 'systems/crawlspace/templates/apps/upkeep-footer.hbs' },
+  }
+
+  /** The crawlers on the list, and those checked. */
+  listed: string[]
+  checked: Set<string>
+
+  constructor(uuids: string[], options: any = {}) {
+    super(options)
+    this.listed = [...new Set(uuids)]
+    this.checked = new Set(this.listed)
+  }
+
+  get actors(): any[] {
+    return this.listed.map((uuid) => fromUuidSync(uuid)).filter((actor: any) => actor?.type === 'crawler')
+  }
+
+  async _prepareContext() {
+    const gm = game.user.isGM
+    const request = !gm && !game.settings.get('crawlspace', 'playerUpkeep')
+    const hint = gm ? 'Hint' : !upkeepAutomated() ? 'ManualHint' : request ? 'RequestHint' : 'NoTime'
+    const groups = rosterGroups(
+      this.actors.map((actor: any) => ({ uuid: actor.uuid, name: actor.name, party: partyKeyOf(actor) })),
+      this.checked,
+      { parties: otherParties(), playersLabel: playerPartyLabel(), soloLabel: game.i18n.localize('CRAWLSPACE.Party.Solo'), unnamedLabel: game.i18n.localize('CRAWLSPACE.Party.Unnamed') },
+    )
+    const kinds = ['short', 'long', 'full', 'hourly', 'safeRoom', 'session', 'floor', 'grinding', 'assign', ...(gm ? ['level', 'awards', 'autoLoot', 'generator'] : [])]
+    // Rest times go in the tooltips, which say Personal Space upgrades can change them.
+    const buttons = kinds.map((kind) => ({
+      kind,
+      label: game.i18n.localize(`CRAWLSPACE.Upkeep.Actions.${kind}`),
+      tooltip: ['short', 'long', 'full'].includes(kind) ? game.i18n.localize(`CRAWLSPACE.Upkeep.RestTime.${kind}`) : '',
+    }))
+    return { gm, hint: game.i18n.localize(`CRAWLSPACE.Upkeep.${hint}`), groups, buttons }
+  }
+
+  _onFirstRender(context: any, options: any) {
+    super._onFirstRender(context, options)
+    this.element.addEventListener('change', (event: Event) => {
+      const input = event.target as HTMLInputElement
+      if (input?.name !== 'actor') return
+      if (input.checked) this.checked.add(input.value)
+      else this.checked.delete(input.value)
+      this.render()
+    })
+    if (!game.user.isGM) return
+    this.element.addEventListener('dragover', (event: DragEvent) => event.preventDefault())
+    this.element.addEventListener('drop', (event: DragEvent) => this.#onDrop(event))
+  }
+
+  /** A dropped crawler (or every crawler in a dropped Actors folder) joins the list, checked. */
+  async #onDrop(event: DragEvent) {
+    const data: any = foundry.applications.ux.TextEditor.implementation.getDragEventData(event)
+    if (!data?.uuid || !['Actor', 'Folder'].includes(data.type)) return
+    event.preventDefault()
+    const dropped: any = await fromUuid(data.uuid)
+    const list = data.type === 'Folder' ? (dropped?.type === 'Actor' ? dropped.contents ?? [] : []) : [dropped]
+    const crawlers = list.filter((actor: any) => actor?.type === 'crawler')
+    if (!crawlers.length) return ui.notifications.warn(game.i18n.localize('CRAWLSPACE.Upkeep.DropCrawlers'))
+    for (const actor of crawlers) {
+      if (!this.listed.includes(actor.uuid)) this.listed.push(actor.uuid)
+      this.checked.add(actor.uuid)
     }
-    return await upkeepAction(answer.uuids, answer.kind, hours)
-  } catch (error: any) { ui.notifications.error(error.message) }
+    this.render()
+  }
+
+  static #onToggleParty(this: UpkeepApp, _event: Event, target: HTMLElement) {
+    const uuids = [...(target.closest('.upkeep-party')?.querySelectorAll<HTMLInputElement>('[name=actor]') ?? [])].map((input) => input.value)
+    this.checked = toggleGroup(this.checked, uuids)
+    this.render()
+  }
+
+  #remove(uuids: string[]) {
+    this.listed = this.listed.filter((uuid) => !uuids.includes(uuid))
+    for (const uuid of uuids) this.checked.delete(uuid)
+    this.render()
+  }
+
+  static #onRemoveCrawler(this: UpkeepApp, _event: Event, target: HTMLElement) {
+    const uuid = target.closest<HTMLElement>('[data-uuid]')?.dataset.uuid
+    if (uuid) this.#remove([uuid])
+  }
+
+  static #onRemoveParty(this: UpkeepApp, _event: Event, target: HTMLElement) {
+    this.#remove([...(target.closest('.upkeep-party')?.querySelectorAll<HTMLElement>('[data-uuid]') ?? [])].map((row) => row.dataset.uuid!))
+  }
+
+  static async #onUpkeep(this: UpkeepApp, _event: Event, target: HTMLElement) {
+    const kind = target.dataset.kind!
+    if (kind === 'generator') return openItemGenerator()
+    const chosen = this.actors.filter((actor: any) => this.checked.has(actor.uuid))
+    if (!chosen.length) return ui.notifications.warn(game.i18n.localize('CRAWLSPACE.Time.SelectActors'))
+    try {
+      if (kind === 'awards') return openAwards(chosen)
+      if (kind === 'autoLoot') return openAutoLoot(chosen)
+      if (kind === 'assign') { for (const entry of chosen) await assignStats(entry); return }
+      // Only the actions that take hours ask for them.
+      let hours = 1
+      if (kind === 'hourly' || kind === 'grinding') {
+        const picked = await askHours(game.i18n.localize(`CRAWLSPACE.Upkeep.Actions.${kind}`))
+        if (picked === null) return
+        hours = picked
+      }
+      return await upkeepAction(chosen.map((actor: any) => actor.uuid), kind, hours)
+    } catch (error: any) { ui.notifications.error(error.message) }
+  }
+}
+
+/** Party Upkeep for the players' party, or for one crawler (from its sheet). */
+export async function openUpkeep(actor?: any) {
+  const id = actor ? `crawl-upkeep-${actor.id}` : 'crawl-upkeep'
+  const open: any = foundry.applications.instances.get(id)
+  if (open) return open.render({ force: true })
+  const uuids = actor ? [actor.uuid] : partyCrawlers().filter((entry: any) => entry.type === 'crawler' && (game.user.isGM || entry.visible)).map((entry: any) => entry.uuid)
+  return new UpkeepApp(uuids, { id }).render({ force: true })
 }
 
 /** A small prompt for how many hours an upkeep action takes (1–30, one dungeon day). */
@@ -322,41 +433,5 @@ export function registerUpkeep() {
   game.settings.register('crawlspace', 'playerUpkeep', {
     name: 'CRAWLSPACE.Upkeep.PlayerSetting', hint: 'CRAWLSPACE.Upkeep.PlayerSettingHint',
     scope: 'world', config: true, restricted: true, type: Boolean, default: false,
-  })
-  // Party Upkeep and Timers sit in the left column under Journal, set apart from Regions by a separator.
-  // Foundry's top-level controls are canvas layers rather than buttons, so these join the rendered column.
-  Hooks.on('renderSceneControls', (_app: any, html: HTMLElement) => {
-    const menu = html.querySelector('#scene-controls-layers') ?? html.querySelector('menu')
-    const journal = menu?.querySelector('[data-control="notes"]')?.closest('li')
-    if (!menu || !journal || menu.querySelector('.crawlspace-control')) return
-    const button = (name: string, icon: string, title: string, onClick: () => unknown) => {
-      const li = document.createElement('li')
-      li.className = 'crawlspace-control'
-      const element = document.createElement('button')
-      element.type = 'button'
-      element.className = `control ui-control layer icon ${icon}`
-      element.dataset.crawlspaceControl = name
-      element.dataset.tooltip = game.i18n.localize(title)
-      element.setAttribute('aria-label', game.i18n.localize(title))
-      element.addEventListener('click', (event) => {
-        event.preventDefault()
-        event.stopPropagation()
-        onClick()
-      })
-      li.append(element)
-      return li
-    }
-    const added: HTMLElement[] = []
-    added.push(button('upkeep', 'fa-solid fa-campground', 'CRAWLSPACE.Upkeep.Party', () => openUpkeep()))
-    if (game.user.isGM) added.push(button('timers', 'fa-solid fa-hourglass-half', 'CRAWLSPACE.Time.Title', () => openTime()))
-    journal.after(...added)
-    const separator = document.createElement('li')
-    separator.className = 'crawlspace-control crawlspace-separator'
-    separator.setAttribute('role', 'separator')
-    const regions = menu.querySelector('[data-control="regions"]')?.closest('li')
-    const items = [...menu.children]
-    // Between the Journal group and Regions, whichever comes first.
-    if (regions && items.indexOf(regions) < items.indexOf(journal)) journal.before(separator)
-    else (added.at(-1) ?? journal).after(separator)
   })
 }

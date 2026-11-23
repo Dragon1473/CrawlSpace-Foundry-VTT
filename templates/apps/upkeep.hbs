@@ -1,0 +1,26 @@
+{{!-- Party Upkeep (apps/upkeep.ts): the crawlers by party, then the upkeep buttons. --}}
+<section class="upkeep-body">
+  <p class="hint">{{hint}}</p>
+  <div class="upkeep-roster">
+    {{#each groups as |group|}}
+    <fieldset class="upkeep-party" data-party="{{group.key}}">
+      <legend>
+        <span class="upkeep-party-name">{{group.label}}</span>
+        <button type="button" class="icon upkeep-party-toggle" data-action="toggleParty" data-tooltip="{{#if group.allChecked}}{{localize 'CRAWLSPACE.Upkeep.DeselectParty'}}{{else}}{{localize 'CRAWLSPACE.Upkeep.SelectParty'}}{{/if}}" aria-label="{{#if group.allChecked}}{{localize 'CRAWLSPACE.Upkeep.DeselectParty'}}{{else}}{{localize 'CRAWLSPACE.Upkeep.SelectParty'}}{{/if}}"><i class="fa-regular {{#if group.allChecked}}fa-square-check{{else}}fa-square{{/if}}"></i></button>
+        <button type="button" class="icon upkeep-remove" data-action="removeParty" data-tooltip="{{localize 'CRAWLSPACE.Upkeep.RemoveParty'}}" aria-label="{{localize 'CRAWLSPACE.Upkeep.RemoveParty'}}"><i class="fa-solid fa-xmark"></i></button>
+      </legend>
+      <div class="upkeep-participants">
+        {{#each group.crawlers as |crawler|}}
+        <div class="upkeep-participant" data-uuid="{{crawler.uuid}}">
+          <label><input type="checkbox" name="actor" value="{{crawler.uuid}}" {{checked crawler.checked}}> {{crawler.name}}</label>
+          <button type="button" class="icon upkeep-remove" data-action="removeCrawler" data-tooltip="{{localize 'CRAWLSPACE.Upkeep.RemoveCrawler'}}" aria-label="{{localize 'CRAWLSPACE.Upkeep.RemoveCrawler'}}"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        {{/each}}
+      </div>
+    </fieldset>
+    {{else}}
+    <p class="hint upkeep-empty">{{localize "CRAWLSPACE.Upkeep.NoCrawlers"}}</p>
+    {{/each}}
+    {{#if gm}}<p class="hint upkeep-drop-hint"><i class="fa-solid fa-hand-pointer"></i> {{localize "CRAWLSPACE.Upkeep.DropHint"}}</p>{{/if}}
+  </div>
+</section>
