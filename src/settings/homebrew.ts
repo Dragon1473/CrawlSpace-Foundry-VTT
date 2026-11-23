@@ -3,7 +3,7 @@
  * init, so leaving them out there removes them everywhere: the Compendium tab, the sheets' "Add from Database" and
  * every lookup that walks game.packs. Changing the setting reloads the world.
  */
-export const HOMEBREW_PACKS = ['homebrew-skills', 'homebrew-spells', 'homebrew-items']
+export const HOMEBREW_PACKS = ['homebrew-skills', 'homebrew-spells', 'homebrew-items', 'homebrew-personal-space', 'homebrew-space-tables', 'homebrew-hobby-tables']
 
 export function registerHomebrewSetting() {
   game.settings.register('crawlspace', 'homebrewCompendium', {

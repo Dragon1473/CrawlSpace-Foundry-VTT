@@ -4,7 +4,7 @@
  * uploading and document creation.
  */
 import { strFromU8, unzipSync } from 'fflate'
-import { mobToActor, stableId, toHtml } from './convert.ts'
+import { imagePath, mobToActor, stableId, toHtml } from './convert.ts'
 
 export const IMAGE_PREFIX = 'crawlspace-image:'
 const imageReferences = /crawlspace-image:([0-9a-f-]{32,64})/gi
@@ -173,42 +173,66 @@ export function usedImageIds(value: unknown, ids = new Set<string>(), depth = 0)
 
 /** Foundry's smallest grid cell. */
 const MIN_GRID = 50
+/** Foundry's largest scene padding. */
+const MAX_PADDING = 0.5
 const mod = (value: number, size: number) => ((value % size) + size) % size
+const round = (value: number) => Math.round(value * 100) / 100 + 0
+
+type Box = { x: number; y: number; width: number; height: number }
+const union = (boxes: Box[]): Box => {
+  const x = Math.min(...boxes.map((box) => box.x))
+  const y = Math.min(...boxes.map((box) => box.y))
+  return { x, y, width: Math.max(...boxes.map((box) => box.x + box.width)) - x, height: Math.max(...boxes.map((box) => box.y + box.height)) - y }
+}
+/** The upright box around a box turned about its center. */
+const turned = (box: Box, degrees: number): Box => {
+  const cos = Math.abs(Math.cos((degrees * Math.PI) / 180))
+  const sin = Math.abs(Math.sin((degrees * Math.PI) / 180))
+  const width = box.width * cos + box.height * sin
+  const height = box.width * sin + box.height * cos
+  return { x: box.x + (box.width - width) / 2, y: box.y + (box.height - height) / 2, width, height }
+}
+/** A V14 tile for a top-left box: Foundry positions and turns tiles by their center. */
+const tileShape = (src: string, box: Box) => ({
+  texture: { src, anchorX: 0.5, anchorY: 0.5 },
+  x: round(box.x + box.width / 2),
+  y: round(box.y + box.height / 2),
+  width: round(box.width),
+  height: round(box.height),
+})
 
 /**
- * App scenes place everything in percentages of a surface: the map plus a border of
- * max(map × canvasPadding, two cells) when padding is on (vttSceneSurface.ts). Foundry wants pixels
- * from the map's corner, with grid lines on multiples of the cell size.
+ * App scenes have a map area plus a border of max(area × canvasPadding, two unscaled cells) when
+ * padding is on (vttSceneSurface.ts). Most things are placed in percentages of that whole surface,
+ * drawings in its pixels. This turns both into Foundry pixels from the map area's corner.
  */
 export function sceneGeometry(data: Record<string, any>) {
   const config = record(data.configuration) ? data.configuration : {}
   const mapWidth = num(config.sceneWidthPixels, 2000)
   const mapHeight = num(config.sceneHeightPixels, 1200)
-  const cell = num(config.gridCellSize, 100) * num(config.gridScaleX, 1)
+  const baseCell = num(config.gridCellSize, 100)
+  const cellX = baseCell * num(config.gridScaleX, 1)
+  const cellY = baseCell * num(config.gridScaleY, 1)
   const padding = num(config.canvasPadding, 0)
-  const borderX = padding > 0 ? Math.max(mapWidth * padding, 2 * cell) : 0
-  const borderY = padding > 0 ? Math.max(mapHeight * padding, 2 * cell) : 0
+  const borderX = padding > 0 ? Math.max(mapWidth * padding, 2 * baseCell) : 0
+  const borderY = padding > 0 ? Math.max(mapHeight * padding, 2 * baseCell) : 0
   const surfaceWidth = mapWidth + 2 * borderX
   const surfaceHeight = mapHeight + 2 * borderY
-  const scale = cell < MIN_GRID ? MIN_GRID / cell : 1
-  // Where the app's first grid line falls, in map pixels; everything moves so it lands on Foundry's.
-  const shiftX = mod((num(data.gridOffsetX, 0) * surfaceWidth) / 100 - borderX, cell)
-  const shiftY = mod((num(data.gridOffsetY, 0) * surfaceHeight) / 100 - borderY, cell)
-  const round = (value: number) => Math.round(value * 100) / 100 + 0
+  // Foundry's cells are square whole pixels: scale each axis onto them so the grid doesn't drift across the map.
+  const size = Math.round(Math.max(MIN_GRID, cellX, cellY))
+  const scale = { x: size / cellX, y: size / cellY }
+  const pixel = (x: number, y: number) => ({ x: round((x - borderX) * scale.x), y: round((y - borderY) * scale.y) })
+  const point = (x: number, y: number) => pixel((num(x, 0) * surfaceWidth) / 100, (num(y, 0) * surfaceHeight) / 100)
   return {
     scale,
-    size: Math.round(cell * scale),
-    width: Math.round(mapWidth * scale),
-    height: Math.round(mapHeight * scale),
-    surface: { width: surfaceWidth, height: surfaceHeight },
-    inset: { x: (borderX / surfaceWidth) * 100, y: (borderY / surfaceHeight) * 100 },
-    factor: { x: surfaceWidth / mapWidth, y: surfaceHeight / mapHeight },
-    backgroundOffset: { x: round(-shiftX * scale), y: round(-shiftY * scale) },
-    point: (x: number, y: number) => ({
-      x: round(((num(x, 0) * surfaceWidth) / 100 - borderX - shiftX) * scale),
-      y: round(((num(y, 0) * surfaceHeight) / 100 - borderY - shiftY) * scale),
-    }),
-    length: (percentX: number, percentY: number) => ({ width: round(((num(percentX, 0) * surfaceWidth) / 100) * scale), height: round(((num(percentY, 0) * surfaceHeight) / 100) * scale) }),
+    size,
+    width: Math.round(mapWidth * scale.x),
+    height: Math.round(mapHeight * scale.y),
+    /** Where one of the app's grid intersections falls. */
+    gridLine: point(data.gridOffsetX, data.gridOffsetY),
+    point,
+    pixel,
+    length: (percentX: number, percentY: number) => ({ width: round(((num(percentX, 0) * surfaceWidth) / 100) * scale.x), height: round(((num(percentY, 0) * surfaceHeight) / 100) * scale.y) }),
   }
 }
 type Point = (x: number, y: number) => { x: number; y: number }
@@ -283,35 +307,13 @@ export function convertScene(scene: ExportParty['scenes'][number], objects: Expo
   const data = record(scene.data) ? scene.data : {}
   const config = record(data.configuration) ? data.configuration : {}
   const geometry = sceneGeometry(data)
-  const { point, length } = geometry
+  const { point, pixel, length, scale } = geometry
   const ref = (value: unknown) => {
     if (typeof value !== 'string' || !value) return null
     const id = value.startsWith(IMAGE_PREFIX) ? value.slice(IMAGE_PREFIX.length) : value
-    return /^[0-9a-f-]{32,64}$/i.test(id) ? context.image(id.toLowerCase()) : value.startsWith('/') ? value.slice(1) : value
+    return /^[0-9a-f-]{32,64}$/i.test(id) ? context.image(id.toLowerCase()) : imagePath(value) || null
   }
-  const transform = record(data.mapTransform) ? data.mapTransform : {}
-  const mapMoved = num(transform.x, 0) !== 0 || num(transform.y, 0) !== 0 || num(transform.width, 100) !== 100 || num(transform.height, 100) !== 100 || num(transform.rotation, 0) !== 0 || num(transform.opacity, 1) !== 1
   const mapSrc = ref(data.mapAssetId)
-  const tiles: any[] = []
-  const offsetX = num(config.backgroundOffsetX, 0)
-  const offsetY = num(config.backgroundOffsetY, 0)
-  if (mapSrc && mapMoved) {
-    // The app's sceneMapRectangle: the map's rectangle is a share of the map area, inside the border.
-    const { inset, factor, surface } = geometry
-    const x = inset.x + num(transform.x, 0) / factor.x + (offsetX / surface.width) * 100
-    const y = inset.y + num(transform.y, 0) / factor.y + (offsetY / surface.height) * 100
-    tiles.push({
-      texture: { src: mapSrc },
-      ...point(x, y),
-      ...length(num(transform.width, 100) / factor.x, num(transform.height, 100) / factor.y),
-      rotation: num(transform.rotation, 0),
-      alpha: num(transform.opacity, 1),
-      hidden: false,
-      locked: true,
-      sort: -1,
-    })
-  }
-  const view = record(config.initialView) ? config.initialView : null
   const result = {
     scene: {
       name: scene.name || 'Scene',
@@ -319,15 +321,15 @@ export function convertScene(scene: ExportParty['scenes'][number], objects: Expo
       navName: typeof config.navigationName === 'string' ? config.navigationName : '',
       width: geometry.width,
       height: geometry.height,
-      padding: Math.min(0.5, Math.max(0, num(config.canvasPadding, 0))),
-      // V14 keeps the map, its color and the foreground on the scene's level; the offset is the scene's shift.
-      shiftX: Math.round(geometry.backgroundOffset.x + offsetX * geometry.scale),
-      shiftY: Math.round(geometry.backgroundOffset.y + offsetY * geometry.scale),
+      padding: 0,
+      shiftX: 0,
+      shiftY: 0,
+      // V14 keeps the map, its color and the foreground on the scene's level; frameScene places them.
       levels: [
         {
           _id: 'defaultLevel0000',
           name: scene.name || 'Scene',
-          background: { src: mapMoved ? null : mapSrc, color: typeof config.backgroundColor === 'string' ? config.backgroundColor : '#999999' },
+          background: { src: mapSrc, color: typeof config.backgroundColor === 'string' ? config.backgroundColor : '#999999' },
           foreground: { src: ref(config.foregroundAssetId) },
           ...(num(config.foregroundElevation, 0) ? { elevation: { top: num(config.foregroundElevation, 0) } } : {}),
         },
@@ -346,7 +348,8 @@ export function convertScene(scene: ExportParty['scenes'][number], objects: Expo
         darknessLevel: num(config.darkness, 0),
         globalLight: { enabled: config.globalIllumination === true, darkness: { max: num(config.globalIlluminationThreshold, 1) } },
       },
-      initial: view ? { ...point(num(view.x, 50), num(view.y, 50)), scale: num(view.zoom, 1) } : null,
+      // The app saves its view as a pan in screen pixels, which means nothing here: Foundry fits the scene instead.
+      initial: { x: null, y: null, scale: null },
       ownership: scene.gm_only ? { default: 0 } : undefined,
       flags: { crawlspace: { appSceneId: scene.id } },
     },
@@ -359,7 +362,7 @@ export function convertScene(scene: ExportParty['scenes'][number], objects: Expo
       hidden: record(light.light) && light.light.enabled === false,
       config: lightConfig(light),
     })),
-    tiles,
+    tiles: [] as any[],
     drawings: [] as any[],
     notes: [] as any[],
     tokens: [] as any[],
@@ -368,9 +371,7 @@ export function convertScene(scene: ExportParty['scenes'][number], objects: Expo
     const src = ref(tile.textureAssetId)
     if (!src) return null
     return {
-      texture: { src },
-      ...point(tile.x, tile.y),
-      ...length(tile.width, tile.height),
+      ...tileShape(src, { ...point(tile.x, tile.y), ...length(tile.width, tile.height) }),
       rotation: num(tile.rotation, 0),
       alpha: num(tile.opacity, 1),
       hidden: tile.hidden === true,
@@ -399,16 +400,14 @@ export function convertScene(scene: ExportParty['scenes'][number], objects: Expo
         journal: journalToFoundry(entry, (value) => (typeof value === 'string' ? value : '')),
       })
     } else if (object.kind === 'drawing' && object.layer === 'drawings') {
-      const corner = point(item.x, item.y)
-      const size = length(item.width, item.height)
+      const corner = pixel(num(item.x, 0), num(item.y, 0))
+      const size = { width: round(num(item.width, 0) * scale.x), height: round(num(item.height, 0) * scale.y) }
       const shape =
         item.type === 'rectangle' || item.type === 'text' ? { type: 'r', ...size } : item.type === 'ellipse' ? { type: 'e', ...size } : {
           type: 'p',
           ...size,
-          points: list(item.points).flatMap((p) => {
-            const at = point(p.x, p.y)
-            return [Math.round((at.x - corner.x) * 100) / 100, Math.round((at.y - corner.y) * 100) / 100]
-          }),
+          // Already measured from the drawing's own corner.
+          points: list(item.points).flatMap((p) => [round(num(p.x, 0) * scale.x), round(num(p.y, 0) * scale.y)]),
         }
       result.drawings.push({
         ...corner,
@@ -416,7 +415,7 @@ export function convertScene(scene: ExportParty['scenes'][number], objects: Expo
         rotation: num(item.rotation, 0),
         elevation: num(item.elevation, 0),
         bezierFactor: item.type === 'freehand' ? Math.min(0.5, num(item.smoothing, 0.5)) : 0,
-        strokeWidth: item.type === 'text' ? 0 : num(item.strokeWidth, 8),
+        strokeWidth: item.type === 'text' ? 0 : Math.round(num(item.strokeWidth, 8) * scale.x),
         strokeColor: item.strokeColor ?? '#f4d45f',
         strokeAlpha: num(item.strokeOpacity, 1),
         fillType: fillTypes[item.fillType] ?? 0,
@@ -425,7 +424,7 @@ export function convertScene(scene: ExportParty['scenes'][number], objects: Expo
         texture: item.fillType === 'texture' ? ref(item.textureAssetId) : null,
         text: typeof item.text === 'string' ? item.text : '',
         fontFamily: fonts[item.fontFamily] ?? 'Signika',
-        fontSize: num(item.fontSize, 48),
+        fontSize: Math.min(256, Math.max(8, Math.round(num(item.fontSize, 48) * scale.y))),
         textColor: item.textColor ?? '#ffffff',
         textAlpha: num(item.textOpacity, 1),
         hidden: item.hidden === true,
@@ -459,7 +458,77 @@ export function convertScene(scene: ExportParty['scenes'][number], objects: Expo
       })
     }
   }
+  frameScene(result, data, geometry)
   return result
+}
+
+/**
+ * Chooses the Foundry scene's rectangle and measures everything from its corner. The map, as resized
+ * and moved in the app, is that rectangle and its background. A map that can't be one (turned,
+ * see-through, under a foreground of another size, or with things too far off it for padding) is a
+ * tile on a scene big enough for all of it.
+ */
+function frameScene(converted: Record<string, any>, data: Record<string, any>, geometry: ReturnType<typeof sceneGeometry>) {
+  const { scene, walls, lights, tiles, drawings, notes, tokens } = converted
+  const { scale, size } = geometry
+  const config = record(data.configuration) ? data.configuration : {}
+  const transform = record(data.mapTransform) ? data.mapTransform : {}
+  const [level] = scene.levels
+  const src = level.background.src
+  const area = { x: 0, y: 0, width: geometry.width, height: geometry.height }
+  // The app's sceneMapRectangle: percentages of the map area, plus an offset in its pixels.
+  const map = !src ? area : {
+    x: (num(transform.x, 0) / 100) * area.width + num(config.backgroundOffsetX, 0) * scale.x,
+    y: (num(transform.y, 0) / 100) * area.height + num(config.backgroundOffsetY, 0) * scale.y,
+    width: (num(transform.width, 100) / 100) * area.width,
+    height: (num(transform.height, 100) / 100) * area.height,
+  }
+  const rotation = src ? num(transform.rotation, 0) : 0
+  const alpha = src ? num(transform.opacity, 1) : 1
+  const spot = (x: number, y: number) => ({ x, y, width: 0, height: 0 })
+  const content: Box[] = [
+    ...walls.flatMap(({ c }: any) => [spot(c[0], c[1]), spot(c[2], c[3])]),
+    ...[...lights, ...notes].map((doc: any) => spot(doc.x, doc.y)),
+    ...tiles.map((tile: any) => turned({ x: tile.x - tile.width / 2, y: tile.y - tile.height / 2, width: tile.width, height: tile.height }, tile.rotation)),
+    ...drawings.map((drawing: any) => turned({ x: drawing.x, y: drawing.y, width: drawing.shape.width, height: drawing.shape.height }, drawing.rotation)),
+    ...tokens.map((token: any) => ({ x: token.x, y: token.y, width: token.width * size, height: token.height * size })),
+  ]
+  // Foundry's grid starts at the canvas corner: slide the scene under it, by half a cell at most.
+  const shiftFor = (rect: Box) => {
+    const nearest = (value: number) => Math.round(mod(Math.round(value) + size / 2, size) - size / 2)
+    return scene.grid.type ? { x: nearest(geometry.gridLine.x - rect.x), y: nearest(geometry.gridLine.y - rect.y) } : { x: 0, y: 0 }
+  }
+  /** The padding that keeps these boxes on the canvas around a scene rectangle. */
+  const paddingFor = (rect: Box, boxes: Box[]) => {
+    const all = union([rect, ...boxes])
+    const shift = shiftFor(rect)
+    const x = Math.max(rect.x - all.x + shift.x, all.x + all.width - rect.x - rect.width - shift.x) / rect.width
+    const y = Math.max(rect.y - all.y + shift.y, all.y + all.height - rect.y - rect.height - shift.y) / rect.height
+    return Math.ceil(Math.max(0, x, y) * 20) / 20
+  }
+
+  const foreground = !!level.foreground.src
+  const coversArea = (['x', 'y', 'width', 'height'] as const).every((key) => Math.abs(map[key] - area[key]) < 1)
+  const asBackground = !rotation && alpha === 1 && (!foreground || coversArea) && paddingFor(map, content) <= MAX_PADDING
+  // A foreground always covers the map area, so that stays the scene when there is one.
+  const rect = asBackground ? map : foreground ? area : union([area, turned(map, rotation), ...content])
+
+  if (!asBackground && src) {
+    level.background.src = null
+    tiles.unshift({ ...tileShape(src, map), rotation, alpha, hidden: false, locked: true, sort: Math.min(0, ...tiles.map((tile: any) => tile.sort)) - 1 })
+  }
+  const shift = shiftFor(rect)
+  scene.width = Math.round(rect.width)
+  scene.height = Math.round(rect.height)
+  scene.shiftX = shift.x
+  scene.shiftY = shift.y
+  // Room for the rest of the app's board and anything off the map.
+  const border = Math.ceil(num(config.canvasPadding, 0) * 20) / 20
+  scene.padding = Math.min(MAX_PADDING, Math.max(border, paddingFor(rect, [area, turned(map, rotation), ...content])))
+
+  for (const doc of [...lights, ...notes, ...tiles, ...drawings]) Object.assign(doc, { x: round(doc.x - rect.x), y: round(doc.y - rect.y) })
+  for (const token of tokens) Object.assign(token, { x: Math.round(token.x - rect.x), y: Math.round(token.y - rect.y) })
+  for (const wall of walls) wall.c = wall.c.map((value: number, index: number) => round(value - (index % 2 ? rect.y : rect.x)))
 }
 
 /* ------------------------------------------------------------------ */
@@ -490,7 +559,7 @@ export function combatantToMob(combatant: Record<string, any>, img?: string | nu
     { kind: combatant.boss ? 'boss' : 'mob', flavor: combatant.flavor ?? '', stats: { evade: combatant.evade }, attacks, currentFloor: combatant.floor },
     `token-${combatant.id ?? combatant.name}`,
   )
-  if (img) actor.img = img
+  if (imagePath(img)) actor.img = img
   actor.flags = { crawlspace: { combatant } }
   return actor
 }
@@ -517,6 +586,43 @@ export const importId = (...parts: (string | number)[]) => stableId(`crawlspace-
 
 /** The key that finds an imported document again when the same export is imported later. */
 export const importKey = (...parts: (string | number)[]) => parts.join(':')
+
+/** Where an export's crawlers come from. App ids repeat between environments, and a party backup only names its party. */
+export function importSource({ account, parties }: AccountManifest) {
+  const id = account.createdAt || account.displayName
+  return id ? `account:${id}` : `party:${parties[0]?.party?.name ?? ''}`
+}
+
+/** An actor an earlier import may have made. Its folders identify imports from before sources were recorded. */
+export type ImportedCrawler = { id: string; name: string; key?: string; source?: string; folders: string[] }
+export type CrawlerQuestion = { id: number; name: string; candidates: ImportedCrawler[] }
+
+/**
+ * Which actor each crawler refreshes. Only one with the same id, name and source is refreshed
+ * unasked; the same id with just one of those is the GM's call; any other gets a new actor.
+ */
+export function matchCrawlers(crawlers: { id: number; name: string }[], actors: ImportedCrawler[], source: string, rootFolder: string) {
+  const update = new Map<number, string>()
+  const ask: CrawlerQuestion[] = []
+  const plain = (name: string) => name.trim().toLowerCase()
+  for (const { id, name } of crawlers) {
+    const key = importKey('character', id)
+    const found = actors
+      .filter((actor) => actor.key === key)
+      .map((actor) => ({
+        actor,
+        sameName: plain(actor.name) === plain(name),
+        sameSource: actor.source ? actor.source === source : actor.folders.includes(rootFolder),
+      }))
+    const same = found.filter((entry) => entry.sameName && entry.sameSource)
+    const recorded = same.filter((entry) => entry.actor.source)
+    const certain = recorded.length ? recorded : same
+    const possible = found.filter((entry) => entry.sameName || entry.sameSource)
+    if (certain.length === 1) update.set(id, certain[0].actor.id)
+    else if (possible.length) ask.push({ id, name, candidates: possible.map((entry) => entry.actor) })
+  }
+  return { update, ask }
+}
 
 const embeddedFields: Record<string, Record<string, string>> = {
   Actor: { items: 'Item', effects: 'ActiveEffect' },

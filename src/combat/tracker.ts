@@ -2,6 +2,8 @@ import { COMBAT_PHASES } from '../config'
 import { combatantSide, promptDeclaration, type CrawlCombat } from './combat'
 import { combatAction } from '../socket'
 import { partyOrder } from '../actors/companions'
+import { mobCrawlerCount } from '../actors/elite'
+import { mobActionsPerRound } from '../rules/mob-kinds'
 
 /** Core tracker plus a phase strip: the five phases, who still has to act, and phase controls. */
 export function createCombatTracker() {
@@ -38,6 +40,8 @@ export function createCombatTracker() {
           img: combatant.img,
           done: combat.isDone(combatant.id),
           canToggle: game.user.isGM || combatant.isOwner,
+          // Bosses, deities and Elites: attacks declared this round out of one per crawler.
+          actions: side === 'mob' ? actionsUsed(combat, combatant) : null,
         }))
       return {
         ...context,
@@ -87,4 +91,12 @@ export function createCombatTracker() {
       if (combat && game.user.isGM) await promptDeclaration(combat)
     }
   }
+}
+
+/** A boss's, deity's or Elite's actions this round: attacks declared so far, out of one per crawler. Null for others. */
+export function actionsUsed(combat: any, combatant: any) {
+  const total = mobActionsPerRound(combatant.actor?.system, mobCrawlerCount(combatant.actor, combat))
+  if (!total) return null
+  const declared = (combat.crawl?.declarations ?? []).filter((entry: any) => entry.round === combat.round && entry.mobCombatantId === combatant.id).length
+  return { declared, total, spent: declared >= total }
 }

@@ -1,0 +1,49 @@
+{
+  "_id": "iWfpTRQFKuGMpBlv",
+  "name": "Precision Fabrication Lab",
+  "type": "spaceUpgrade",
+  "img": "icons/tools/smithing/anvil.webp",
+  "system": {
+    "description": "<p>Once per day, one crafting project finished in the lab treats each table it needs as one tier higher (to Tier 10) before the lowest-table rule.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Crafting",
+    "tier": 2,
+    "floor": 6,
+    "price": 1000000,
+    "status": "homebrew",
+    "footprint": "Large room (8 units)",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Once a day, one project treats its tables as one tier higher.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "HB-112"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!iWfpTRQFKuGMpBlv",
+  "folder": "DN4Kb1fctxbBlpic"
+}

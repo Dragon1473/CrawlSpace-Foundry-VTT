@@ -60,6 +60,36 @@ for (const row of rows) {
   byPack[converted.pack].push(stamp(converted.data, systemManifest.version))
 }
 
+// The rulebook backgrounds live in the CrawlSpace app's code (the character builder's list), not its database, so they
+// join the Backgrounds pack here; one the database already has (same species and name) is left to it.
+{
+  const { build } = await import('esbuild')
+  const entry = path.join(ROOT, 'src', 'crawlspace-shared', 'shared', 'characterBuilderCatalog.ts')
+  const bundle = await build({ entryPoints: [entry], bundle: true, write: false, format: 'esm', platform: 'node', logLevel: 'silent' })
+  const { bookBackgrounds } = await import(`data:text/javascript;base64,${Buffer.from(bundle.outputFiles[0].text).toString('base64')}`)
+  const have = new Set(byPack.backgrounds.map((doc) => `${doc.system?.species}:${doc.name.toLowerCase()}`))
+  let added = 0
+  for (const background of bookBackgrounds) {
+    if (have.has(`${background.species}:${background.name.toLowerCase()}`)) continue
+    byPack.backgrounds.push(
+      stamp(
+        {
+          _id: stableId(`book-background-${background.species}-${background.stage}-${background.name}`),
+          name: background.name,
+          type: 'background',
+          img: 'icons/svg/house.svg',
+          system: { description: '', notes: '', source: { database: 'game', id: null, book: '', pages: '' }, stage: background.stage, species: background.species, skills: background.skills },
+          effects: [],
+          flags: { crawlspace: { builderBackground: true } },
+        },
+        systemManifest.version,
+      ),
+    )
+    added++
+  }
+  console.log(`backgrounds: ${added} from the rulebooks' builder list`)
+}
+
 // Aiming modifies Ranged Attack skills; its text doesn't list them, so link every ranged attack skill.
 const rangedSkills = byPack.skills.filter((skill) => skill.system?.isAttack && isRangedAttackText(skill.system.description)).map((skill) => skill.name)
 for (const skill of byPack.skills) {

@@ -1,0 +1,49 @@
+{
+  "_id": "OcCZ1GexAjZx7xuC",
+  "name": "Training Room",
+  "type": "spaceUpgrade",
+  "img": "icons/skills/melee/weapons-crossed-swords-yellow.webp",
+  "system": {
+    "description": "<p>Once a day a crawler trains one non-spell skill for an hour as if using it for real: that hour is a normal grinding hour for the skill, under the usual advancement rules. Needs a Level 3 space.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Training",
+    "tier": 1,
+    "floor": 4,
+    "price": 250000,
+    "status": "canon",
+    "footprint": "Major room",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "One hour a day of real practice in one non-spell skill.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 1
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "C-030"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!OcCZ1GexAjZx7xuC",
+  "folder": "Oyd7R3n3iQdfJD8E"
+}

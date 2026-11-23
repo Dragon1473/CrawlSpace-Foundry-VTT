@@ -1,0 +1,49 @@
+{
+  "_id": "goRPPtfMSABHvnqb",
+  "name": "NPC Workroom",
+  "type": "spaceUpgrade",
+  "img": "icons/svg/house.svg",
+  "system": {
+    "description": "<p>A proper workshop for a manager. Once per day, one interruption while they craft does not cut the consumables they produce in half. Every other manager crafting limit still applies.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Manager / Helper",
+    "tier": 2,
+    "floor": 6,
+    "price": 350000,
+    "status": "homebrew",
+    "footprint": "Small room (4 units)",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Once a day, one interruption doesn't halve the manager's crafting output.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "HB-116"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!goRPPtfMSABHvnqb",
+  "folder": "DN4Kb1fctxbBlpic"
+}

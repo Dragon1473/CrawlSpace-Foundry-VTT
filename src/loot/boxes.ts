@@ -7,12 +7,16 @@ import { lootTypes, tierRules, type LootTier, type LootType } from '../crawlspac
 import { generateLoot, rollLootGold } from '../crawlspace-shared/shared/lootGenerator'
 import { finalizeLootItem, type InventoryItem } from '../crawlspace-shared/shared/inventoryItems'
 import { boxSummary, contextFor, foundryItemData } from './database'
+import { rewardContents } from './reward-tables'
 
-export type BoxContents = { gold: number; items: InventoryItem[] }
+export type BoxContents = { gold: number; items: InventoryItem[]; note?: string }
 
 const isSealedBox = (item: any) => item.type === 'lootBox' && item.system.sealed && (Number(item.system.quantity) || 0) > 0
 
-/** The contents one unit of a box gives: its sealed contents, or a fresh roll for its tier and type. */
+/**
+ * The contents one unit of a box gives: its sealed contents, or a fresh roll for its tier and type. With the reward
+ * tables on, a box the sheet covers rolls on its d100 table (loot/reward-tables.ts); others use the generator.
+ */
 async function unitContents(actor: any, box: any): Promise<BoxContents> {
   const sealed = box.system.loot
   if (sealed && Array.isArray(sealed.items)) return { gold: Math.max(0, Math.floor(Number(sealed.gold) || 0)), items: sealed.items }
@@ -20,6 +24,8 @@ async function unitContents(actor: any, box: any): Promise<BoxContents> {
   const type = (lootTypes.find((known) => known.toLowerCase() === String(box.system.boxType).toLowerCase()) ?? 'Custom') as LootType
   const rule = tierRules[tier]
   const { context } = await contextFor(actor)
+  const reward = await rewardContents(tier, type, context)
+  if (reward) return reward
   const entries = generateLoot({ tier, type, mode: 'Random', items: rule.items, consumables: rule.consumables, potions: rule.potions, choices: [] }, context)
   return { gold: rollLootGold(tier, context.floor, type), items: entries.map((entry) => entry.item) }
 }
@@ -37,7 +43,7 @@ export async function openLootBoxes(actor: any, boxes?: any[]) {
       const items = contents.items.map((item) => finalizeLootItem({ ...foundry.utils.deepClone(item), id: foundry.utils.randomID(), equipped: false, expanded: false }))
       gold += contents.gold
       received.push(...items)
-      lines.push(`<li><strong>${foundry.utils.escapeHTML(box.name)}</strong>: ${foundry.utils.escapeHTML(boxSummary({ gold: contents.gold, items }).join(', ') || game.i18n.localize('CRAWLSPACE.Loot.Empty'))}</li>`)
+      lines.push(`<li><strong>${foundry.utils.escapeHTML(box.name)}</strong>: ${foundry.utils.escapeHTML(boxSummary({ gold: contents.gold, items }).join(', ') || game.i18n.localize('CRAWLSPACE.Loot.Empty'))}${contents.note ? ` <span class="hint">(${foundry.utils.escapeHTML(contents.note)})</span>` : ''}</li>`)
     }
   // Stack onto unequipped items of the same name and type, as addLootToInventory does.
   const creates: any[] = []

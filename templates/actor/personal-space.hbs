@@ -1,0 +1,96 @@
+<section class="space-sheet">
+  <header class="pf-actor-header space-header">
+    <img class="space-img" src="{{actor.img}}" data-action="editImage" data-edit="img" alt="">
+    <div class="pf-actor-title">
+      <input class="pf-name" type="text" name="name" value="{{actor.name}}" {{#unless editable}}disabled{{/unless}}>
+      <div class="pf-actor-fields">
+        <label><span>{{localize "CRAWLSPACE.Space.Level"}}</span>
+          <select name="system.level" {{#unless editable}}disabled{{/unless}}>{{#each levels}}<option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}</select>
+        </label>
+        <span class="hint">{{localize "CRAWLSPACE.Space.LevelHint" price=levelPrice tables=tableLimit}}</span>
+        {{#if unions}}<span class="pf-tag">{{localize "CRAWLSPACE.Space.Conjoined" unions=unions cost=unionCost}}</span>{{/if}}
+      </div>
+      {{#if (or systemSource.legacy.tier systemSource.legacy.size)}}<p class="hint">{{localize "CRAWLSPACE.Space.Legacy" tier=systemSource.legacy.tier size=systemSource.legacy.size}}</p>{{/if}}
+    </div>
+  </header>
+
+  {{#if benefitLines.length}}
+  <section class="space-benefits">
+    <h3 class="pf-section">{{localize "CRAWLSPACE.Space.Benefits"}}</h3>
+    <ul>{{#each benefitLines}}<li>{{this}}</li>{{/each}}</ul>
+    <p class="hint">{{localize "CRAWLSPACE.Space.BenefitsHint"}}</p>
+  </section>
+  {{/if}}
+
+  <section class="crawl-table">
+    <div class="table-head plain-head pf-bar"><span class="head-name">{{localize "CRAWLSPACE.Space.Members"}}</span></div>
+    <ol class="table-rows space-members">
+      {{#each members}}
+      <li class="space-row" data-member="{{index}}" data-uuid="{{uuid}}">
+        <img src="{{img}}" alt="">
+        <a class="space-name" data-action="openMember">{{name}}</a>
+        <select data-member-role {{#unless @root.editable}}disabled{{/unless}}>{{#each roles}}<option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}</select>
+        {{#if canToggle}}<a class="space-here {{#if here}}active{{/if}}" data-action="toggleHere" data-tooltip="{{localize 'CRAWLSPACE.Space.HereHint'}}"><i class="fa-solid fa-house-user"></i> {{#if here}}{{localize "CRAWLSPACE.Space.Here"}}{{else}}{{localize "CRAWLSPACE.Space.Away"}}{{/if}}</a>
+        {{else}}{{#if here}}<span class="space-here active"><i class="fa-solid fa-house-user"></i> {{localize "CRAWLSPACE.Space.Here"}}</span>{{/if}}{{/if}}
+        {{#if (and library @root.editable)}}<a data-action="installLibrary" data-tooltip="{{localize 'CRAWLSPACE.Space.InstallLibrary'}}"><i class="fa-solid fa-box-open"></i> {{library}}</a>{{/if}}
+        {{#if @root.editable}}<a data-action="removeMember" data-tooltip="{{localize 'CRAWLSPACE.Space.RemoveTitle'}}"><i class="fa-solid fa-user-minus"></i></a>{{/if}}
+      </li>
+      {{else}}<li class="empty">{{localize "CRAWLSPACE.Space.DropCrawler"}}</li>{{/each}}
+    </ol>
+  </section>
+
+  <section class="crawl-table">
+    <div class="table-head plain-head pf-bar">
+      <span class="head-name">{{localize "CRAWLSPACE.Space.Upgrades"}}</span>
+      <span class="head-controls"><a data-action="openPack" data-pack="homebrew-personal-space" data-tooltip="{{localize 'CRAWLSPACE.Space.OpenCatalog'}}"><i class="fa-solid fa-book-atlas"></i></a></span>
+    </div>
+    <ol class="table-rows">
+      {{#each upgrades}}
+      <li class="space-row space-upgrade {{#unless installed}}uninstalled{{/unless}}" data-item-id="{{id}}">
+        <img src="{{img}}" alt="">
+        <div class="space-name">
+          <a data-action="editItem">{{name}}</a>
+          <small>{{tier}}{{#if category}} · {{category}}{{/if}}{{#if homebrew}} · {{localize "CRAWLSPACE.Space.Homebrew"}}{{/if}}{{#if effects}} · <i class="fa-solid fa-bolt" data-tooltip="{{localize 'CRAWLSPACE.Space.HasEffects'}}"></i>{{/if}}</small>
+          {{#if summary}}<small class="hint">{{summary}}</small>{{/if}}
+        </div>
+        {{#if attachment}}<select data-item-field="attachedTo" data-tooltip="{{localize 'CRAWLSPACE.Space.AttachedTo'}}" {{#unless @root.editable}}disabled{{/unless}}>{{#each tables}}<option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}</select>{{/if}}
+        <select data-item-field="owner" data-tooltip="{{localize 'CRAWLSPACE.Space.Owner'}}" {{#unless @root.editable}}disabled{{/unless}}>{{#each owners}}<option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}</select>
+        <label data-tooltip="{{localize 'CRAWLSPACE.Space.Installed'}}"><input type="checkbox" data-item-field="installed" {{#if installed}}checked{{/if}} {{#unless @root.editable}}disabled{{/unless}}></label>
+        {{#if @root.editable}}<a data-action="deleteItem"><i class="fa-solid fa-trash"></i></a>{{/if}}
+      </li>
+      {{else}}<li class="empty">{{localize "CRAWLSPACE.Space.DropUpgrade"}}</li>{{/each}}
+    </ol>
+  </section>
+
+  <section class="crawl-table">
+    <div class="table-head plain-head pf-bar">
+      <span class="head-name">{{localize "CRAWLSPACE.Space.Tables"}} ({{tables.length}}/{{tableLimit}})</span>
+    </div>
+    {{#if tablesOver}}<p class="hint warning">{{localize "CRAWLSPACE.Space.TablesOver" limit=tableLimit}}</p>{{/if}}
+    <ol class="table-rows">
+      {{#each tables}}
+      <li class="space-row" data-item-id="{{id}}">
+        <img src="{{img}}" alt="">
+        <div class="space-name">
+          <a data-action="editItem">{{name}}</a>
+          <small>{{category}}{{#if broken}} · {{localize "CRAWLSPACE.Space.Broken"}}{{/if}}{{#each upgrades}} · <span class="pf-tag">{{this}}</span>{{/each}}</small>
+        </div>
+        <span class="space-tier">
+          {{#if @root.editable}}<a data-action="tableTier" data-step="-1"><i class="fa-solid fa-minus"></i></a>{{/if}}
+          {{localize "CRAWLSPACE.Space.TierN" tier=tier}}
+          {{#if @root.editable}}<a data-action="tableTier" data-step="1"><i class="fa-solid fa-plus"></i></a>{{/if}}
+        </span>
+        <select data-item-field="owner" data-tooltip="{{localize 'CRAWLSPACE.Space.Owner'}}" {{#unless @root.editable}}disabled{{/unless}}>{{#each owners}}<option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}</select>
+        {{#if @root.editable}}<a data-action="deleteItem"><i class="fa-solid fa-trash"></i></a>{{/if}}
+      </li>
+      {{else}}<li class="empty">{{localize "CRAWLSPACE.Space.DropTable"}}</li>{{/each}}
+    </ol>
+  </section>
+
+  <h3 class="pf-section">{{localize "CRAWLSPACE.Item.Description"}}</h3>
+  {{#if editable}}<prose-mirror name="system.description" value="{{systemSource.description}}" toggled>{{{enriched.description}}}</prose-mirror>{{else}}{{{enriched.description}}}{{/if}}
+  {{#if isGM}}
+  <h3 class="pf-section">{{localize "CRAWLSPACE.Space.GmNotes"}}</h3>
+  <prose-mirror name="system.notes" value="{{systemSource.notes}}" toggled>{{{enriched.notes}}}</prose-mirror>
+  {{/if}}
+</section>

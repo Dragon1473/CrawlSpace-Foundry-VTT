@@ -1,0 +1,49 @@
+{
+  "_id": "CCYk1tevIYzRDz3C",
+  "name": "Cauldron Attachment",
+  "type": "spaceUpgrade",
+  "img": "icons/tools/smithing/anvil.webp",
+  "system": {
+    "description": "<p>Attach it to an Alchemy table. When brewing a batch, each potion after the first adds only half its usual time (round down to the minute). Every potion still needs its ingredients and the check.</p>",
+    "notes": "",
+    "kind": "attachment",
+    "category": "Crafting Attachment",
+    "tier": 2,
+    "floor": 6,
+    "price": 350000,
+    "status": "homebrew",
+    "footprint": "Module (2 units)",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Extra potions in a batch take half the usual extra time.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "HB-114"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!CCYk1tevIYzRDz3C",
+  "folder": "gClMjGykKB3HVtHa"
+}

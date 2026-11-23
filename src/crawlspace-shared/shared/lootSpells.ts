@@ -7,7 +7,14 @@ import type { LootTier } from './lootData'
 
 export type SpellRarity = 'Weak' | 'Standard' | 'Rare'
 export const spellKey = (name: string) => name.toLowerCase().replace(/[^a-z0-9]/g, '')
+/** Foundry: the reward tables' spell lists can replace the catalogue's tiers (rules/reward-tables.ts). */
+let rarityOverride: Map<string, SpellRarity> | null = null
+export function setSpellRarityOverride(rarities: Record<string, SpellRarity> | null) {
+  rarityOverride = rarities ? new Map(Object.entries(rarities).map(([name, rarity]) => [spellKey(name), rarity])) : null
+}
 export function spellRarity(name: string): SpellRarity | undefined {
+  const override = rarityOverride?.get(spellKey(name))
+  if (override) return override
   return catalogue.find((s) => spellKey(s.name) === spellKey(name))?.tier as SpellRarity | undefined
 }
 export function spellRarities(tier: LootTier, usage: 'scroll' | 'tome' | 'inherent'): SpellRarity[] {

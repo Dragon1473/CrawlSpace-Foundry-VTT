@@ -1,0 +1,49 @@
+{
+  "_id": "IiynpmJHCVbanlIG",
+  "name": "Ultra-Stabilized Sleep Apparatus",
+  "type": "spaceUpgrade",
+  "img": "icons/svg/sleep.svg",
+  "system": {
+    "description": "<p>A bed that fits itself to the sleeper's body and wounds. A Long Rest in it takes 2 hours instead of 8 and grants the Good Sleep buff (+Floor to every stat) for 30 hours.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Bed",
+    "tier": 1,
+    "floor": 4,
+    "price": 250000,
+    "status": "canon",
+    "footprint": "Major room",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Two hours in it is a full Long Rest, plus Good Sleep for 30 hours.",
+    "rest": {
+      "longRestHours": 2,
+      "goodSleepHours": 30,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "C-010"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!IiynpmJHCVbanlIG",
+  "folder": "Oyd7R3n3iQdfJD8E"
+}

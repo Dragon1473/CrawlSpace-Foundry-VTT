@@ -38,11 +38,23 @@ export const clearDatabaseRows = () => {
   cache = null
 }
 
+/** Whose a compendium's records are: the system's homebrew packs, the game content module, or the world's own. */
+export function packSource(pack: { collection?: string; metadata?: { packageName?: string; packageType?: string; name?: string } }) {
+  const meta = pack.metadata ?? {}
+  if (meta.packageType === 'system' && meta.packageName === 'crawlspace' && String(meta.name ?? '').startsWith('homebrew')) return 'homebrew'
+  if (meta.packageName === 'crawlspace-content') return 'game'
+  return 'world'
+}
+
 /** Every item with a CrawlSpace record, from Item compendia and the world. Cached for a minute. */
 export async function databaseRows(): Promise<DatabaseRow[]> {
   if (cache && Date.now() - cache.at < 60_000) return cache.rows
   const rows: DatabaseRow[] = []
-  const add = (entry: any, uuid: string) => {
+  /**
+   * `fallback`: where a background without a database record comes from, by where it is: the system's homebrew
+   * packs are homebrew, the game content module's are the game's, anything else is the world's.
+   */
+  const add = (entry: any, uuid: string, fallback = 'world') => {
     const flags = entry.flags?.crawlspace
     // Backgrounds are edited on their item sheet, so their skills come from the item, even ones made in Foundry.
     if (entry.type === 'background') {
@@ -51,7 +63,7 @@ export async function databaseRows(): Promise<DatabaseRow[]> {
       const match = /^(game|homebrew)-(\d+)$/.exec(String(flags?.sourceId ?? ''))
       rows.push({
         id: match ? Number(match[2]) : hashId(uuid),
-        source: match?.[1] ?? 'world',
+        source: match?.[1] ?? fallback,
         content_type: `background_${stage}`,
         name: entry.name,
         data: { ...(flags?.data ?? {}), stage, species: system.species ?? flags?.data?.species ?? 'human', skills: system.skills ?? flags?.data?.skills ?? [], skillLinks: [] },
@@ -65,7 +77,8 @@ export async function databaseRows(): Promise<DatabaseRow[]> {
   }
   for (const pack of game.packs.filter((pack: any) => pack.documentName === 'Item')) {
     const index = await pack.getIndex({ fields: ['type', 'flags.crawlspace', 'system.stage', 'system.species', 'system.skills'] })
-    for (const entry of index) add(entry, entry.uuid ?? `Compendium.${pack.collection}.Item.${entry._id}`)
+    const fallback = packSource(pack)
+    for (const entry of index) add(entry, entry.uuid ?? `Compendium.${pack.collection}.Item.${entry._id}`, fallback)
   }
   // World copies win over compendium ones with the same record, as a GM's edits should.
   for (const item of game.items) add(item, item.uuid)

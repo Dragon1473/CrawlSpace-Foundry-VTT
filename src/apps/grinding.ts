@@ -4,6 +4,8 @@ import { floorCheckDc } from '../rules/floor-checks'
 import { rankCap } from '../effects/rank-cap'
 import { rollD20, naturalD20, penaltyModifiers } from '../dice/rolls'
 import { advanceTime } from '../time'
+import { markTrainingUsed, trainingFor } from '../actors/personal-space'
+import { trainingBonus } from '../rules/personal-space'
 
 const t = (key: string, data?: any) => data ? game.i18n.format(`CRAWLSPACE.Grinding.${key}`, data) : game.i18n.localize(`CRAWLSPACE.Grinding.${key}`)
 const esc = (value: unknown) => foundry.utils.escapeHTML(String(value))
@@ -31,6 +33,7 @@ export async function openGrinding(actors: any[], hours = 1, policy: { advance?:
   for (const entry of prepared) {
     const { actor, endurance } = entry
     let state = entry.state
+    let productiveHours = 0
     for (let hour = 0; hour < hours; hour++) {
       let productive = true
       if (state.hoursToday >= 5) {
@@ -42,8 +45,17 @@ export async function openGrinding(actors: any[], hours = 1, policy: { advance?:
         entry.lines.push(t('HourResult', { hour: state.hoursToday + 1, total: result!.roll.total, dc, result: t(productive ? 'Productive' : 'Failed') }))
       }
       state = creditGrindingHour(state, productive)
+      if (productive) productiveHours++
     }
     state = creditGrindingAid(state, options.aid)
+    // A training upgrade in the crawler's Personal Space: once a day, one hour there counts as more than one.
+    const training = trainingFor(actor, state.day)
+    const bonus = trainingBonus(training.hours, productiveHours, training.used)
+    if (bonus) {
+      state = { ...state, levelHours: state.levelHours + bonus, unassignedHours: state.unassignedHours + bonus }
+      entry.trainingDay = state.day
+      entry.lines.push(game.i18n.format('CRAWLSPACE.Space.TrainingResult', { hours: bonus, list: training.sources.join(', ') }))
+    }
     const skills = actor.items.filter((item: any) => ['skill', 'spell'].includes(item.type) && item.name.trim())
     const capacity = (item: any) => Math.max(0, Math.max(1, item.system.rank.base) - (state.skillHours[item.id] ?? 0))
     const required = Math.min(state.unassignedHours, skills.reduce((sum: number, item: any) => sum + capacity(item), 0))
@@ -86,6 +98,7 @@ export async function openGrinding(actors: any[], hours = 1, policy: { advance?:
   if (policy.advance !== false) await advanceTime(hours * 3600)
   for (const entry of prepared) {
     if (entry.updates.length) await entry.actor.updateEmbeddedDocuments('Item', entry.updates)
+    if (entry.trainingDay) await markTrainingUsed(entry.actor, entry.trainingDay)
     await entry.actor.update({ 'flags.crawlspace.grinding': entry.state, 'system.details.level': entry.level })
     for (let index = 0; index < entry.fatigue; index++) await entry.actor.addDebuff('fatigued')
     await ChatMessage.create({ speaker: ChatMessage.getSpeaker({ actor: entry.actor }), content: `<div class="crawlspace chat-card"><h3>${t('Title')}</h3><p>${t('Summary', { hours, productive: entry.state.productiveToday, level: entry.state.levelHours })}</p><ul>${entry.lines.map((line: string) => `<li>${esc(line)}</li>`).join('')}</ul></div>` })

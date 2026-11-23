@@ -1,0 +1,93 @@
+{
+  "_id": "FH7SbSZZ5IQ1hryw",
+  "name": "Platinum Box Housing Reward",
+  "img": "icons/svg/d20-grey.svg",
+  "description": "<p>Homebrew Personal Space reward table.</p>",
+  "formula": "1d12",
+  "replacement": true,
+  "displayRoll": true,
+  "results": [
+    {
+      "type": "document",
+      "name": "Crafting Table",
+      "img": "icons/svg/d20-grey.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-space-tables.RollTable.0U4epHdtQ8pQ1P7S",
+      "description": "",
+      "range": [
+        1,
+        4
+      ],
+      "weight": 4,
+      "_id": "Lj0C1e2CxMIA5PZi",
+      "_key": "!tables.results!FH7SbSZZ5IQ1hryw.Lj0C1e2CxMIA5PZi"
+    },
+    {
+      "type": "document",
+      "name": "Crafting Table Upgrade Coupon",
+      "img": "icons/sundries/documents/document-sealed-signatures-red.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.hLuc3S5QDeSJnpFX",
+      "description": "Raises one crafting table by a tier (worth about 250,000 gold).",
+      "range": [
+        5,
+        7
+      ],
+      "weight": 3,
+      "_id": "i0Ww5fWXsAkkXLDe",
+      "_key": "!tables.results!FH7SbSZZ5IQ1hryw.i0Ww5fWXsAkkXLDe"
+    },
+    {
+      "type": "document",
+      "name": "Personal Space Coupon",
+      "img": "icons/sundries/documents/document-sealed-signatures-red.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.wiqCBk4jMfSMXReg",
+      "description": "Grants or upgrades a Personal Space.",
+      "range": [
+        8,
+        10
+      ],
+      "weight": 3,
+      "_id": "n7Np3V5kZZta5NWE",
+      "_key": "!tables.results!FH7SbSZZ5IQ1hryw.n7Np3V5kZZta5NWE"
+    },
+    {
+      "type": "document",
+      "name": "Personal Space Upgrade (Tier 1)",
+      "img": "icons/svg/d20-grey.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-space-tables.RollTable.coRFh2L7k9pGB7BX",
+      "description": "",
+      "range": [
+        11,
+        11
+      ],
+      "weight": 1,
+      "_id": "s6c6rzcwI6w53hnN",
+      "_key": "!tables.results!FH7SbSZZ5IQ1hryw.s6c6rzcwI6w53hnN"
+    },
+    {
+      "type": "text",
+      "name": "GM's choice: a sponsored, odd Personal Space reward. Roll on Weird Amenity for ideas.",
+      "img": "icons/svg/d20-grey.svg",
+      "description": "GM's choice: a sponsored, odd Personal Space reward. Roll on Weird Amenity for ideas.",
+      "range": [
+        12,
+        12
+      ],
+      "weight": 1,
+      "_id": "Rb8GJLzaFlijFjod",
+      "_key": "!tables.results!FH7SbSZZ5IQ1hryw.Rb8GJLzaFlijFjod"
+    }
+  ],
+  "flags": {},
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!tables!FH7SbSZZ5IQ1hryw"
+}

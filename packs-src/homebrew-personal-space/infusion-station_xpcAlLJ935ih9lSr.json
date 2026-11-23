@@ -1,0 +1,49 @@
+{
+  "_id": "xpcAlLJ935ih9lSr",
+  "name": "Infusion Station",
+  "type": "spaceUpgrade",
+  "img": "icons/tools/smithing/anvil.webp",
+  "system": {
+    "description": "<p>Attach it to a table. Once per floor, reroll one failed Alchemy or Arcane crafting check made there; the new roll stands. No rerolling a deliberate over-enchant or a roll already rerolled.</p>",
+    "notes": "",
+    "kind": "attachment",
+    "category": "Crafting Attachment",
+    "tier": 2,
+    "floor": 6,
+    "price": 600000,
+    "status": "homebrew",
+    "footprint": "Module (2 units)",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Once per floor, reroll a failed Alchemy or Arcane crafting check at this table.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "HB-115"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!xpcAlLJ935ih9lSr",
+  "folder": "gClMjGykKB3HVtHa"
+}

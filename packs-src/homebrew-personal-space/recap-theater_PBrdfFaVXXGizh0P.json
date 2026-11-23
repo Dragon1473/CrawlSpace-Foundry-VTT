@@ -1,0 +1,49 @@
+{
+  "_id": "PBrdfFaVXXGizh0P",
+  "name": "Recap Theater",
+  "type": "spaceUpgrade",
+  "img": "icons/svg/house.svg",
+  "system": {
+    "description": "<p>Watch the latest recap, then ask the GM one question; the answer uses only what viewers would have seen. Nothing redacted, private or hidden.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Entertainment / Information",
+    "tier": 1,
+    "floor": 4,
+    "price": 25000,
+    "status": "homebrew",
+    "footprint": "Fixture (1 unit)",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "After a recap, ask the GM one question about what was broadcast.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "HB-007"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!PBrdfFaVXXGizh0P",
+  "folder": "Oyd7R3n3iQdfJD8E"
+}

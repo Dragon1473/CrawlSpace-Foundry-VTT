@@ -6,10 +6,17 @@
 const DAMAGE_KEYS = ['rank5Damage', 'rank10Damage', 'rank15Damage'] as const
 
 let index: Map<string, { pack: any; id: string }> | null = null
+let loadingIndex: Promise<Map<string, { pack: any; id: string }>> | null = null
 
 async function compendiumIndex() {
   if (index) return index
-  index = new Map()
+  if (loadingIndex) return loadingIndex
+  loadingIndex = loadCompendiumIndex()
+  try { return await loadingIndex } finally { loadingIndex = null }
+}
+
+async function loadCompendiumIndex() {
+  const entriesByName = new Map<string, { pack: any; id: string }>()
   // Official content first, then homebrew and the rest.
   const packs = game.packs.filter((pack: any) => pack.documentName === 'Item').sort((a: any, b: any) => Number(b.collection.startsWith('crawlspace-content.')) - Number(a.collection.startsWith('crawlspace-content.')))
   for (const pack of packs) {
@@ -17,10 +24,11 @@ async function compendiumIndex() {
     for (const entry of entries) {
       if (entry.type !== 'skill' && entry.type !== 'spell') continue
       const key = `${entry.type}:${entry.name.trim().toLowerCase()}`
-      if (!index.has(key)) index.set(key, { pack, id: entry._id })
+      if (!entriesByName.has(key)) entriesByName.set(key, { pack, id: entry._id })
     }
   }
-  return index
+  index = entriesByName
+  return entriesByName
 }
 
 /** The compendium skill or spell with this name (official packs first), as a document. */

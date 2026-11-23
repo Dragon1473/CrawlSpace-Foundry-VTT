@@ -1,0 +1,49 @@
+{
+  "_id": "YaWO3CYscXosLdg3",
+  "name": "Basic Stable",
+  "type": "spaceUpgrade",
+  "img": "icons/environment/settlement/stable.webp",
+  "system": {
+    "description": "<p>No details are given; tie any benefit to Riding, recovery or mount care rather than a new subsystem.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Mount Facility",
+    "tier": 1,
+    "floor": 4,
+    "price": 100000,
+    "status": "canon",
+    "footprint": "Small room",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Stabling for mounts.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "C-041"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!YaWO3CYscXosLdg3",
+  "folder": "Oyd7R3n3iQdfJD8E"
+}

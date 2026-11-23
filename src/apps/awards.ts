@@ -6,6 +6,7 @@
  * Prepare mode fills a loot box item's contents ahead of time; awarding it later hands out exactly those.
  * Compendium "database picker" choices are drag and drop here: items onto the preview, achievements onto theirs.
  */
+import { rewardContents } from '../loot/reward-tables'
 import { lootTiers, lootTypes, tierRules, type LootTier, type LootType } from '../crawlspace-shared/shared/lootData'
 import { generateLoot, generateLootEntry, goldAllowed, rollLootGold, xValueLabel, type LootEntry, type LootSettings } from '../crawlspace-shared/shared/lootGenerator'
 import { describeInventoryItem, finalizeLootItem } from '../crawlspace-shared/shared/inventoryItems'
@@ -259,16 +260,26 @@ export class CrawlerAwards extends HandlebarsApplicationMixin(ApplicationV2) {
     this.render()
   }
 
-  #roll() {
+  async #roll() {
     if (!this.context) throw new Error('CRAWLSPACE.Awards.Loading')
     const settings: LootSettings = { ...this.settings, mode: 'Random', choices: [] }
+    // Reward tables (homebrew): a box the sheet covers rolls its d100 row; its items aren't rerolled one by one.
+    const reward = await rewardContents(settings.tier, settings.type, this.context)
+    if (reward)
+      return {
+        settings: { ...this.settings },
+        entries: reward.items.map((item, index) => ({ item, checked: true, kind: 'database' as const, index, rolls: [reward.note] })),
+        gold: reward.gold,
+        confirmGold: true,
+        manual: false,
+      }
     const entries = generateLoot(settings, this.context)
     return { settings: { ...this.settings }, entries, gold: rollLootGold(settings.tier, this.context.floor, settings.type), confirmGold: true, manual: false }
   }
 
   static #onGenerate(this: CrawlerAwards) {
-    return this.#run(() => {
-      this.preview = this.#roll()
+    return this.#run(async () => {
+      this.preview = await this.#roll()
       this.expanded.clear()
     })
   }
@@ -276,7 +287,7 @@ export class CrawlerAwards extends HandlebarsApplicationMixin(ApplicationV2) {
   /** Roll and award at once: nobody sees the contents until the box is opened. */
   static #onBlind(this: CrawlerAwards) {
     return this.#run(async () => {
-      const preview = this.#roll()
+      const preview = await this.#roll()
       await this.#award(preview)
     })
   }

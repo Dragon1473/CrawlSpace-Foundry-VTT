@@ -1,0 +1,49 @@
+{
+  "_id": "H9ov7GNOJAF3vJRR",
+  "name": "Crafting Table Upgrade",
+  "type": "spaceUpgrade",
+  "img": "icons/tools/smithing/anvil.webp",
+  "system": {
+    "description": "<p>Raises a table one tier, up to Tier 10 (use the + on the table's row on the space's sheet). Tables also gain a tier each time their owner reaches a new floor.</p>",
+    "notes": "",
+    "kind": "tableUpgrade",
+    "category": "Crafting Upgrade",
+    "tier": 1,
+    "floor": 4,
+    "price": 250000,
+    "status": "canon",
+    "footprint": "Module",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Raises one crafting table by one tier.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "C-028"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!H9ov7GNOJAF3vJRR",
+  "folder": "gClMjGykKB3HVtHa"
+}

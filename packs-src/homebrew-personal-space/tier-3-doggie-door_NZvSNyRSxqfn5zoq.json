@@ -1,0 +1,49 @@
+{
+  "_id": "NZvSNyRSxqfn5zoq",
+  "name": "Tier 3 Doggie Door",
+  "type": "spaceUpgrade",
+  "img": "icons/svg/door-exit.svg",
+  "system": {
+    "description": "<p>Turns every door the owner has already passed through on the current floor into an exit, with access controls for guests and party. It adds no new destinations.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Travel",
+    "tier": 3,
+    "floor": 9,
+    "price": 5000000,
+    "status": "canon",
+    "footprint": "Door",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Leave the space through any door the owner has used on this floor.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "C-060"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!NZvSNyRSxqfn5zoq",
+  "folder": "Mwql17X180xYnF9f"
+}

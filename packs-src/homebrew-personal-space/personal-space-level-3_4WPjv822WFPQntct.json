@@ -1,0 +1,49 @@
+{
+  "_id": "4WPjv822WFPQntct",
+  "name": "Personal Space Level 3",
+  "type": "spaceUpgrade",
+  "img": "icons/environment/settlement/house-two-stories-small.webp",
+  "system": {
+    "description": "<p>The space is now a headquarters rather than an apartment: it fits major rooms, and joined with another member's space it can host a shared common hall. The price is the toolkit's estimate.</p>",
+    "notes": "",
+    "kind": "level",
+    "category": "Space Level",
+    "tier": 1,
+    "floor": 4,
+    "price": 250000,
+    "status": "canon",
+    "footprint": "Expansion",
+    "spaceLevel": 3,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Big enough for major rooms such as a Training Room; can anchor a communal hall.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "C-003"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!4WPjv822WFPQntct",
+  "folder": "RTR2H5ZLV7MQj79g"
+}

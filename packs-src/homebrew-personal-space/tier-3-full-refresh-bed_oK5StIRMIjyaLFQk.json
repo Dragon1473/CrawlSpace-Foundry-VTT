@@ -1,0 +1,49 @@
+{
+  "_id": "oK5StIRMIjyaLFQk",
+  "name": "Tier 3 Full-Refresh Bed",
+  "type": "spaceUpgrade",
+  "img": "icons/svg/sleep.svg",
+  "system": {
+    "description": "<p>Less a bed than a lit floor plate. Crossing it gives an immediate Long Rest and the Good Sleep buff for 30 hours. Normally out of reach before the Ninth Floor.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Bed",
+    "tier": 3,
+    "floor": 9,
+    "price": 5000000,
+    "status": "canon",
+    "footprint": "Major room",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Step across the glowing panel: an instant Long Rest and 30 hours of Good Sleep.",
+    "rest": {
+      "longRestHours": 0,
+      "goodSleepHours": 30,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "C-012"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!oK5StIRMIjyaLFQk",
+  "folder": "Mwql17X180xYnF9f"
+}

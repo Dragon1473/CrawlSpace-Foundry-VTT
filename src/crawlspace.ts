@@ -7,9 +7,14 @@ import { CrawlRoll } from './dice/crawl-roll'
 import { openGrinding } from './apps/grinding'
 import { openAwards } from './apps/awards'
 import { registerImmunity } from './effects/immunity'
+import { registerGrantedSkills } from './actors/granted-skills'
 import { openTime, registerClock, registerTimePickers } from './apps/time'
 import { registerFrames } from './apps/frames'
 import { registerBossBattle, startBossBattle } from './apps/boss-battle'
+import { encounterApi, registerEncounterTuner } from './apps/encounter-tuner'
+import { registerSkillCreator, skillCreatorApi } from './apps/skill-creator'
+import { leaderboardApi, registerLeaderboard } from './apps/leaderboard'
+import { registerRewardTables } from './loot/reward-tables'
 import { registerBossBar } from './apps/boss-bar'
 import { markPartyInDirectory, openParties, registerParty } from './actors/party'
 import { calibrateGrid, registerGridCalibration } from './apps/grid-calibration'
@@ -41,12 +46,17 @@ import { CrawlEffectSheet } from './sheets/effect-sheet'
 import { DEBUFFS } from './rules/debuffs'
 import { registerSocket } from './socket'
 import { registerCraftSettings, registerCrafting } from './actors/crafting'
+import { registerElites } from './actors/elite'
+import { minimapMarkerApi } from './canvas/minimap'
 import { openCraftingFor, registerCraftingControls } from './apps/crafting'
 import { registerChatHandlers } from './chat/cards'
 import { characterToActor } from './import/convert'
 import { fillActorDamage, fillDamageData } from './import/fill-damage'
 import { registerUpkeep, openUpkeep, rest, performUpkeep } from './apps/upkeep'
 import { migrateShieldLoss } from './rules/repair'
+import { PersonalSpaceData, SpaceUpgradeData } from './data/personal-space'
+import { PersonalSpaceSheet } from './sheets/personal-space-sheet'
+import { hideSpaceTypes, migrateLegacySpaces, registerPersonalSpaces, registerPersonalSpaceSetting } from './actors/personal-space'
 import { actionRowsOf, runAction } from './apps/actions-config'
 import { attackWithRow, findAttackRow } from './actors/attacks'
 import { registerHotlistUpkeep } from './rules/hotlist-upkeep'
@@ -111,6 +121,7 @@ const TEMPLATES = [
 Hooks.once('init', () => {
   console.log('CrawlSpace | Initializing')
   registerHomebrewSetting()
+  registerPersonalSpaceSetting()
   registerSettingsLayout()
   registerVehicleExplosions()
   registerRace()
@@ -126,7 +137,7 @@ Hooks.once('init', () => {
   CONFIG.Actor.documentClass = CrawlActor
   CONFIG.Item.documentClass = CrawlItem
   CONFIG.Combat.documentClass = CrawlCombat
-  Object.assign(CONFIG.Actor.dataModels, { crawler: CrawlerData, mob: MobData, minion: MinionData, companion: CompanionData, npc: NpcData })
+  Object.assign(CONFIG.Actor.dataModels, { crawler: CrawlerData, mob: MobData, minion: MinionData, companion: CompanionData, npc: NpcData, personalSpace: PersonalSpaceData })
   Object.assign(CONFIG.Item.dataModels, {
     skill: items.SkillData,
     spell: items.SpellData,
@@ -145,6 +156,7 @@ Hooks.once('init', () => {
     trap: items.TrapData,
     material: items.MaterialData,
     craftingTable: items.CraftingTableData,
+    spaceUpgrade: SpaceUpgradeData,
   })
   // Auras and dreads: a Region behavior handing conditions to the tokens inside.
   CONFIG.RegionBehavior.dataModels.aura = createAuraBehavior()
@@ -197,6 +209,9 @@ Hooks.once('init', () => {
   sheets.registerSheet(Actor, 'crawlspace', CrawlerSheet, { types: ['crawler'], makeDefault: true, label: 'CRAWLSPACE.Sheet.Crawler' })
   sheets.registerSheet(Actor, 'crawlspace', MobSheet, { types: ['mob', 'minion', 'companion'], makeDefault: true, label: 'CRAWLSPACE.Sheet.Mob' })
   sheets.registerSheet(Actor, 'crawlspace', NpcSheet, { types: ['npc'], makeDefault: true, label: 'CRAWLSPACE.Sheet.Npc' })
+  sheets.registerSheet(Actor, 'crawlspace', PersonalSpaceSheet, { types: ['personalSpace'], makeDefault: true, label: 'CRAWLSPACE.Sheet.PersonalSpace' })
+  hideSpaceTypes(CONFIG.Actor.documentClass, 'personalSpace')
+  hideSpaceTypes(CONFIG.Item.documentClass, 'spaceUpgrade')
   sheets.registerSheet(Item, 'crawlspace', CrawlItemSheet, { makeDefault: true, label: 'CRAWLSPACE.Sheet.Item' })
   sheets.registerSheet(ActiveEffect, 'crawlspace', CrawlEffectSheet, { makeDefault: true, label: 'CRAWLSPACE.Sheet.Effect' })
 
@@ -224,6 +239,9 @@ Hooks.once('init', () => {
   registerTimePickers()
   registerFrames()
   registerBossBattle()
+  registerSkillCreator()
+  registerLeaderboard()
+  registerEncounterTuner()
   registerBossBar()
   registerParty()
   registerTokenSize()
@@ -234,6 +252,7 @@ Hooks.once('init', () => {
   registerAreas()
   registerUpkeep()
   registerLootTools()
+  registerRewardTables()
   registerHotlistUpkeep()
   registerHandRules()
   registerFlavorTooltip()
@@ -242,9 +261,11 @@ Hooks.once('init', () => {
   registerBestiary()
   registerCraftSettings()
   registerCrafting()
+  registerElites()
+  registerPersonalSpaces()
   registerCraftingControls()
 
-  game.crawlspace = { config, startBossBattle, openParties, openHeadshotMaker: (actor: any) => HeadshotMakerApp.open(actor), openGrinding, openAwards, openBuilder, performUpkeep, openTime, advanceTime, settleTime, rest, importCharacter, importFile, openUpkeep, fillActorDamage, calibrateGrid, useAttack: useAttackRow, useAction: useActionRow, declareAttack: () => game.combat && promptDeclaration(game.combat), openTokenMaker: (actor: any, options?: { source?: string; foreground?: string; pixelArt?: boolean }) => TokenMakerApp.open(actor, options), openNeighborhoodBuilder: () => new NeighborhoodBuilder().render({ force: true }), createBlankJournal: createBlank, compileFieldGuide, bestiary: bestiaryApi, openBestiary: bestiaryApi.open, openCrafting: (actor?: any) => openCraftingFor(actor) }
+  game.crawlspace = { config, startBossBattle, openParties, openHeadshotMaker: (actor: any) => HeadshotMakerApp.open(actor), openGrinding, openAwards, openBuilder, performUpkeep, openTime, advanceTime, settleTime, rest, importCharacter, importFile, openUpkeep, fillActorDamage, calibrateGrid, useAttack: useAttackRow, useAction: useActionRow, declareAttack: () => game.combat && promptDeclaration(game.combat), openTokenMaker: (actor: any, options?: { source?: string; foreground?: string; pixelArt?: boolean }) => TokenMakerApp.open(actor, options), openNeighborhoodBuilder: () => new NeighborhoodBuilder().render({ force: true }), createBlankJournal: createBlank, compileFieldGuide, bestiary: bestiaryApi, openBestiary: bestiaryApi.open, openCrafting: (actor?: any) => openCraftingFor(actor), encounter: encounterApi, skillCreator: skillCreatorApi, leaderboard: leaderboardApi, minimapMarker: minimapMarkerApi }
 })
 
 /** A new crawler's tokens are linked to it unless the creator said otherwise. */
@@ -267,10 +288,12 @@ Hooks.once('ready', () => {
     const unlinked = game.actors.filter((actor: any) => actor.type === 'crawler' && !actor.prototypeToken.actorLink)
     for (const actor of unlinked) actor.update({ 'prototypeToken.actorLink': true })
     void migrateShieldLoss().catch((error) => console.error('CrawlSpace | shield DR migration', error))
+    void migrateLegacySpaces().catch((error) => console.error('CrawlSpace | personal space migration', error))
   }
   registerSocket()
   registerTime()
   registerImmunity()
+  registerGrantedSkills()
 })
 
 /** Dragging an owned item to the hotbar makes a macro that uses it. */

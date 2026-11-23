@@ -12,6 +12,7 @@ import { raceClassGrant } from '../crawlspace-shared/shared/raceClassGrants.ts'
 import { linkedEffects } from '../rules/build-links.ts'
 import { durationSeconds, durationEvent } from '../rules/time.ts'
 import { iconFor } from './icons.ts'
+import { legacySpace } from '../rules/personal-space.ts'
 
 export type ContentRow = { id: number; content_type: string; name: string; data: Record<string, any> }
 export type Converted = { documentName: 'Item' | 'Actor' | 'JournalEntry' | 'ActiveEffect' | 'RollTable'; pack: string; data: Record<string, any> }
@@ -99,6 +100,16 @@ export function legacyBonusEffects(properties: Record<string, any> = {}): CrawlE
   push('evadeModifier', '', properties.evadeModifier)
   if (str(properties.healthBonus).trim()) push('healthBonus', '', properties.healthBonus, ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'])
   return out
+}
+
+/** Foundry refuses a whole document whose image lacks one of these extensions (CONST.IMAGE_FILE_EXTENSIONS). */
+const IMAGE_FILE = /\.(apng|avif|bmp|gif|jpe?g|png|svg|tiff|webp)(\?.*)?$/i
+const IMAGE_DATA = /^data:image\/(apng|avif|bmp|gif|jpeg|png|svg\+xml|tiff|webp);base64,/
+
+/** The image if Foundry can use it, or '' for the caller's fallback. The app's own URLs (/api/…, /icons/…) don't exist in Foundry. */
+export function imagePath(value: unknown) {
+  if (typeof value !== 'string' || /^(crawlspace-image:|\/)/.test(value)) return ''
+  return IMAGE_FILE.test(value) || IMAGE_DATA.test(value) ? value : ''
 }
 
 function effectsFor(name: string, img: string, effects: CrawlEffectProperty[], options: { transfer?: boolean; disabled?: boolean } = {}) {
@@ -261,7 +272,7 @@ export function buffToEffect(data: Record<string, any>, img = ICONS.buff) {
   changes.push(...(missingNamedChanges(str(data.name), changes as any) as any[]))
   return {
     name: str(data.name) || 'Condition',
-    img: standard ? `systems/crawlspace/assets/debuffs/${standard.id}.png` : str(properties.icon) || img,
+    img: standard ? `systems/crawlspace/assets/debuffs/${standard.id}.png` : imagePath(properties.icon) || img,
     type: 'base',
     description: toHtml(data.description),
     disabled: false,
@@ -357,7 +368,7 @@ export function inventoryToItem(entry: Record<string, any>, contentType = '') {
     default:
       system = base
   }
-  const img = str(properties.icon) || iconFor(type, name, system) || ICONS[type]
+  const img = imagePath(properties.icon) || iconFor(type, name, system) || ICONS[type]
   // A consumable's cast-time conditions (Good Mana Refill) are applied to the user when it is used.
   const effects = [
     ...effectsFor(name, img, [...list(properties.effects), ...legacyBonusEffects(properties)]),
@@ -593,7 +604,7 @@ export function companionToActor(name: string, data: Record<string, any>, kind: 
   return {
     ...base,
     type: 'companion',
-    img: str(data.portrait) || ICONS.mob,
+    img: imagePath(data.portrait) || ICONS.mob,
     system: {
       ...base.system,
       kind,
@@ -752,7 +763,7 @@ export function convertRow(row: ContentRow, database: 'game' | 'homebrew'): Conv
     case 'skill':
     case 'spell': {
       const kind = row.content_type
-      const img = str(data.icon) || iconFor(kind, name) || ICONS[kind]
+      const img = imagePath(data.icon) || iconFor(kind, name) || ICONS[kind]
       const system: Record<string, any> = { ...rankedSystem(data, kind), source }
       if (kind === 'spell') Object.assign(system, { mana: str(data.mana), range: str(data.range), duration: str(data.duration), usage: 'learned' })
       const effects = [...effectsFor(name, img, list(data.effects)), ...(kind === 'spell' ? useEffectConditions(data, img) : [])]
@@ -875,12 +886,9 @@ export function convertRow(row: ContentRow, database: 'game' | 'homebrew'): Conv
 /*  Character backups                                                  */
 /* ------------------------------------------------------------------ */
 
-/** A portrait Foundry can show: a web or data URL, or a path in Foundry's data (an imported image). App-only links and unresolved export references can't. */
+/** A portrait Foundry can show (see imagePath), or the mystery man. */
 export function portraitPath(value: unknown) {
-  if (typeof value !== 'string' || !value.trim()) return 'icons/svg/mystery-man.svg'
-  if (/^https?:|^data:image\//.test(value)) return value
-  if (/^(crawlspace-image:|\/api\/|\/)/.test(value) || /\s/.test(value)) return 'icons/svg/mystery-man.svg'
-  return value
+  return imagePath(value) || 'icons/svg/mystery-man.svg'
 }
 
 /** A CrawlSpace character JSON export → crawler Actor data with embedded items and effects. */
@@ -915,14 +923,14 @@ export function characterToActor(input: Record<string, any>) {
     const system = rankedSystem(skill, 'skill')
     const override = data.skillEnhancedOverrides?.[skill.id]
     if (str(override)) system.rank.override = nullableInt(override)
-    const img = str(skill.icon) || iconFor('skill', str(skill.name)) || ICONS.skill
+    const img = imagePath(skill.icon) || iconFor('skill', str(skill.name)) || ICONS.skill
     add({ name: str(skill.name) || 'Skill', type: 'skill', img, system, effects: effectsFor(skill.name, img, list(skill.effects)) }, skill.id)
   }
   for (const spell of list(data.spells)) {
     const system: Record<string, any> = { ...rankedSystem(spell, 'spell'), mana: str(spell.mana), range: str(spell.range), duration: str(spell.duration), usage: spell.inherentGrantId ? 'inherent' : 'learned' }
     const override = data.spellEnhancedOverrides?.[spell.id]
     if (str(override)) system.rank.override = nullableInt(override)
-    const img = str(spell.icon) || iconFor('spell', str(spell.name)) || ICONS.spell
+    const img = imagePath(spell.icon) || iconFor('spell', str(spell.name)) || ICONS.spell
     add({ name: str(spell.name) || 'Spell', type: 'spell', img, system, effects: [...effectsFor(spell.name, img, list(spell.effects)), ...useEffectConditions(spell, img)] }, spell.id)
   }
   for (const entry of list(data.inventory)) add(inventoryToItem(entry), entry.id)
@@ -1038,11 +1046,9 @@ export function characterToActor(input: Record<string, any>) {
       },
       notes: toHtml(data.sideInfo?.notes),
       importantKills: list(data.importantKills).map((kill) => str(kill.value)).filter(Boolean),
-      amenities: list(data.amenities).map((entry) => str(entry.value)).filter(Boolean),
       clubs: list(data.clubs).map((entry) => str(entry.value)).filter(Boolean),
       attacks,
       sheetActions,
-      personalSpace: { tier: str(data.personalSpace?.tier), size: str(data.personalSpace?.size) },
       upkeep: { allocatedThroughLevel: int(data.upkeep?.allocatedThroughLevel, 1), lastSafeRoomLevel: int(data.upkeep?.lastSafeRoomLevel, 0), pendingStatPoints: 0 },
       // CrawlSpace pins by name; Foundry by item id.
       hotlist: { items: [...new Set(list(data.hotlist).map((pinned) => items.find((item) => item.name === str(pinned))?._id).filter(Boolean))] },
@@ -1051,7 +1057,9 @@ export function characterToActor(input: Record<string, any>) {
       ...data.upkeep?.grinding,
       skillHours: Object.fromEntries(Object.entries(data.upkeep?.grinding?.skillHours ?? {}).flatMap(([id, value]) => mapped(id.replace(/^spell:/, '')) ? [[mapped(id.replace(/^spell:/, '')), Number(value)]] : [])),
       attempted: Object.fromEntries(Object.entries(data.upkeep?.grinding?.attempted ?? {}).flatMap(([id, value]) => mapped(id.replace(/^spell:/, '')) ? [[mapped(id.replace(/^spell:/, '')), Number(value)]] : [])),
-    }) } },
+    }),
+    // The app's Personal Space fields become a space actor once the crawler exists (actors/personal-space.ts).
+    ...(legacySpace(data) ? { legacyPersonalSpace: legacySpace(data) } : {}) } },
     prototypeToken: { actorLink: true, disposition: 1, bar1: { attribute: 'healthBar' }, bar2: { attribute: 'mana' } },
     items,
     effects,

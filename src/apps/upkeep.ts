@@ -10,6 +10,7 @@ import { advanceTime, expireActorEvent, settleTime } from '../time'
 import { startRegenCollect, stopRegenCollect } from '../effects/regen-collector'
 import { recoveryRow } from '../rules/upkeep-summary'
 import { restSeconds } from '../rules/time'
+import { afterSpaceRest, restSecondsFor } from '../actors/personal-space'
 import { openTime } from './time'
 import { STATS, STAT_KEYS } from '../config'
 import { debuffByName } from '../rules/debuffs'
@@ -38,7 +39,9 @@ export async function restParty(actors: any[], kind: RecoveryKind, hours = 1, op
   startRegenCollect()
   let regen: Map<string, string[]>
   try {
-    if (options.advance !== false) await advanceTime(restSeconds(kind, hours))
+    // A Long Rest in a Personal Space with a better bed is shorter (actors/personal-space.ts).
+    const seconds = restSecondsFor(actors, kind, hours, restSeconds)
+    if (options.advance !== false && seconds > 0) await advanceTime(seconds)
     else await settleTime()
   } finally {
     regen = stopRegenCollect()
@@ -53,6 +56,7 @@ export async function restParty(actors: any[], kind: RecoveryKind, hours = 1, op
     if (row.bonusFrom.length)
       parts.push(game.i18n.format('CRAWLSPACE.Upkeep.BonusFrom', { slots: row.bonusSlots, mana: row.bonusMana, list: esc(row.bonusFrom.join(', ')) }))
     if (cleared.length) parts.push(game.i18n.format('CRAWLSPACE.Upkeep.Cleared', { list: esc(cleared.join(', ')) }))
+    for (const line of await afterSpaceRest(actor, kind)) parts.push(esc(line))
     rows.push(`<b>${esc(actor.name)}</b>: ${parts.join(' ')}`)
   }
   const title = game.i18n.localize(`CRAWLSPACE.Upkeep.${kind}`) + (kind === 'hourly' ? ` (${game.i18n.format('CRAWLSPACE.Upkeep.HoursSpent', { hours })})` : '')

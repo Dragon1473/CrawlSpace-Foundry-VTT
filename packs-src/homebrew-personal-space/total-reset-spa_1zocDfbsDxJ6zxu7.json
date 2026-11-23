@@ -1,0 +1,49 @@
+{
+  "_id": "1zocDfbsDxJ6zxu7",
+  "name": "Total Reset Spa",
+  "type": "spaceUpgrade",
+  "img": "icons/svg/regen.svg",
+  "system": {
+    "description": "<p>Once per day one crawler spends 2 hours in the spa for the benefits of a Long Rest, and loses one non-Divine, non-injury debuff. It does not heal injuries, lift curses or reset cooldowns a Long Rest wouldn't. (The shortened rest is automated; keep the once-a-day limit yourself.)</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Bathroom / Medical",
+    "tier": 3,
+    "floor": 9,
+    "price": 5000000,
+    "status": "homebrew",
+    "footprint": "Large room (8 units)",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Once a day: a Long Rest in 2 hours, and one contamination debuff gone.",
+    "rest": {
+      "longRestHours": 2,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "HB-201"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!1zocDfbsDxJ6zxu7",
+  "folder": "Mwql17X180xYnF9f"
+}

@@ -1,0 +1,49 @@
+{
+  "_id": "pVUxBd1LVrC7r9ji",
+  "name": "Reality Scrubber",
+  "type": "spaceUpgrade",
+  "img": "icons/svg/house.svg",
+  "system": {
+    "description": "<p>Between outings it clears ordinary blood, smoke, toxins and residue from the common areas. Once per day it neutralizes one lasting nonmagical hazard inside the space. No curses, magical hazards, enemies or quest objects.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Housekeeping / Utility",
+    "tier": 3,
+    "floor": 9,
+    "price": 3000000,
+    "status": "homebrew",
+    "footprint": "Module (2 units)",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Cleans mundane contamination; once a day neutralizes one lasting hazard.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "HB-212"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!pVUxBd1LVrC7r9ji",
+  "folder": "Mwql17X180xYnF9f"
+}

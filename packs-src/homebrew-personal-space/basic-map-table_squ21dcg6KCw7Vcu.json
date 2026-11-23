@@ -1,0 +1,72 @@
+{
+  "_id": "squ21dcg6KCw7Vcu",
+  "name": "Basic Map Table",
+  "type": "spaceUpgrade",
+  "img": "icons/svg/house.svg",
+  "system": {
+    "description": "<p>Once per day, Advantage on one Investigation, Survival or Tactics check that works from a map the party owns. It shows nothing undiscovered. (While in the space, the crawler has Advantage on those checks.)</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Quest / Tactical",
+    "tier": 1,
+    "floor": 4,
+    "price": 100000,
+    "status": "homebrew",
+    "footprint": "Small room (4 units)",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Once a day, Advantage on an Investigation, Survival or Tactics check over a map you own.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [
+    {
+      "name": "Basic Map Table: Advantage",
+      "img": "icons/svg/house.svg",
+      "type": "base",
+      "transfer": false,
+      "disabled": false,
+      "description": "",
+      "system": {
+        "changes": [
+          {
+            "key": "checkMode:Investigation, Survival, Tactics",
+            "type": "crawlspace.rollMode",
+            "value": "advantage",
+            "phase": "initial"
+          }
+        ],
+        "conditionType": "buff"
+      },
+      "flags": {},
+      "_id": "jnLTRcCn7uiiJNlq",
+      "_key": "!items.effects!squ21dcg6KCw7Vcu.jnLTRcCn7uiiJNlq"
+    }
+  ],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "HB-013"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!squ21dcg6KCw7Vcu",
+  "folder": "Oyd7R3n3iQdfJD8E"
+}

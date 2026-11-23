@@ -1,0 +1,49 @@
+{
+  "_id": "Wm5mb70L0EDRVv6X",
+  "name": "Emergency Ward",
+  "type": "spaceUpgrade",
+  "img": "icons/svg/regen.svg",
+  "system": {
+    "description": "<p>If a Dying crawler reaches the space before their timer runs out, the ward stabilizes them at 10% of their Health Bar, once per floor. It cannot bring back the dead.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Medical",
+    "tier": 3,
+    "floor": 9,
+    "price": 5000000,
+    "status": "homebrew",
+    "footprint": "Large room (8 units)",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Once per floor, stabilizes a Dying crawler brought inside at 10% Health.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "HB-215"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!Wm5mb70L0EDRVv6X",
+  "folder": "Mwql17X180xYnF9f"
+}

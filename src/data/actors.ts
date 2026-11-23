@@ -4,6 +4,7 @@ import { KILL_KINDS, migrateKills } from '../rules/crawler-marks'
 import { BOSS_TIERS, DAMAGE_TYPES, HEALTH_MAX, HEALTH_SLOTS, STAT_KEYS, statKeyFromCode, type StatKey } from '../config'
 import { abilityScoreModifier, mobDerived, mobToHit, resolveFormulaTokens, safeArithmetic, type DamageResponse } from '../rules/core'
 import { debuffById } from '../rules/debuffs'
+import { DEITY_LEVELS, MOB_KINDS, isDeity, mobBaseStat, mobLevel, rebasedStats } from '../rules/mob-kinds'
 
 const f = () => foundry.data.fields
 const optionalNumber = (options: Record<string, unknown> = {}) =>
@@ -222,9 +223,7 @@ export class CrawlerData extends CrawlActorData {
       importantKills: new fields.ArrayField(new fields.StringField({ blank: true })),
       /** The marks by the crawler's name: crawlers, leaderboard crawlers and bosses killed (rules/crawler-marks.ts). */
       kills: new fields.SchemaField(Object.fromEntries(KILL_KINDS.map((kind) => [kind.key, integer(0, { min: 0 })]))),
-      amenities: new fields.ArrayField(new fields.StringField({ blank: true })),
       clubs: new fields.ArrayField(new fields.StringField({ blank: true })),
-      personalSpace: new fields.SchemaField({ tier: text(), size: text() }),
       hotlist: new fields.SchemaField({ items: new fields.ArrayField(new fields.StringField({ blank: true })) }),
       attacks: new fields.ArrayField(crawlerAttackSchema()),
       sheetActions: new fields.ArrayField(sheetActionSchema()),
@@ -349,9 +348,14 @@ export class MobData extends CrawlActorData {
   static defineSchema() {
     const fields = f()
     return {
-      kind: new fields.StringField({ required: true, initial: 'mob', choices: ['mob', 'boss'] }),
+      /** Feral gods (level 150) and gods (level 250) are deities: boss-like, and a spinning star on the minimap. */
+      kind: new fields.StringField({ required: true, initial: 'mob', choices: [...MOB_KINDS] }),
       /** A GM-run crawler kept on the mob sheet: it joins parties like a crawler (rules/party.ts isCrawler). */
       crawler: new fields.BooleanField({ initial: false }),
+      /** An Elite acts once per crawler, like a boss; its token shows as an Elite once the GM reveals it. */
+      elite: new fields.BooleanField({ initial: false }),
+      /** Not a crawler and not one of the dungeon's residents (hunters, tourists): purple on the minimap. */
+      outsider: new fields.BooleanField({ initial: false }),
       bossTier: new fields.StringField({ required: true, initial: 'Neighborhood', choices: Object.keys(BOSS_TIERS) }),
       level: integer(1, { min: 0 }),
       floor: integer(1, { min: 0 }),
@@ -386,7 +390,35 @@ export class MobData extends CrawlActorData {
     }
   }
 
+  /** A new mob with no stats starts each one at its kind's base: 1, or 5 for bosses and deities. */
+  async _preCreate(data: any, options: any, user: any) {
+    if ((await super._preCreate(data, options, user)) === false) return false
+    const attributes = data.system?.attributes ?? {}
+    const blank = STAT_KEYS.every((key) => {
+      const stat = attributes[key] ?? {}
+      return (stat.value ?? null) === null && (stat.override ?? null) === null && (stat.modOverride ?? null) === null
+    })
+    if (blank && this.parent?.type !== 'companion') {
+      const base = mobBaseStat(data.system?.kind ?? this.kind)
+      this.updateSource({ attributes: Object.fromEntries(STAT_KEYS.map((key) => [key, { value: base }])) })
+    }
+    if (isDeity(this.kind)) this.updateSource({ level: DEITY_LEVELS[this.kind] })
+  }
+
+  /** Becoming a deity sets its level; stats still at the old kind's base move to the new kind's base. */
+  async _preUpdate(changes: any, options: any, user: any) {
+    if ((await super._preUpdate(changes, options, user)) === false) return false
+    const kind = changes.system?.kind
+    if (kind === undefined || kind === this.kind || this.parent?.type === 'companion') return
+    if (isDeity(kind)) foundry.utils.setProperty(changes, 'system.level', DEITY_LEVELS[kind])
+    const current = Object.fromEntries(STAT_KEYS.map((key) => [key, changes.system?.attributes?.[key]?.value ?? this._source.attributes[key]?.value]))
+    const rebased = rebasedStats(this.kind, kind, current)
+    if (rebased) for (const [key, value] of Object.entries(rebased)) foundry.utils.setProperty(changes, `system.attributes.${key}.value`, value)
+  }
+
   prepareDerivedData() {
+    // A deity is always its kind's level.
+    this.level = mobLevel(this.kind, this.level)
     this.prepareAttributes()
     const tier = BOSS_TIERS[this.bossTier as keyof typeof BOSS_TIERS] ?? BOSS_TIERS.Neighborhood
     const published = (value: string) => (value ? safeArithmetic(resolveFormulaTokens(value, { floor: this.floor })) : null)
@@ -416,6 +448,7 @@ export class MobData extends CrawlActorData {
     this.move.total = Math.floor(this.move.value + this.move.bonus)
     this.surpriseTotal = derived.surprise
     this.statPoints = derived.statPoints
+    this.baseStat = derived.baseStat
     const statuses: Set<string> = this.parent?.statuses ?? new Set()
     this.checkPenalty = this.checkPenaltyFromStatuses(statuses, (id) => this.parent?.debuffStacks?.(id) ?? 1)
     for (const attack of this.attacks) {
@@ -487,6 +520,8 @@ export class NpcData extends CrawlActorData {
       floor: integer(1, { min: 0 }),
       attributes: attributeSchema(),
       traits: traitsSchema(),
+      /** An important NPC: a star instead of a dot on the minimap. */
+      important: new fields.BooleanField({ initial: false }),
       /** UUID of a Mob actor whose stat block this NPC fights with. */
       statBlock: new fields.StringField({ required: true, blank: true }),
       /** Shown when someone Shift-hovers the token (rules/flavor.ts). */

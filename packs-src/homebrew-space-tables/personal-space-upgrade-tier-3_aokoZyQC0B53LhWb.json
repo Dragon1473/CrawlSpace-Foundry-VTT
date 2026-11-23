@@ -1,0 +1,304 @@
+{
+  "_id": "aokoZyQC0B53LhWb",
+  "name": "Personal Space Upgrade (Tier 3)",
+  "img": "icons/svg/d20-grey.svg",
+  "description": "<p>Homebrew Personal Space reward table.</p>",
+  "formula": "1d100",
+  "replacement": true,
+  "displayRoll": true,
+  "results": [
+    {
+      "type": "document",
+      "name": "Tier 3 Full-Refresh Bed",
+      "img": "icons/svg/sleep.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.oK5StIRMIjyaLFQk",
+      "description": "Step across the glowing panel: an instant Long Rest and 30 hours of Good Sleep.",
+      "range": [
+        1,
+        5
+      ],
+      "weight": 5,
+      "_id": "tRfDtJ8HbT5KXDI9",
+      "_key": "!tables.results!aokoZyQC0B53LhWb.tRfDtJ8HbT5KXDI9"
+    },
+    {
+      "type": "document",
+      "name": "Banquet Engine",
+      "img": "icons/consumables/food/bowl-stew-brown.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.kcd1rHHbyQz8fbMo",
+      "description": "Once a day per crawler: +1 to a chosen stat for 8 hours.",
+      "range": [
+        6,
+        10
+      ],
+      "weight": 5,
+      "_id": "x1Gu3mqEzoHUzLuu",
+      "_key": "!tables.results!aokoZyQC0B53LhWb.x1Gu3mqEzoHUzLuu"
+    },
+    {
+      "type": "document",
+      "name": "Dimensional Vault",
+      "img": "icons/svg/house.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.KwDLfVUSMMvb3bFN",
+      "description": "The same vault from every entrance to the space.",
+      "range": [
+        11,
+        15
+      ],
+      "weight": 5,
+      "_id": "bRU7DfJ3btSQN9zz",
+      "_key": "!tables.results!aokoZyQC0B53LhWb.bRU7DfJ3btSQN9zz"
+    },
+    {
+      "type": "document",
+      "name": "Emergency Ward",
+      "img": "icons/svg/regen.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.Wm5mb70L0EDRVv6X",
+      "description": "Once per floor, stabilizes a Dying crawler brought inside at 10% Health.",
+      "range": [
+        16,
+        20
+      ],
+      "weight": 5,
+      "_id": "cAp6h2OpOdUah94r",
+      "_key": "!tables.results!aokoZyQC0B53LhWb.cAp6h2OpOdUah94r"
+    },
+    {
+      "type": "document",
+      "name": "Retinue Wing",
+      "img": "icons/svg/house.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.YUJCL7XMUGoolZky",
+      "description": "Quarters for up to eight hired NPCs or mercenaries.",
+      "range": [
+        21,
+        25
+      ],
+      "weight": 5,
+      "_id": "ftx9xWxR1QxTtTt1",
+      "_key": "!tables.results!aokoZyQC0B53LhWb.ftx9xWxR1QxTtTt1"
+    },
+    {
+      "type": "document",
+      "name": "Total Reset Spa",
+      "img": "icons/svg/regen.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.1zocDfbsDxJ6zxu7",
+      "description": "Once a day: a Long Rest in 2 hours, and one contamination debuff gone.",
+      "range": [
+        26,
+        30
+      ],
+      "weight": 5,
+      "_id": "wGI23FiSayZXxlU2",
+      "_key": "!tables.results!aokoZyQC0B53LhWb.wGI23FiSayZXxlU2"
+    },
+    {
+      "type": "document",
+      "name": "Adaptive Crafting Nexus",
+      "img": "icons/tools/smithing/anvil.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.XxvrNbWhf5HxJlcM",
+      "description": "Once a day, one project treats every required table as one tier higher.",
+      "range": [
+        31,
+        35
+      ],
+      "weight": 5,
+      "_id": "RLUhh3C99LBtdzno",
+      "_key": "!tables.results!aokoZyQC0B53LhWb.RLUhh3C99LBtdzno"
+    },
+    {
+      "type": "document",
+      "name": "Rapid Loadout Conveyor",
+      "img": "icons/svg/house.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.26CrNvKNaQv4xPgZ",
+      "description": "Swap saved loadouts instantly inside the space.",
+      "range": [
+        36,
+        40
+      ],
+      "weight": 5,
+      "_id": "AMsJXmpq0HGBjNzS",
+      "_key": "!tables.results!aokoZyQC0B53LhWb.AMsJXmpq0HGBjNzS"
+    },
+    {
+      "type": "document",
+      "name": "Reality Scrubber",
+      "img": "icons/svg/house.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.pVUxBd1LVrC7r9ji",
+      "description": "Cleans mundane contamination; once a day neutralizes one lasting hazard.",
+      "range": [
+        41,
+        45
+      ],
+      "weight": 5,
+      "_id": "6yTBraVYKDAaHD3C",
+      "_key": "!tables.results!aokoZyQC0B53LhWb.6yTBraVYKDAaHD3C"
+    },
+    {
+      "type": "document",
+      "name": "Arcane Crucible",
+      "img": "icons/skills/melee/weapons-crossed-swords-yellow.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.mKrRFjfTigEy1Ndw",
+      "description": "Once per floor, one eligible magic advancement check with Advantage.",
+      "range": [
+        46,
+        50
+      ],
+      "weight": 5,
+      "_id": "uyb4p7E1Wuf0XdCr",
+      "_key": "!tables.results!aokoZyQC0B53LhWb.uyb4p7E1Wuf0XdCr"
+    },
+    {
+      "type": "document",
+      "name": "Holo-Scenario Archive",
+      "img": "icons/skills/melee/weapons-crossed-swords-yellow.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.nnFXfNMdzJggzngK",
+      "description": "Replays up to three fought foes; reviewing one gives Advantage on a Tactics or Perception check.",
+      "range": [
+        51,
+        55
+      ],
+      "weight": 5,
+      "_id": "setCtOGWSDMgxL4w",
+      "_key": "!tables.results!aokoZyQC0B53LhWb.setCtOGWSDMgxL4w"
+    },
+    {
+      "type": "document",
+      "name": "Mastery Arena",
+      "img": "icons/skills/melee/weapons-crossed-swords-yellow.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.3d2mPlzTx9idBd9o",
+      "description": "Once a day, one hour counts as 3 grinding hours.",
+      "range": [
+        56,
+        60
+      ],
+      "weight": 5,
+      "_id": "suf7LEt3uZsob15g",
+      "_key": "!tables.results!aokoZyQC0B53LhWb.suf7LEt3uZsob15g"
+    },
+    {
+      "type": "document",
+      "name": "Monster Performance Habitat",
+      "img": "icons/svg/pawprint.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.VJhhVVMvl75D1dS5",
+      "description": "After an hour of training: Advantage on Animal Handling and +1 damage on the pet's first hit.",
+      "range": [
+        61,
+        65
+      ],
+      "weight": 5,
+      "_id": "yuG2fije8jHkp5Sb",
+      "_key": "!tables.results!aokoZyQC0B53LhWb.yuG2fije8jHkp5Sb"
+    },
+    {
+      "type": "document",
+      "name": "War Mount Hangar",
+      "img": "icons/environment/settlement/stable.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.Iwz6lRaqc2uTV93k",
+      "description": "A mount's Long Rest here restores it fully; once a day, Advantage on a combat Riding check.",
+      "range": [
+        66,
+        70
+      ],
+      "weight": 5,
+      "_id": "E2HAvFthUIn4l1pf",
+      "_key": "!tables.results!aokoZyQC0B53LhWb.E2HAvFthUIn4l1pf"
+    },
+    {
+      "type": "document",
+      "name": "Interfloor Brokerage Terminal",
+      "img": "icons/commodities/currency/coins-plain-stack-gold.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.4oQIvnDAEcIufTm7",
+      "description": "Once per floor, one rare listing at full market price.",
+      "range": [
+        71,
+        75
+      ],
+      "weight": 5,
+      "_id": "vxCt7mfNvYq8tRkc",
+      "_key": "!tables.results!aokoZyQC0B53LhWb.vxCt7mfNvYq8tRkc"
+    },
+    {
+      "type": "document",
+      "name": "Predictive Ops Center",
+      "img": "icons/svg/house.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.J7McrXFZ7v8s3TPM",
+      "description": "Once a day, one useful tactical clue from what the party already knows.",
+      "range": [
+        76,
+        80
+      ],
+      "weight": 5,
+      "_id": "cinxt6ie0TQqN1bX",
+      "_key": "!tables.results!aokoZyQC0B53LhWb.cinxt6ie0TQqN1bX"
+    },
+    {
+      "type": "document",
+      "name": "Sponsor Operations Studio",
+      "img": "icons/svg/house.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.5ZHlrFwlL3NslFkp",
+      "description": "Once per floor, Advantage on a sponsor-facing social check after preparing.",
+      "range": [
+        81,
+        85
+      ],
+      "weight": 5,
+      "_id": "HFyQPOUDxIGgtVCE",
+      "_key": "!tables.results!aokoZyQC0B53LhWb.HFyQPOUDxIGgtVCE"
+    },
+    {
+      "type": "document",
+      "name": "Tier 3 Doggie Door",
+      "img": "icons/svg/door-exit.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.NZvSNyRSxqfn5zoq",
+      "description": "Leave the space through any door the owner has used on this floor.",
+      "range": [
+        86,
+        90
+      ],
+      "weight": 5,
+      "_id": "CGJM55vge0YW5Z0V",
+      "_key": "!tables.results!aokoZyQC0B53LhWb.CGJM55vge0YW5Z0V"
+    },
+    {
+      "type": "document",
+      "name": "Tier 3 Teleport Portal",
+      "img": "icons/svg/door-exit.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.csrmxkwciryjjJnY",
+      "description": "A teleport portal; its destinations are up to the GM.",
+      "range": [
+        91,
+        95
+      ],
+      "weight": 5,
+      "_id": "5HbbtZ3hDtfc7x9O",
+      "_key": "!tables.results!aokoZyQC0B53LhWb.5HbbtZ3hDtfc7x9O"
+    },
+    {
+      "type": "document",
+      "name": "Waypoint Control Console",
+      "img": "icons/svg/door-exit.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.HT8SZNPGDVjILFt7",
+      "description": "Favorites, a default exit and access presets for a Doggie Door.",
+      "range": [
+        96,
+        100
+      ],
+      "weight": 5,
+      "_id": "zviBvDQCjfScl7nu",
+      "_key": "!tables.results!aokoZyQC0B53LhWb.zviBvDQCjfScl7nu"
+    }
+  ],
+  "flags": {},
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!tables!aokoZyQC0B53LhWb"
+}

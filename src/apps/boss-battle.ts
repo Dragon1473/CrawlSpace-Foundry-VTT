@@ -12,6 +12,7 @@
  * "Boss battle when a boss encounter starts" setting is off; then the enemies are the combat's hostiles, never the
  * GM's selection.
  */
+import { isBossLike } from '../rules/mob-kinds'
 import { partyCrawlers, partyNameFor } from '../actors/party'
 import { isCrawler } from '../rules/party'
 import { followersOf } from '../actors/companions'
@@ -46,7 +47,7 @@ function gatherBattle({ useSelection }: { useSelection: boolean }) {
     img: headshot(actor, tokenImg),
     disposition,
     crawler: isCrawler(actor),
-    boss: actor?.type === 'mob' && actor.system?.kind === 'boss',
+    boss: actor?.type === 'mob' && isBossLike(actor.system?.kind),
     party: isCrawler(actor) ? partyNameFor(actor, memberIds) : '',
     level: levelOf(actor),
   })
@@ -134,7 +135,7 @@ export const bossBattleOpen = () => !!document.querySelector(`#${OVERLAY_ID}:not
 export function splashExpected(combat: any, changes: any) {
   if (!game.settings.get('crawlspace', 'autoBossBattle')) return false
   const combatants = combat.combatants.contents.map((combatant: any) => ({
-    kind: combatant.actor?.type === 'mob' ? combatant.actor.system?.kind : undefined,
+    kind: combatant.actor?.type === 'mob' ? (isBossLike(combatant.actor.system?.kind) ? 'boss' : combatant.actor.system?.kind) : undefined,
     hidden: combatant.hidden || combatant.token?.hidden,
   }))
   return autoBossBattle(changes, combatants, combat.previous?.round)

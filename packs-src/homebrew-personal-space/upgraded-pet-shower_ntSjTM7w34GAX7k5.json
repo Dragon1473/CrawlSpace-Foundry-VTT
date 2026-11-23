@@ -1,0 +1,49 @@
+{
+  "_id": "ntSjTM7w34GAX7k5",
+  "name": "Upgraded Pet Shower",
+  "type": "spaceUpgrade",
+  "img": "icons/svg/pawprint.svg",
+  "system": {
+    "description": "<p>At the least, a pet leaves clean and odor-free. Any grooming bonus is a small GM effect.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Pet Bathroom",
+    "tier": 2,
+    "floor": 6,
+    "price": 350000,
+    "status": "canon",
+    "footprint": "Module",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Washes dungeon grime and blood out of a pet's coat.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "C-042"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!ntSjTM7w34GAX7k5",
+  "folder": "DN4Kb1fctxbBlpic"
+}

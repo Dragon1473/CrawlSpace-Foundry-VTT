@@ -1,0 +1,49 @@
+{
+  "_id": "9r4md1mrx7mJvHxs",
+  "name": "Crafting Safety Hood",
+  "type": "spaceUpgrade",
+  "img": "icons/tools/smithing/anvil.webp",
+  "system": {
+    "description": "<p>Attach it to a table. Once per floor, a Critical Fail on a crafting check at that table becomes a Major Fail instead; materials are lost or salvaged by the Major Fail result. It cannot stop story disasters or deliberate over-enchanting.</p>",
+    "notes": "",
+    "kind": "attachment",
+    "category": "Crafting",
+    "tier": 1,
+    "floor": 4,
+    "price": 50000,
+    "status": "homebrew",
+    "footprint": "Module (2 units)",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Once per floor, a Critical Fail at this table counts as a Major Fail.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "HB-010"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!9r4md1mrx7mJvHxs",
+  "folder": "gClMjGykKB3HVtHa"
+}

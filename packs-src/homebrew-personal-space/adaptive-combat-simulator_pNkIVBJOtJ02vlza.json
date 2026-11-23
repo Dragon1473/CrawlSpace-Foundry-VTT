@@ -1,0 +1,49 @@
+{
+  "_id": "pNkIVBJOtJ02vlza",
+  "name": "Adaptive Combat Simulator",
+  "type": "spaceUpgrade",
+  "img": "icons/skills/melee/weapons-crossed-swords-yellow.webp",
+  "system": {
+    "description": "<p>One 1-hour session a day counts as two grinding hours for one combat skill. A skill still can't be ground twice in one day.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Training",
+    "tier": 2,
+    "floor": 6,
+    "price": 1000000,
+    "status": "homebrew",
+    "footprint": "Major room (12 units)",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Once a day, one hour counts as 2 grinding hours toward a combat skill.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 2
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "HB-106"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!pNkIVBJOtJ02vlza",
+  "folder": "DN4Kb1fctxbBlpic"
+}

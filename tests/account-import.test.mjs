@@ -5,7 +5,9 @@ import {
   combatantToMob,
   convertScene,
   importKey,
+  importSource,
   macroToFoundry,
+  matchCrawlers,
   readImportFile,
   reimportUpdate,
   resolveImages,
@@ -96,13 +98,21 @@ test('scene geometry turns surface percentages into map pixels, including the bo
   assert.equal(small.size, 50)
   assert.equal(small.width, 2000)
   assert.deepEqual(small.point(50, 50), { x: 1000, y: 500 })
-  // Grid lines 10 px in: everything (the map too) moves 10 px so they meet Foundry's grid.
+  assert.deepEqual(small.scale, { x: 2, y: 2 })
   const offset = sceneGeometry({ gridOffsetX: 1, configuration: { sceneWidthPixels: 1000, sceneHeightPixels: 500, gridCellSize: 100, canvasPadding: 0 } })
-  assert.deepEqual(offset.point(50, 50), { x: 490, y: 250 })
-  assert.deepEqual(offset.backgroundOffset, { x: -10, y: 0 })
-  const shifted = convertScene({ id: 's', name: 'S', is_active: false, gm_only: false, data: { gridOffsetX: 1, configuration: { sceneWidthPixels: 1000, sceneHeightPixels: 500, gridCellSize: 100, canvasPadding: 0, backgroundOffsetX: 4 } } }, [], { image: () => null, crawler: () => null, mob: () => null })
-  assert.equal(shifted.scene.shiftX, -6)
+  assert.deepEqual(offset.gridLine, { x: 10, y: 0 })
+  assert.deepEqual(offset.point(50, 50), { x: 500, y: 250 })
+  // The border is two unscaled cells, however the grid was measured.
+  const measured = sceneGeometry({ configuration: { sceneWidthPixels: 1000, sceneHeightPixels: 500, gridCellSize: 100, gridScaleX: 1.5, gridScaleY: 1.5, canvasPadding: 0.1 } })
+  assert.deepEqual(measured.point(0, 0), { x: -200, y: -200 })
 })
+
+const place = (data, configuration = {}, objects = []) =>
+  convertScene(
+    { id: 's', name: 'S', is_active: false, gm_only: false, data: { mapAssetId: map, ...data, configuration: { sceneWidthPixels: 1000, sceneHeightPixels: 500, gridCellSize: 100, canvasPadding: 0, ...configuration } } },
+    objects.map((object) => ({ id: 'o', scene_id: 's', ...object })),
+    { image: () => 'up/map.png', crawler: () => ({ actorId: 'a' }), mob: () => null },
+  )
 
 test('walls keep their kind, door state and what they block', () => {
   const point = (x, y) => ({ x: x * 10, y: y * 10 })
@@ -171,7 +181,7 @@ test('a scene converts with its map, grid, walls, lights, tiles, drawings, notes
       scene_id: 's1',
       kind: 'drawing',
       layer: 'drawings',
-      data: { type: 'line', x: 10, y: 10, width: 10, height: 10, rotation: 0, points: [{ x: 10, y: 10 }, { x: 20, y: 20 }], strokeWidth: 4, strokeColor: '#ff0000', strokeOpacity: 1, fillType: 'none', fillColor: '#000000', fillOpacity: 0, text: '', fontSize: 24, textColor: '#ffffff', textOpacity: 1, hidden: false, locked: false },
+      data: { type: 'line', x: 100, y: 50, width: 100, height: 50, rotation: 0, points: [{ x: 0, y: 0 }, { x: 100, y: 50 }], strokeWidth: 4, strokeColor: '#ff0000', strokeOpacity: 1, fillType: 'none', fillColor: '#000000', fillOpacity: 0, text: '', fontSize: 24, textColor: '#ffffff', textOpacity: 1, hidden: false, locked: false },
     },
     { id: 'j1', scene_id: 's1', kind: 'drawing', layer: 'journals', data: { x: 50, y: 50, hidden: false, hoverText: 'Hi', entry: { id: 'e1', name: 'Clue', pages: [{ id: 'p', name: 'Page', html: '<p>Look</p>', text: 'Look' }] } } },
     { id: 'k1', scene_id: 's1', kind: 'token', layer: 'objects', data: { characterId: 4, label: 'Donut', x: 50, y: 50, width: 1, height: 1, image: null, visionRangeFeet: 30 } },
@@ -201,7 +211,7 @@ test('a scene converts with its map, grid, walls, lights, tiles, drawings, notes
   assert.equal(result.scene.fog.exploration, false)
   assert.equal(result.scene.environment.darknessLevel, 0.5)
   assert.equal(result.scene.environment.globalLight.enabled, true)
-  assert.deepEqual(result.scene.initial, { x: 500, y: 250, scale: 1.5 })
+  assert.deepEqual(result.scene.initial, { x: null, y: null, scale: null })
   assert.deepEqual(result.walls, [{ c: [0, 0, 100, 0], move: 20, sight: 20, light: 20, sound: 20, door: 1, ds: 1 }])
   assert.equal(result.lights[0].x, 100)
   assert.equal(result.lights[0].y, 100)
@@ -210,7 +220,7 @@ test('a scene converts with its map, grid, walls, lights, tiles, drawings, notes
   assert.equal(result.lights[0].config.angle, 90)
   assert.equal(result.lights[0].config.animation.type, 'torch')
   assert.equal(result.lights[0].config.coloration, 1)
-  assert.deepEqual(result.tiles, [{ texture: { src: 'up/tile.png' }, x: 100, y: 50, width: 200, height: 100, rotation: 0, alpha: 0.5, hidden: false, locked: true, sort: 2 }])
+  assert.deepEqual(result.tiles, [{ texture: { src: 'up/tile.png', anchorX: 0.5, anchorY: 0.5 }, x: 200, y: 100, width: 200, height: 100, rotation: 0, alpha: 0.5, hidden: false, locked: true, sort: 2 }])
   assert.equal(result.drawings[0].x, 100)
   assert.deepEqual(result.drawings[0].shape.points, [0, 0, 100, 50])
   assert.equal(result.drawings[0].strokeColor, '#ff0000')
@@ -237,14 +247,44 @@ test('a scene converts with its map, grid, walls, lights, tiles, drawings, notes
   assert.equal(goblin.texture.src, 'up/tile.png')
 })
 
-test('a moved or rotated map becomes a tile so it keeps its place', () => {
-  const result = convertScene(
-    { id: 's', name: 'S', is_active: false, gm_only: false, data: { mapAssetId: map, mapTransform: { x: 10, y: 0, width: 50, height: 100, rotation: 15, opacity: 0.8 }, configuration: { sceneWidthPixels: 1000, sceneHeightPixels: 500, gridCellSize: 100, canvasPadding: 0 } } },
-    [],
-    { image: () => 'up/map.png', crawler: () => null, mob: () => null },
-  )
+test('a resized or moved map is the background, and the scene is its rectangle', () => {
+  const result = place({ mapTransform: { x: 10, y: 10, width: 80, height: 80 } }, {}, [{ kind: 'token', layer: 'objects', data: { characterId: 1, x: 50, y: 50 } }])
+  assert.equal(result.scene.levels[0].background.src, 'up/map.png')
+  assert.deepEqual(result.tiles, [])
+  assert.deepEqual([result.scene.width, result.scene.height], [800, 400])
+  assert.deepEqual([result.tokens[0].x, result.tokens[0].y], [350, 150])
+  // A map bigger than the app's scene isn't cropped to it.
+  assert.equal(place({ mapTransform: { x: -50, y: -50, width: 200, height: 200 } }).scene.width, 2000)
+})
+
+test('the scene shifts so the app grid lands on the Foundry grid, without moving things off the map', () => {
+  const result = place({ gridOffsetX: 1, walls: [{ x1: 1, y1: 0, x2: 1, y2: 100, type: 'normal' }] })
+  assert.equal(result.scene.shiftX, 10)
+  assert.equal(result.walls[0].c[0], 10)
+  assert.ok(result.scene.padding > 0) // room for the shift
+  // An offset map carries the grid's place on it along.
+  assert.equal(place({ gridOffsetX: 1 }, { backgroundOffsetX: 4 }).scene.shiftX, 6)
+  // Float noise just under a whole cell is no shift.
+  assert.equal(place({ gridOffsetY: 14.285714285714285 }, { sceneWidthPixels: 3942, sceneHeightPixels: 3170, canvasPadding: 0.2 }).scene.shiftY, 0)
+})
+
+test('a map that cannot be a background is a tile placed by its center', () => {
+  const result = place({ mapTransform: { x: 25, y: 25, width: 50, height: 50, rotation: 15, opacity: 0.8 } })
   assert.equal(result.scene.levels[0].background.src, null)
-  assert.deepEqual(result.tiles[0], { texture: { src: 'up/map.png' }, x: 100, y: 0, width: 500, height: 500, rotation: 15, alpha: 0.8, hidden: false, locked: true, sort: -1 })
+  assert.deepEqual(result.tiles[0], { texture: { src: 'up/map.png', anchorX: 0.5, anchorY: 0.5 }, x: 500, y: 250, width: 500, height: 250, rotation: 15, alpha: 0.8, hidden: false, locked: true, sort: -1 })
+
+  const far = place({ mapTransform: { x: 0, y: 0, width: 20, height: 20 } }, {}, [{ kind: 'token', layer: 'objects', data: { characterId: 1, x: 90, y: 80 } }])
+  assert.equal(far.scene.width, 1000)
+  assert.deepEqual([far.tiles[0].x, far.tiles[0].y], [100, 50])
+
+  const covered = place({ mapTransform: { x: 10, y: 10, width: 80, height: 80 } }, { foregroundAssetId: map })
+  assert.deepEqual([covered.scene.width, covered.tiles[0].x], [1000, 500])
+})
+
+test('drawings are in surface pixels, with points from their own corner', () => {
+  const data = { type: 'polygon', x: 300, y: 250, width: 100, height: 50, points: [{ x: 0, y: 0 }, { x: 100, y: 0 }, { x: 50, y: 50 }] }
+  const [drawing] = place({}, { canvasPadding: 0.1 }, [{ kind: 'drawing', layer: 'drawings', data }]).drawings
+  assert.deepEqual([drawing.x, drawing.y, drawing.shape.points], [100, 50, [0, 0, 100, 0, 50, 50]])
 })
 
 test('a token-only mob becomes a mob actor; macros become Foundry macros', () => {
@@ -263,7 +303,7 @@ test('a token-only mob becomes a mob actor; macros become Foundry macros', () =>
   assert.match(script.command, /\/\/ crawl\.doThing\(\)/)
 })
 
-import { portraitPath } from '../src/import/convert.ts'
+import { characterToActor, convertRow, imagePath, inventoryToItem, portraitPath } from '../src/import/convert.ts'
 
 test('a crawler portrait can be an imported world image, but not an app link or an unresolved reference', () => {
   assert.equal(portraitPath('worlds/w/crawlspace-import/a.png'), 'worlds/w/crawlspace-import/a.png')
@@ -273,9 +313,69 @@ test('a crawler portrait can be an imported world image, but not an app link or 
   assert.equal(portraitPath(''), 'icons/svg/mystery-man.svg')
 })
 
+test('an app icon Foundry would refuse falls back, so the document still imports', () => {
+  const app = '/api/app-library/app-icon-69762998d61de63fce73bdf7/image'
+  for (const bad of [app, '/icons/default-token.png', 'crawlspace-image:abc', 'https://example.com/image', 'worlds/w/a.bin', 'data:image/png,raw', '', null]) assert.equal(imagePath(bad), '', String(bad))
+  for (const good of ['worlds/w/a.png', 'systems/crawlspace/assets/a.WEBP', 'https://example.com/a.jpg?v=2', 'data:image/png;base64,AAAA']) assert.equal(imagePath(good), good)
+
+  const actor = characterToActor({ name: 'Heath', data: { skills: [{ name: 'Shield Block', value: 3, icon: app }], spells: [{ name: 'Heal', icon: app }], portrait: 'https://example.com/image' } })
+  const images = [
+    actor.img,
+    ...actor.items.flatMap((item) => [item.img, ...(item.effects ?? []).map((effect) => effect.img)]),
+    inventoryToItem({ name: 'Sword', icon: app, properties: { icon: app } }, 'weapon').img,
+    convertRow({ id: 1, content_type: 'skill', name: 'Handgun', data: { icon: app } }, 'homebrew').data.img,
+    combatantToMob({ name: 'Barflie' }, '/icons/default-token.png').img,
+  ]
+  assert.ok(actor.items.some((item) => item.name === 'Shield Block'))
+  for (const image of images) assert.equal(imagePath(image), image)
+
+  // A token with only an app image shows its actor's instead.
+  const scene = { id: 's', name: 'S', data: {} }
+  const [token] = convertScene(scene, [{ scene_id: 's', kind: 'token', data: { characterId: 1, image: app } }], { image: () => null, crawler: () => ({ actorId: 'a' }), mob: () => null }).tokens
+  assert.equal(token.texture, undefined)
+})
+
 test('a re-import finds each document by a key made from its export ids', () => {
   assert.equal(importKey('party', 4, 'scene', 's1'), 'party:4:scene:s1')
   assert.equal(importKey('character', 7), 'character:7')
+})
+
+const lake = 'party:Lake Elsinore Gang'
+const crawler = (id, name, from = lake) => ({ id, name, key: 'character:25', source: from, folders: [] })
+
+test('another party reusing a crawler id gets its own crawler, without a question', () => {
+  const imported = [{ id: 25, name: 'A2' }]
+  assert.deepEqual(matchCrawlers(imported, [crawler('heath', 'Heath')], 'party:Test Export', 'CrawlSpace: Test Export'), { update: new Map(), ask: [] })
+  const older = { ...crawler('heath', 'Heath', undefined), source: undefined, folders: ['CrawlSpace: Lake Elsinore Gang'] }
+  assert.deepEqual(matchCrawlers(imported, [older], 'party:Test Export', 'CrawlSpace: Test Export'), { update: new Map(), ask: [] })
+})
+
+test('the same crawler from the same export source is refreshed', () => {
+  const match = (...actors) => matchCrawlers([{ id: 25, name: 'Heath' }], actors, lake, 'CrawlSpace: Lake Elsinore Gang')
+  assert.deepEqual(match(crawler('other', 'A2', 'party:Test Export'), crawler('heath', ' heath ')).update, new Map([[25, 'heath']]))
+  // An import from before sources were recorded is known by the folder it was put in.
+  const older = { ...crawler('old', 'Heath'), source: undefined, folders: ['Lake Elsinore Gang', 'CrawlSpace: Lake Elsinore Gang'] }
+  assert.deepEqual(match(older).update, new Map([[25, 'old']]))
+  // Once there's one with a recorded source, it wins over the older copy.
+  assert.deepEqual(match(older, crawler('new', 'Heath')).update, new Map([[25, 'new']]))
+  assert.deepEqual(match({ ...crawler('x', 'Heath'), key: 'character:250' }), { update: new Map(), ask: [] })
+})
+
+test('an uncertain crawler match is asked about, never overwritten', () => {
+  const match = (...actors) => matchCrawlers([{ id: 25, name: 'Heath' }], actors, lake, 'CrawlSpace: Lake Elsinore Gang')
+  for (const actors of [
+    [crawler('renamed', 'Heath the Great')],
+    [crawler('other', 'Heath', 'party:Another Party')],
+    [{ ...crawler('moved', 'Heath'), source: undefined, folders: ['PCs'] }],
+    [crawler('original', 'Heath'), crawler('copy', 'Heath')],
+  ]) assert.deepEqual(match(...actors), { update: new Map(), ask: [{ id: 25, name: 'Heath', candidates: actors }] })
+})
+
+test('a party backup is known by its party, an account export by its account', () => {
+  assert.equal(importSource(manifest({ account: { displayName: '', email: '', createdAt: null }, parties: [{ party: { name: 'Lake Elsinore Gang' } }] })), lake)
+  const source = importSource(manifest({ account: { displayName: 'Carl', email: 'carl@example.com', createdAt: '2026-09-24T03:36:32.189Z' } }))
+  assert.equal(source, 'account:2026-09-24T03:36:32.189Z')
+  assert.equal(importSource(manifest()), 'account:Carl')
 })
 
 test('a re-import replaces content and embedded documents but keeps where the GM filed it and who sees it', () => {

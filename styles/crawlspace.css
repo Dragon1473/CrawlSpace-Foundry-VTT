@@ -701,6 +701,13 @@
     border-radius: 999px;
     padding: 0 6px 0 0;
   }
+  .crawl-phases .phase-waiting .crawl-actions {
+    font-weight: 700;
+    color: var(--crawl-accent, #c0392b);
+  }
+  .crawl-phases .phase-waiting .crawl-actions.spent {
+    opacity: 0.6;
+  }
   .crawl-phases .phase-waiting li.done {
     opacity: 0.5;
     text-decoration: line-through;
@@ -2376,6 +2383,13 @@
   .crawlspace .pf-kind {
     display: flex;
     gap: 4px;
+  }
+  .crawlspace .pf-level-badge.mob-actions {
+    white-space: nowrap;
+  }
+  .crawlspace .pf-kind input[type='checkbox'] {
+    margin: 0;
+    align-self: center;
   }
   .crawlspace .pf-kind select {
     flex: 1;
@@ -4512,6 +4526,19 @@
   .crawl-card .craft-answer { margin: 4px 0 0; font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em; }
   .crawl-card .craft-answer-approved, .crawl-card .craft-answer-grant, .crawl-card .craft-answer-other { color: var(--crawl-good); }
   .crawl-card .craft-answer-declined, .crawl-card .craft-answer-fail { color: var(--crawl-bad); }
+}
+
+/* The GM's Encounter Tuner (apps/encounter-tuner.ts). */
+@layer system {
+  .crawl-encounter-tuner .crawl-encounter-result { font-size: 1.3em; font-weight: 700; text-align: center; margin: 8px 0; }
+  .crawl-encounter-tuner .crawl-encounter-table { width: 100%; text-align: center; border-collapse: collapse; }
+  .crawl-encounter-tuner .crawl-encounter-table th,
+  .crawl-encounter-tuner .crawl-encounter-table td { padding: 2px 4px; }
+  .crawl-encounter-tuner .crawl-encounter-table tbody th { text-align: left; }
+  .crawl-encounter-tuner .crawl-encounter-table .active { background: rgba(212, 71, 44, 0.15); }
+  .crawl-encounter-tuner tr.active td.active,
+  .crawl-encounter-tuner tr.active th.active { background: rgba(212, 71, 44, 0.45); font-weight: 700; }
+  .crawl-encounter-tuner ul.hint { margin: 8px 0 0; padding-left: 18px; }
   /* Crafting: the GM's pick of whose crafting window to open. */
   .crawl-crafter-dialog .crawl-crafter-list { margin: 0; }
   .crawl-crafter-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; max-height: 420px; overflow-y: auto; padding: 2px; }
@@ -4524,6 +4551,26 @@
   .crawl-crafter-pick small { font-weight: 400; opacity: 0.7; }
 }
 
+/* Personal Space sheet (sheets/personal-space-sheet.ts). */
+.crawlspace.personal-space .space-sheet { display: flex; flex-direction: column; gap: 0.6rem; padding: 0.5rem; }
+.crawlspace.personal-space .space-header { display: flex; gap: 0.75rem; align-items: flex-start; }
+.crawlspace.personal-space .space-img { width: 72px; height: 72px; object-fit: cover; border: none; cursor: pointer; flex: none; }
+.crawlspace.personal-space .space-header .pf-actor-title { flex: 1; display: flex; flex-direction: column; gap: 0.3rem; }
+.crawlspace.personal-space .space-header .pf-actor-fields { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+.crawlspace.personal-space .space-benefits ul { margin: 0.2rem 0; padding-left: 1.2rem; }
+.crawlspace.personal-space .space-row { display: flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.4rem; }
+.crawlspace.personal-space .space-row > img { width: 28px; height: 28px; border: none; flex: none; }
+.crawlspace.personal-space .space-row .space-name { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.crawlspace.personal-space .space-row a.space-name { display: block; }
+.crawlspace.personal-space .space-row select { width: auto; max-width: 11rem; }
+.crawlspace.personal-space .space-row.uninstalled { opacity: 0.55; }
+.crawlspace.personal-space .space-here { white-space: nowrap; opacity: 0.6; }
+.crawlspace.personal-space .space-here.active { opacity: 1; font-weight: bold; }
+.crawlspace.personal-space .space-tier { white-space: nowrap; display: flex; gap: 0.3rem; align-items: center; }
+.crawlspace.personal-space .hint.warning { color: var(--color-level-warning, #c9593f); }
+.crawlspace .time-actor { display: inline-flex; align-items: center; gap: 0.25rem; margin-right: 0.6rem; }
+.crawlspace .time-space { display: inline-flex; align-items: center; gap: 0.15rem; }
+
 /* Party screen header: the party's name beside the tabs; party titles on the cards. */
 @layer system {
   .crawl-party-screen .party-head { display: flex; flex: none; align-items: center; gap: 12px; margin: 8px 10px 0; }
@@ -4535,4 +4582,47 @@
   .crawl-party-screen .window-content .member-title-fields label { display: flex; flex-direction: row; align-items: center; gap: 6px; }
   .crawl-party-screen .member-title-fields input { width: 220px; }
   .crawl-title-dialog { display: flex; flex-direction: column; gap: 8px; }
+}
+
+@layer system {
+  /* Skill Creator (apps/skill-creator.ts): attack-only and utility-only fields follow the Attack/Utility choice. */
+  .crawl-skill-creator fieldset { margin: 6px 0; padding: 4px 8px 6px; border: 1px solid var(--crawl-border, rgba(0, 0, 0, 0.25)); border-radius: 6px; }
+  .crawl-skill-creator legend { font-weight: 700; padding: 0 4px; }
+  .crawl-skill-creator[data-kind='attack'] .crawl-utility-only,
+  .crawl-skill-creator[data-kind='utility'] .crawl-attack-only { display: none; }
+  .crawl-skill-creator .form-group label.checkbox { display: inline-flex; flex-direction: row; align-items: center; gap: 4px; margin-right: 12px; flex: none; font-weight: 400; }
+  .crawl-skill-creator .form-group label.checkbox input { margin: 0; }
+  .crawl-skill-creator .crawl-skill-targets { flex-wrap: wrap; }
+  .crawl-skill-creator .form-group.stacked { flex-direction: column; align-items: stretch; }
+  .crawl-skill-creator textarea { width: 100%; resize: vertical; }
+  .crawl-skill-creator input[name='cooldownAmount'] { flex: 0 0 60px; }
+  .crawl-skill-creator .crawl-skill-compare a { margin-right: 4px; }
+  .crawl-skill-creator .crawl-skill-balance ul { margin: 0; padding-left: 18px; }
+  .crawl-skill-creator .crawl-skill-balance li.ok { list-style: none; margin-left: -18px; opacity: 0.8; }
+  .crawl-skill-creator .crawl-skill-credit { font-size: 0.85em; text-align: center; margin-top: 6px; }
+  .chat-message button[data-crawl-hobby-skill] { margin: 2px 0 4px; }
+  /* Leaderboard & Population (apps/leaderboard.ts). */
+  .crawl-leaderboard .window-content { gap: 6px; }
+  .crawl-leaderboard-tabs { display: flex; gap: 4px; }
+  .crawl-leaderboard-tabs button.active { background: var(--row-bg-hover, rgba(212, 71, 44, 0.2)); font-weight: 700; }
+  .crawl-leaderboard-table,
+  .crawl-population-table { width: 100%; border-collapse: collapse; }
+  .crawl-leaderboard-table td,
+  .crawl-leaderboard-table th,
+  .crawl-population-table td,
+  .crawl-population-table th { padding: 2px 4px; text-align: left; }
+  .crawl-leaderboard-table td:first-child,
+  .crawl-population-table td:first-child { width: 2.5em; font-weight: 700; }
+  .crawl-leaderboard-table input,
+  .crawl-population-table input { width: 100%; }
+  .crawl-leaderboard-table .row-tools { white-space: nowrap; width: 1%; }
+  .crawl-leaderboard-table .row-tools > div { display: flex; gap: 2px; }
+  .crawl-leaderboard-table td.field-level { width: 4em; }
+  .crawl-leaderboard-table .row-tools button,
+  .crawl-population-table button { width: auto; min-width: 26px; padding: 0 4px; line-height: 22px; height: 24px; }
+  .crawl-leaderboard-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+  .crawl-leaderboard-actions > * { flex: 1 1 auto; width: auto; }
+  .crawl-leaderboard-card table { width: 100%; }
+  .crawl-leaderboard label.checkbox { display: inline-flex; flex-direction: row; align-items: center; gap: 6px; flex: none; }
+  .crawl-leaderboard label.checkbox input { margin: 0; }
 }

@@ -1,0 +1,49 @@
+{
+  "_id": "Iwz6lRaqc2uTV93k",
+  "name": "War Mount Hangar",
+  "type": "spaceUpgrade",
+  "img": "icons/environment/settlement/stable.webp",
+  "system": {
+    "description": "<p>A mount that takes a Long Rest here returns to full Health. Once a day the rider has Advantage on the first Riding check made in combat or rough terrain. No new levels, attacks or immunities for the mount.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Mount",
+    "tier": 3,
+    "floor": 9,
+    "price": 3000000,
+    "status": "homebrew",
+    "footprint": "Large room (8 units)",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "A mount's Long Rest here restores it fully; once a day, Advantage on a combat Riding check.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "HB-204"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!Iwz6lRaqc2uTV93k",
+  "folder": "Mwql17X180xYnF9f"
+}

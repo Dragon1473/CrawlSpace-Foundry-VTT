@@ -1,0 +1,49 @@
+{
+  "_id": "csrmxkwciryjjJnY",
+  "name": "Tier 3 Teleport Portal",
+  "type": "spaceUpgrade",
+  "img": "icons/svg/door-exit.svg",
+  "system": {
+    "description": "<p>Canon confirms these exist at Tier 3 but not how they work. Keep its destinations modest and no stronger than the Doggie Door.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Travel",
+    "tier": 3,
+    "floor": 9,
+    "price": 3000000,
+    "status": "canon",
+    "footprint": "Portal",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "A teleport portal; its destinations are up to the GM.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "C-061"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!csrmxkwciryjjJnY",
+  "folder": "Mwql17X180xYnF9f"
+}

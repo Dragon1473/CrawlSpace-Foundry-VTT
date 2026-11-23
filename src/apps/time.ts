@@ -1,8 +1,9 @@
 import { openGrinding } from './grinding'
+import { currentSpace, restSecondsFor, setInSpace, spacesEnabled, spacesOf } from '../actors/personal-space'
 import { SPECIAL_DURATIONS } from '../effects/end-triggers'
 /** GM time controls and shared countdowns (partyTimers.ts); all game timers use core world time. */
 import { advanceTime } from '../time'
-import { durationSeconds, formatTime, restSeconds, timeParts, timePartsSeconds, type TimeParts } from '../rules/time'
+import { DAY_LENGTHS, durationSeconds, durationText, formatTime, restSeconds, setDisplayDayHours, timeParts, timePartsSeconds, type TimeParts } from '../rules/time'
 import { restParty, advanceMarked, gmAllowsAutomation } from './upkeep'
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api
@@ -12,7 +13,7 @@ export type Countdown = { id: string; label: string; floor: boolean; visible: bo
 /** Remaining game seconds; paused timers retain their saved value. */
 export const timerRemaining = (timer: Countdown) => Math.max(0, timer.end === null ? timer.remaining : timer.end - game.time.worldTime)
 
-/** Label every countdown unit so the thirty-hour day is unambiguous. */
+/** Label every countdown unit so the day's length (dayLength setting) is unambiguous. */
 function labeledTime(seconds: number) {
   return Object.entries(timeParts(seconds)).map(([unit, value]) => `${value} ${game.i18n.localize(`CRAWLSPACE.Time.${unit}`)}`).join(' ')
 }
@@ -184,7 +185,13 @@ export class CrawlTime extends HandlebarsApplicationMixin(ApplicationV2) {
       paused: game.paused,
       worldTime: formatTime(game.time.worldTime),
       timers: timers.filter((timer) => game.user.isGM || timer.visible).sort((a, b) => Number(b.floor) - Number(a.floor)).map((timer) => ({ ...timer, time: labeledTime(timerRemaining(timer)), running: timer.end !== null, ended: timerRemaining(timer) === 0 })),
-      actors: game.actors.filter((actor: any) => actor.type === 'crawler').map((actor: any) => ({ id: actor.id, name: actor.name })),
+      // The Personal Space toggle: a crawler with a space can rest (or grind) in it (actors/personal-space.ts).
+      actors: game.actors.filter((actor: any) => actor.type === 'crawler').map((actor: any) => ({
+        id: actor.id,
+        name: actor.name,
+        hasSpace: spacesEnabled() && spacesOf(actor).length > 0,
+        inSpace: !!currentSpace(actor),
+      })),
     }
   }
 
@@ -241,12 +248,18 @@ export class CrawlTime extends HandlebarsApplicationMixin(ApplicationV2) {
       if (!Number.isSafeInteger(hours) || hours < 0 || hours > 30000) throw new Error(game.i18n.localize('CRAWLSPACE.Time.InvalidDuration'))
       const actors = [...this.element.querySelectorAll('[name=actor]:checked')].map((input: any) => game.actors.get(input.value)).filter(Boolean)
       if (kind !== 'skip' && !actors.length) throw new Error(game.i18n.localize('CRAWLSPACE.Time.SelectActors'))
+      const inSpace = new Set([...this.element.querySelectorAll('[name=inSpace]:checked')].map((input: any) => input.value))
+      for (const actor of actors) {
+        if (!spacesOf(actor).length) continue
+        const space = inSpace.has(actor.id) ? currentSpace(actor) ?? spacesOf(actor)[0] : null
+        if (space !== currentSpace(actor)) await setInSpace(actor, space)
+      }
       const recovery = ['short', 'long', 'full', 'hourly'].includes(kind)
       // With automation off the GM chooses: the clock still moves, but the activity changes nothing.
       const automate = kind === 'skip' || await gmAllowsAutomation(kind, actors, hours)
       if (automate === null) return
       if (kind === 'grinding' && automate) return await openGrinding(actors, hours)
-      const seconds = recovery ? restSeconds(kind, hours) : hours * 3600
+      const seconds = recovery ? restSecondsFor(actors, kind, hours, restSeconds) : hours * 3600
       // A rest passes its own time, so its card can count what regeneration did over it.
       if (recovery && automate) await restParty(actors, kind as any, hours)
       else await advanceTime(seconds)
@@ -279,6 +292,23 @@ export function registerClock() {
   game.settings.register('crawlspace', 'timers', { scope: 'world', config: false, type: Array, default: [], onChange: refresh })
   game.settings.register('crawlspace', 'timerHudPosition', { scope: 'client', config: false, type: Object, default: null })
   game.settings.register('crawlspace', 'clockRunning', { scope: 'world', config: false, type: Boolean, default: false, onChange: refresh })
+  // How long a day reads on screen (rules/time.ts): it never changes how long anything lasts.
+  game.settings.register('crawlspace', 'dayLength', {
+    name: 'CRAWLSPACE.Time.DayLength.Name',
+    hint: 'CRAWLSPACE.Time.DayLength.Hint',
+    scope: 'world',
+    config: true,
+    restricted: true,
+    type: Number,
+    choices: Object.fromEntries(DAY_LENGTHS.map((hours) => [hours, `CRAWLSPACE.Time.DayLength.${hours}`])),
+    default: 30,
+    onChange: (value: unknown) => {
+      setDisplayDayHours(value)
+      refresh()
+      for (const app of foundry.applications.instances.values()) if ((app as any).document?.documentName === 'Actor' && (app as any).rendered) (app as any).render(false)
+    },
+  })
+  setDisplayDayHours(game.settings.get('crawlspace', 'dayLength'))
   Hooks.on('updateWorldTime', async () => {
     renderTimerHud()
     const panel = foundry.applications.instances.get('crawlspace-time')
@@ -336,18 +366,12 @@ export function registerClock() {
   })
 }
 
-/** Cooldown and duration text from a picked time: "1 day 2 hours 30 minutes", which durationSeconds reads back. */
-export function durationText(seconds: number) {
-  const parts = timeParts(seconds)
-  const unit = (value: number, one: string, many: string) => (value ? `${value} ${value === 1 ? one : many}` : '')
-  return [unit(parts.days, 'day', 'days'), unit(parts.hours, 'hour', 'hours'), unit(parts.minutes, 'minute', 'minutes'), unit(parts.seconds, 'second', 'seconds')]
-    .filter(Boolean)
-    .join(' ')
-}
+/** Cooldown and duration text from a picked time (rules/time.ts), which durationSeconds reads back. */
+export { durationText } from '../rules/time'
 
 /**
  * The clock button beside a cooldown or duration field: pick days, hours, minutes and seconds (overflow
- * normalizes, with thirty-hour days), and the field gets the matching text. Prose such as "until the end of
+ * normalizes, with display days of the dayLength setting), and the field gets the matching text. Prose such as "until the end of
  * combat" can still be typed in the field itself.
  */
 async function pickDuration(input: HTMLInputElement, special = false) {

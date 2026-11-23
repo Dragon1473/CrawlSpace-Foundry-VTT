@@ -12,7 +12,9 @@
     "packs:homebrew": "node tools/build-homebrew-packs.mjs",
     "packs:content": "node tools/build-content-module.mjs",
     "packs:actions": "node tools/build-action-packs.mjs",
-    "packs": "npm run packs:homebrew && npm run packs:actions && npm run packs:content",
+    "packs:space": "node tools/build-personal-space-packs.mjs",
+    "packs:hobbies": "node tools/build-hobby-packs.mjs",
+    "packs": "npm run packs:homebrew && npm run packs:actions && npm run packs:space && npm run packs:hobbies && npm run packs:content",
     "link": "node tools/link-foundry.mjs",
     "release": "node tools/package-release.mjs"
   },

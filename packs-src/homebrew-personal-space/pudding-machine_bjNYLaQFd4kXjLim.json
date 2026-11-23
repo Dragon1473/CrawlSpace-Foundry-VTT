@@ -1,0 +1,49 @@
+{
+  "_id": "bjNYLaQFd4kXjLim",
+  "name": "Pudding Machine",
+  "type": "spaceUpgrade",
+  "img": "icons/svg/house.svg",
+  "system": {
+    "description": "<p>An official reward with no stated rules. Flavor by default, or a minor short food buff.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Food Amenity",
+    "tier": 1,
+    "floor": 5,
+    "price": 50000,
+    "status": "canon",
+    "footprint": "Fixture",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "A sponsored pudding dispenser.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "C-017"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!bjNYLaQFd4kXjLim",
+  "folder": "Oyd7R3n3iQdfJD8E"
+}

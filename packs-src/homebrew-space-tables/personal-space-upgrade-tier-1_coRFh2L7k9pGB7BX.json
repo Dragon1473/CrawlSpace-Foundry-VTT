@@ -1,0 +1,556 @@
+{
+  "_id": "coRFh2L7k9pGB7BX",
+  "name": "Personal Space Upgrade (Tier 1)",
+  "img": "icons/svg/d20-grey.svg",
+  "description": "<p>Homebrew Personal Space reward table.</p>",
+  "formula": "1d100",
+  "replacement": true,
+  "displayRoll": true,
+  "results": [
+    {
+      "type": "document",
+      "name": "Food Synthesizers",
+      "img": "icons/consumables/food/bowl-stew-brown.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.53GdL0jQ7KpJnRrW",
+      "description": "Personal food cabinets whose meals give a small all-day buff.",
+      "range": [
+        1,
+        3
+      ],
+      "weight": 3,
+      "_id": "c6kZ1n9e2OAhRrSa",
+      "_key": "!tables.results!coRFh2L7k9pGB7BX.c6kZ1n9e2OAhRrSa"
+    },
+    {
+      "type": "document",
+      "name": "Ultra-Stabilized Sleep Apparatus",
+      "img": "icons/svg/sleep.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.IiynpmJHCVbanlIG",
+      "description": "Two hours in it is a full Long Rest, plus Good Sleep for 30 hours.",
+      "range": [
+        4,
+        6
+      ],
+      "weight": 3,
+      "_id": "MooVPWIdcNKxt9yP",
+      "_key": "!tables.results!coRFh2L7k9pGB7BX.MooVPWIdcNKxt9yP"
+    },
+    {
+      "type": "document",
+      "name": "First-Aid Alcove",
+      "img": "icons/svg/regen.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.8shITfNPSIvR971f",
+      "description": "A Short Rest here heals 1 more Health Bar slot.",
+      "range": [
+        7,
+        9
+      ],
+      "weight": 3,
+      "_id": "mmU7PcBLkJDivzHG",
+      "_key": "!tables.results!coRFh2L7k9pGB7BX.mmU7PcBLkJDivzHG"
+    },
+    {
+      "type": "document",
+      "name": "Spare Bunk Module",
+      "img": "icons/svg/house.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.B9JMpHQW3nrlZ3Cq",
+      "description": "Four guest bunks for normal rests.",
+      "range": [
+        10,
+        12
+      ],
+      "weight": 3,
+      "_id": "TjGd53PX9l8GtnSs",
+      "_key": "!tables.results!coRFh2L7k9pGB7BX.TjGd53PX9l8GtnSs"
+    },
+    {
+      "type": "document",
+      "name": "Alchemy Table",
+      "img": "icons/skills/toxins/cauldron-pot-bubbles-green.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-items.Item.iSd15Ftw0GwYZn1B",
+      "description": "",
+      "range": [
+        13,
+        15
+      ],
+      "weight": 3,
+      "_id": "O8MTN1iXSuqrZvDV",
+      "_key": "!tables.results!coRFh2L7k9pGB7BX.O8MTN1iXSuqrZvDV"
+    },
+    {
+      "type": "document",
+      "name": "Arcanist Table",
+      "img": "icons/skills/ranged/wand-attack-beam-blue.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-items.Item.eWdFRuOg6VARpphs",
+      "description": "",
+      "range": [
+        16,
+        18
+      ],
+      "weight": 3,
+      "_id": "vPEuDIymd0VJJ5vE",
+      "_key": "!tables.results!coRFh2L7k9pGB7BX.vPEuDIymd0VJJ5vE"
+    },
+    {
+      "type": "document",
+      "name": "Armorer Table",
+      "img": "icons/skills/trades/smithing-anvil-silver-red.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-items.Item.TVDNNP7HbhIxHLIt",
+      "description": "",
+      "range": [
+        19,
+        21
+      ],
+      "weight": 3,
+      "_id": "h5sWfXj1v3KH9Fv3",
+      "_key": "!tables.results!coRFh2L7k9pGB7BX.h5sWfXj1v3KH9Fv3"
+    },
+    {
+      "type": "document",
+      "name": "Crafting Table Upgrade",
+      "img": "icons/tools/smithing/anvil.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.H9ov7GNOJAF3vJRR",
+      "description": "Raises one crafting table by one tier.",
+      "range": [
+        22,
+        24
+      ],
+      "weight": 3,
+      "_id": "aWjQxwNNYTPGzPQJ",
+      "_key": "!tables.results!coRFh2L7k9pGB7BX.aWjQxwNNYTPGzPQJ"
+    },
+    {
+      "type": "document",
+      "name": "Engineering Table",
+      "img": "icons/tools/hand/wrench-adjustable-toothed.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-items.Item.gKihvF8b8u9cP9yZ",
+      "description": "",
+      "range": [
+        25,
+        27
+      ],
+      "weight": 3,
+      "_id": "e0dQ3f2MyCt25pkr",
+      "_key": "!tables.results!coRFh2L7k9pGB7BX.e0dQ3f2MyCt25pkr"
+    },
+    {
+      "type": "document",
+      "name": "Enhanced Crafting Studio",
+      "img": "icons/tools/smithing/anvil.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.DVLVFotMXmLzZDcW",
+      "description": "A dedicated workshop that houses the party's crafting tables.",
+      "range": [
+        28,
+        30
+      ],
+      "weight": 3,
+      "_id": "KSKpPke3wtAf31CZ",
+      "_key": "!tables.results!coRFh2L7k9pGB7BX.KSKpPke3wtAf31CZ"
+    },
+    {
+      "type": "document",
+      "name": "Metalworking Table",
+      "img": "icons/skills/trades/smithing-anvil-brown.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-items.Item.VFWN1W6qPqu7Ttk3",
+      "description": "",
+      "range": [
+        31,
+        33
+      ],
+      "weight": 3,
+      "_id": "2CqDrhMWCmcLR5Jg",
+      "_key": "!tables.results!coRFh2L7k9pGB7BX.2CqDrhMWCmcLR5Jg"
+    },
+    {
+      "type": "document",
+      "name": "Sapper's Table",
+      "img": "icons/commodities/tech/smoke-bomb-red-yellow.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-items.Item.YSRtdUgc6XDRf7bw",
+      "description": "",
+      "range": [
+        34,
+        36
+      ],
+      "weight": 3,
+      "_id": "UAFvhhw5WuT3dL2S",
+      "_key": "!tables.results!coRFh2L7k9pGB7BX.UAFvhhw5WuT3dL2S"
+    },
+    {
+      "type": "document",
+      "name": "Writing Table",
+      "img": "icons/tools/scribal/ink-quill-red.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-items.Item.5dUaTjjYxBKr112y",
+      "description": "",
+      "range": [
+        37,
+        39
+      ],
+      "weight": 3,
+      "_id": "c6aKfuT8WPYLrDZG",
+      "_key": "!tables.results!coRFh2L7k9pGB7BX.c6aKfuT8WPYLrDZG"
+    },
+    {
+      "type": "document",
+      "name": "Crafting Safety Hood",
+      "img": "icons/tools/smithing/anvil.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.9r4md1mrx7mJvHxs",
+      "description": "Once per floor, a Critical Fail at this table counts as a Major Fail.",
+      "range": [
+        40,
+        42
+      ],
+      "weight": 3,
+      "_id": "nX4MPvojnPCSrbUP",
+      "_key": "!tables.results!coRFh2L7k9pGB7BX.nX4MPvojnPCSrbUP"
+    },
+    {
+      "type": "document",
+      "name": "Material Locker",
+      "img": "icons/tools/smithing/anvil.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.vVzx1brOHTFQHVnZ",
+      "description": "Once a day, Advantage on one Salvage check after a failed craft here.",
+      "range": [
+        43,
+        45
+      ],
+      "weight": 3,
+      "_id": "jZi8FaC1twUjhXF6",
+      "_key": "!tables.results!coRFh2L7k9pGB7BX.jZi8FaC1twUjhXF6"
+    },
+    {
+      "type": "document",
+      "name": "Automatic Shower",
+      "img": "icons/svg/house.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.Z198d05ULGzshray",
+      "description": "A thorough automated wash that leaves a short buff and makes the crawler harder to track.",
+      "range": [
+        46,
+        48
+      ],
+      "weight": 3,
+      "_id": "cqa7fjwDUiEaPhJo",
+      "_key": "!tables.results!coRFh2L7k9pGB7BX.cqa7fjwDUiEaPhJo"
+    },
+    {
+      "type": "document",
+      "name": "Cleaner Bot",
+      "img": "icons/svg/house.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.KMCyR2sT0rM0P7x2",
+      "description": "A flying robot that keeps the space clean.",
+      "range": [
+        49,
+        51
+      ],
+      "weight": 3,
+      "_id": "zNrC5qEGVSxhVNkK",
+      "_key": "!tables.results!coRFh2L7k9pGB7BX.zNrC5qEGVSxhVNkK"
+    },
+    {
+      "type": "document",
+      "name": "Popcorn Machine",
+      "img": "icons/svg/house.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.q2JtZ0kXAlD1VVPO",
+      "description": "A popcorn machine. That is the whole upgrade.",
+      "range": [
+        52,
+        54
+      ],
+      "weight": 3,
+      "_id": "hpZpDm7FPocuZd0d",
+      "_key": "!tables.results!coRFh2L7k9pGB7BX.hpZpDm7FPocuZd0d"
+    },
+    {
+      "type": "document",
+      "name": "Pudding Machine",
+      "img": "icons/svg/house.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.bjNYLaQFd4kXjLim",
+      "description": "A sponsored pudding dispenser.",
+      "range": [
+        55,
+        57
+      ],
+      "weight": 3,
+      "_id": "mg63BexQQnaCH3VK",
+      "_key": "!tables.results!coRFh2L7k9pGB7BX.mg63BexQQnaCH3VK"
+    },
+    {
+      "type": "document",
+      "name": "Environmental Comfort Controls",
+      "img": "icons/svg/house.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.OA17F931gyjAlVVH",
+      "description": "Heat, cold, noise and damp never spoil a rest here.",
+      "range": [
+        58,
+        60
+      ],
+      "weight": 3,
+      "_id": "dnjLLhCUvHeQ313h",
+      "_key": "!tables.results!coRFh2L7k9pGB7BX.dnjLLhCUvHeQ313h"
+    },
+    {
+      "type": "document",
+      "name": "Loadout Locker",
+      "img": "icons/svg/house.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.rrWXRZqdbDPgB9Ak",
+      "description": "Save three loadouts; switching takes a minute inside the space.",
+      "range": [
+        61,
+        63
+      ],
+      "weight": 3,
+      "_id": "hhUZdDwbLRMZZpAk",
+      "_key": "!tables.results!coRFh2L7k9pGB7BX.hhUZdDwbLRMZZpAk"
+    },
+    {
+      "type": "document",
+      "name": "Recap Theater",
+      "img": "icons/svg/house.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.PBrdfFaVXXGizh0P",
+      "description": "After a recap, ask the GM one question about what was broadcast.",
+      "range": [
+        64,
+        66
+      ],
+      "weight": 3,
+      "_id": "qgzmfAAciPWpH1Ug",
+      "_key": "!tables.results!coRFh2L7k9pGB7BX.qgzmfAAciPWpH1Ug"
+    },
+    {
+      "type": "document",
+      "name": "Soundproofing Package",
+      "img": "icons/svg/house.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.AovHvzEygCjBfjvo",
+      "description": "Nobody outside hears ordinary talk inside.",
+      "range": [
+        67,
+        69
+      ],
+      "weight": 3,
+      "_id": "mSrV56aTIVOMZHfJ",
+      "_key": "!tables.results!coRFh2L7k9pGB7BX.mSrV56aTIVOMZHfJ"
+    },
+    {
+      "type": "document",
+      "name": "Training Room",
+      "img": "icons/skills/melee/weapons-crossed-swords-yellow.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.OcCZ1GexAjZx7xuC",
+      "description": "One hour a day of real practice in one non-spell skill.",
+      "range": [
+        70,
+        72
+      ],
+      "weight": 3,
+      "_id": "BdXJpooAnWSajH42",
+      "_key": "!tables.results!coRFh2L7k9pGB7BX.BdXJpooAnWSajH42"
+    },
+    {
+      "type": "document",
+      "name": "Compact Practice Nook",
+      "img": "icons/skills/melee/weapons-crossed-swords-yellow.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.QWFxhxFb0AEXdVWG",
+      "description": "One hour a day counts as a grinding hour for a non-combat skill of Rank 5 or lower.",
+      "range": [
+        73,
+        74
+      ],
+      "weight": 2,
+      "_id": "MqwgNGDMKZbhP9V5",
+      "_key": "!tables.results!coRFh2L7k9pGB7BX.MqwgNGDMKZbhP9V5"
+    },
+    {
+      "type": "document",
+      "name": "Basic Kennel",
+      "img": "icons/svg/pawprint.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.JHZ4zqk85MAjvtzP",
+      "description": "A kennel that gives a pet small buffs.",
+      "range": [
+        75,
+        76
+      ],
+      "weight": 2,
+      "_id": "X5KnF71Udlngt9mX",
+      "_key": "!tables.results!coRFh2L7k9pGB7BX.X5KnF71Udlngt9mX"
+    },
+    {
+      "type": "document",
+      "name": "Basic Stable",
+      "img": "icons/environment/settlement/stable.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.YaWO3CYscXosLdg3",
+      "description": "Stabling for mounts.",
+      "range": [
+        77,
+        78
+      ],
+      "weight": 2,
+      "_id": "qaPQPDEQQcm7JtdD",
+      "_key": "!tables.results!coRFh2L7k9pGB7BX.qaPQPDEQQcm7JtdD"
+    },
+    {
+      "type": "document",
+      "name": "Pet Grooming Station",
+      "img": "icons/svg/pawprint.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.tZkyFh04DvwOXLKo",
+      "description": "After grooming, Advantage on the next Animal Handling check with that pet.",
+      "range": [
+        79,
+        80
+      ],
+      "weight": 2,
+      "_id": "xljintHDJJUbLz37",
+      "_key": "!tables.results!coRFh2L7k9pGB7BX.xljintHDJJUbLz37"
+    },
+    {
+      "type": "document",
+      "name": "Tack & Saddle Locker",
+      "img": "icons/environment/settlement/stable.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.eYoD5PZyE4S1T7YC",
+      "description": "After preparing, Advantage on the next Riding check with that mount.",
+      "range": [
+        81,
+        82
+      ],
+      "weight": 2,
+      "_id": "bd24bfDUxtWdHJcp",
+      "_key": "!tables.results!coRFh2L7k9pGB7BX.bd24bfDUxtWdHJcp"
+    },
+    {
+      "type": "document",
+      "name": "Adventurer's, Inc. Employment Agency",
+      "img": "icons/svg/house.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.m442tyqqEtRgZ1Yq",
+      "description": "A job board of dungeon side work.",
+      "range": [
+        83,
+        84
+      ],
+      "weight": 2,
+      "_id": "RttvxLBHLB1UZnBR",
+      "_key": "!tables.results!coRFh2L7k9pGB7BX.RttvxLBHLB1UZnBR"
+    },
+    {
+      "type": "document",
+      "name": "Marketplace Interface (Tier 1)",
+      "img": "icons/commodities/currency/coins-plain-stack-gold.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.Ekjxvu4J6tYfZxJa",
+      "description": "A virtual store: basic potions and scrolls, rotating stock, selling and later auctions.",
+      "range": [
+        85,
+        86
+      ],
+      "weight": 2,
+      "_id": "OktdnDZGUyk893Sk",
+      "_key": "!tables.results!coRFh2L7k9pGB7BX.OktdnDZGUyk893Sk"
+    },
+    {
+      "type": "document",
+      "name": "Naughty Boys Employment Agency",
+      "img": "icons/svg/house.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.Xl8i1csBx6JmzTF3",
+      "description": "Specialized quests with specialized rewards.",
+      "range": [
+        87,
+        88
+      ],
+      "weight": 2,
+      "_id": "7lEV9LOOp3ZhzjFl",
+      "_key": "!tables.results!coRFh2L7k9pGB7BX.7lEV9LOOp3ZhzjFl"
+    },
+    {
+      "type": "document",
+      "name": "Quest Screen",
+      "img": "icons/svg/house.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.151npQzbr8vJhp7w",
+      "description": "Lists the quests available in the current area.",
+      "range": [
+        89,
+        90
+      ],
+      "weight": 2,
+      "_id": "a0DsLDc8o8MMtFaI",
+      "_key": "!tables.results!coRFh2L7k9pGB7BX.a0DsLDc8o8MMtFaI"
+    },
+    {
+      "type": "document",
+      "name": "Social Screen",
+      "img": "icons/svg/house.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.GOx8PymKIva8zLCJ",
+      "description": "A curated feed of what the audience says about the crawler.",
+      "range": [
+        91,
+        92
+      ],
+      "weight": 2,
+      "_id": "iywRB0dLOpBHlP0m",
+      "_key": "!tables.results!coRFh2L7k9pGB7BX.iywRB0dLOpBHlP0m"
+    },
+    {
+      "type": "document",
+      "name": "Appraisal Kiosk",
+      "img": "icons/commodities/currency/coins-plain-stack-gold.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.NXdSDx2d7L18bVnQ",
+      "description": "Once a day, Advantage on a Determine Value check here.",
+      "range": [
+        93,
+        94
+      ],
+      "weight": 2,
+      "_id": "UsKGjyzzezRp1hBK",
+      "_key": "!tables.results!coRFh2L7k9pGB7BX.UsKGjyzzezRp1hBK"
+    },
+    {
+      "type": "document",
+      "name": "Basic Map Table",
+      "img": "icons/svg/house.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.squ21dcg6KCw7Vcu",
+      "description": "Once a day, Advantage on an Investigation, Survival or Tactics check over a map you own.",
+      "range": [
+        95,
+        96
+      ],
+      "weight": 2,
+      "_id": "hjpJjY4LF27ChV9Q",
+      "_key": "!tables.results!coRFh2L7k9pGB7BX.hjpJjY4LF27ChV9Q"
+    },
+    {
+      "type": "document",
+      "name": "Trophy Display Wall",
+      "img": "icons/svg/house.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.cqanx7QsM6CcFjp3",
+      "description": "Once per floor, mounting a new boss or quest trophy gives an owner +1 Popularity.",
+      "range": [
+        97,
+        98
+      ],
+      "weight": 2,
+      "_id": "iEDDZCk2yn4fB15i",
+      "_key": "!tables.results!coRFh2L7k9pGB7BX.iEDDZCk2yn4fB15i"
+    },
+    {
+      "type": "document",
+      "name": "Wardrobe & Costume Wall",
+      "img": "icons/svg/house.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.dXxhFBr0LNfTT99u",
+      "description": "Once a session, Advantage on a check where the outfit matters.",
+      "range": [
+        99,
+        100
+      ],
+      "weight": 2,
+      "_id": "9Hjf12rQh62qBDnU",
+      "_key": "!tables.results!coRFh2L7k9pGB7BX.9Hjf12rQh62qBDnU"
+    }
+  ],
+  "flags": {},
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!tables!coRFh2L7k9pGB7BX"
+}

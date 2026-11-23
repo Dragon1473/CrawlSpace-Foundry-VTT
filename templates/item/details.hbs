@@ -135,6 +135,25 @@
     <label class="wide" data-tooltip="{{localize 'CRAWLSPACE.Craft.UpgradesHint'}}">{{localize "CRAWLSPACE.Craft.Upgrades"}}<input type="text" name="upgradesText" value="{{upgradesText}}" placeholder="{{localize 'CRAWLSPACE.Craft.UpgradesPlaceholder'}}"></label>
     <label class="check" data-tooltip="{{localize 'CRAWLSPACE.Craft.AutoLevelHint'}}"><input type="checkbox" name="system.autoLevel" {{checked systemSource.autoLevel}}> {{localize "CRAWLSPACE.Craft.AutoLevel"}}</label>
   {{/if}}
+  {{#if (eq type "spaceUpgrade")}}
+    <label>{{localize "CRAWLSPACE.Space.Kind"}}<select name="system.kind">{{selectOptions spaceKindChoices selected=systemSource.kind}}</select></label>
+    <label>{{localize "CRAWLSPACE.Space.Category"}}<input type="text" name="system.category" value="{{systemSource.category}}"></label>
+    <label>{{localize "CRAWLSPACE.Space.Tier"}}<input type="number" name="system.tier" value="{{systemSource.tier}}" min="0" max="4"></label>
+    <label>{{localize "CRAWLSPACE.Space.Floor"}}<input type="number" name="system.floor" value="{{systemSource.floor}}" min="0"></label>
+    <label>{{localize "CRAWLSPACE.Space.Price"}}<input type="number" name="system.price" value="{{systemSource.price}}" min="0"></label>
+    <label>{{localize "CRAWLSPACE.Space.Status"}}<select name="system.status">{{selectOptions spaceStatusChoices selected=systemSource.status}}</select></label>
+    <label>{{localize "CRAWLSPACE.Space.Footprint"}}<input type="text" name="system.footprint" value="{{systemSource.footprint}}"></label>
+    {{#if (eq systemSource.kind "level")}}<label>{{localize "CRAWLSPACE.Space.Level"}}<input type="number" name="system.spaceLevel" value="{{systemSource.spaceLevel}}" min="0" max="5"></label>{{/if}}
+    <label class="check"><input type="checkbox" name="system.installed" {{checked systemSource.installed}}> {{localize "CRAWLSPACE.Space.Installed"}}</label>
+    <label class="wide">{{localize "CRAWLSPACE.Space.Summary"}}<input type="text" name="system.summary" value="{{systemSource.summary}}"></label>
+    <fieldset class="wide"><legend>{{localize "CRAWLSPACE.Space.Automation"}}</legend>
+      <label data-tooltip="{{localize 'CRAWLSPACE.Space.LongRestHoursHint'}}">{{localize "CRAWLSPACE.Space.LongRestHours"}}<input type="number" name="system.rest.longRestHours" value="{{crawlNumberOrBlank systemSource.rest.longRestHours}}" min="0" max="8" placeholder="8"></label>
+      <label data-tooltip="{{localize 'CRAWLSPACE.Space.GoodSleepHoursHint'}}">{{localize "CRAWLSPACE.Space.GoodSleepHours"}}<input type="number" name="system.rest.goodSleepHours" value="{{systemSource.rest.goodSleepHours}}" min="0"></label>
+      <label data-tooltip="{{localize 'CRAWLSPACE.Space.ShortRestSlotsHint'}}">{{localize "CRAWLSPACE.Space.ShortRestSlots"}}<input type="number" name="system.rest.shortRestSlots" value="{{systemSource.rest.shortRestSlots}}" min="0"></label>
+      <label data-tooltip="{{localize 'CRAWLSPACE.Space.TrainingHoursHint'}}">{{localize "CRAWLSPACE.Space.TrainingHours"}}<input type="number" name="system.training.hours" value="{{systemSource.training.hours}}" min="0"></label>
+      <p class="hint wide">{{localize "CRAWLSPACE.Space.EffectsHint"}}</p>
+    </fieldset>
+  {{/if}}
   {{#if isPhysical}}
     <label>{{localize "CRAWLSPACE.Craft.RarityLabel"}}<select name="system.rarity">{{selectOptions rarityChoices selected=systemSource.rarity localize=true}}</select></label>
     <label class="wide" data-tooltip="{{localize 'CRAWLSPACE.Craft.TagsHint'}}">{{localize "CRAWLSPACE.Item.Tags"}}<input type="text" name="physicalTags" value="{{physicalTags}}"></label>

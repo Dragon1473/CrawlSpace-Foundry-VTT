@@ -1,0 +1,49 @@
+{
+  "_id": "dXxhFBr0LNfTT99u",
+  "name": "Wardrobe & Costume Wall",
+  "type": "spaceUpgrade",
+  "img": "icons/svg/house.svg",
+  "system": {
+    "description": "<p>Once a session, Advantage on one Good First Impression or Performance check where clothing or presentation really matters; the player says how. No armor or magic.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Social",
+    "tier": 1,
+    "floor": 4,
+    "price": 50000,
+    "status": "homebrew",
+    "footprint": "Module (2 units)",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Once a session, Advantage on a check where the outfit matters.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "HB-012"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!dXxhFBr0LNfTT99u",
+  "folder": "Oyd7R3n3iQdfJD8E"
+}

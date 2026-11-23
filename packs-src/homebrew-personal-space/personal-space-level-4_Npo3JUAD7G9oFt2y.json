@@ -1,0 +1,49 @@
+{
+  "_id": "Npo3JUAD7G9oFt2y",
+  "name": "Personal Space Level 4",
+  "type": "spaceUpgrade",
+  "img": "icons/environment/settlement/house-two-stories-small.webp",
+  "system": {
+    "description": "<p>Level 4 exists but adds nothing named beyond more room. Parties usually reach it by joining spaces rather than buying it outright. The price is a conservative estimate.</p>",
+    "notes": "",
+    "kind": "level",
+    "category": "Space Level",
+    "tier": 2,
+    "floor": 6,
+    "price": 500000,
+    "status": "canon",
+    "footprint": "Expansion",
+    "spaceLevel": 4,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "A larger communal base; no special feature of its own.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "C-004"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!Npo3JUAD7G9oFt2y",
+  "folder": "RTR2H5ZLV7MQj79g"
+}

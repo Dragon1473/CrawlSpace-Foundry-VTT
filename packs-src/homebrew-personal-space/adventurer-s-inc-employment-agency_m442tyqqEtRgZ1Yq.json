@@ -1,0 +1,49 @@
+{
+  "_id": "m442tyqqEtRgZ1Yq",
+  "name": "Adventurer's, Inc. Employment Agency",
+  "type": "spaceUpgrade",
+  "img": "icons/svg/house.svg",
+  "system": {
+    "description": "<p>Fill it with bounties, escorts, recovery contracts and other paid side jobs.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Quest / Jobs",
+    "tier": 1,
+    "floor": 4,
+    "price": 100000,
+    "status": "canon",
+    "footprint": "Fixture",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "A job board of dungeon side work.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "C-052"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!m442tyqqEtRgZ1Yq",
+  "folder": "Oyd7R3n3iQdfJD8E"
+}

@@ -1,0 +1,49 @@
+{
+  "_id": "J7McrXFZ7v8s3TPM",
+  "name": "Predictive Ops Center",
+  "type": "spaceUpgrade",
+  "img": "icons/svg/house.svg",
+  "system": {
+    "description": "<p>Ask one concrete question about an active quest, known foe or mapped area; the GM gives one clue the party could reasonably work out. No hidden System facts, future events or private thoughts.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Quest / Tactical",
+    "tier": 3,
+    "floor": 9,
+    "price": 5000000,
+    "status": "homebrew",
+    "footprint": "Large room (8 units)",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Once a day, one useful tactical clue from what the party already knows.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "HB-210"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!J7McrXFZ7v8s3TPM",
+  "folder": "Mwql17X180xYnF9f"
+}

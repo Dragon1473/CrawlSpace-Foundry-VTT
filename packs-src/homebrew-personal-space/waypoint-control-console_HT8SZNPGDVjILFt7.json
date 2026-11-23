@@ -1,0 +1,49 @@
+{
+  "_id": "HT8SZNPGDVjILFt7",
+  "name": "Waypoint Control Console",
+  "type": "spaceUpgrade",
+  "img": "icons/svg/door-exit.svg",
+  "system": {
+    "description": "<p>Adds ten favorite exits, a default exit and group permissions to an installed Doggie Door. Every exit must still be a door used on this floor.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Travel",
+    "tier": 3,
+    "floor": 9,
+    "price": 1500000,
+    "status": "homebrew",
+    "footprint": "Module (2 units)",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Favorites, a default exit and access presets for a Doggie Door.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "HB-214"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!HT8SZNPGDVjILFt7",
+  "folder": "Mwql17X180xYnF9f"
+}

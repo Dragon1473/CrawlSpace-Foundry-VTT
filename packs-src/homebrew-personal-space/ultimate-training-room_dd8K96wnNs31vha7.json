@@ -1,0 +1,49 @@
+{
+  "_id": "dd8K96wnNs31vha7",
+  "name": "Ultimate Training Room",
+  "type": "spaceUpgrade",
+  "img": "icons/skills/melee/weapons-crossed-swords-yellow.webp",
+  "system": {
+    "description": "<p>The top training room: up to six hours a day spread over up to six skills or spells, covering regular, magic, explosives and crafting practice, and it shows progress toward each advancement. Keep the normal advancement limits. No normal floor unlocks it.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Training",
+    "tier": 4,
+    "floor": 10,
+    "price": 10000000,
+    "status": "canon",
+    "footprint": "Major room",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Up to six training hours a day across six skills, with every kind of practice in one room.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "C-033"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!dd8K96wnNs31vha7",
+  "folder": "zv1Tn5tvhbRszpL8"
+}

@@ -1,0 +1,49 @@
+{
+  "_id": "AovHvzEygCjBfjvo",
+  "name": "Soundproofing Package",
+  "type": "spaceUpgrade",
+  "img": "icons/svg/house.svg",
+  "system": {
+    "description": "<p>Creatures outside the space can't overhear normal conversation. The System, the production and magic that pierces saferoom privacy still can.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Utility / Privacy",
+    "tier": 1,
+    "floor": 4,
+    "price": 25000,
+    "status": "homebrew",
+    "footprint": "Infrastructure (0 units)",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Nobody outside hears ordinary talk inside.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "HB-008"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!AovHvzEygCjBfjvo",
+  "folder": "Oyd7R3n3iQdfJD8E"
+}

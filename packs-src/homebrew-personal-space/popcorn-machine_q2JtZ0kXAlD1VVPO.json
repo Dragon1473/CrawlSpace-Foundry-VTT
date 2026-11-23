@@ -1,0 +1,49 @@
+{
+  "_id": "q2JtZ0kXAlD1VVPO",
+  "name": "Popcorn Machine",
+  "type": "spaceUpgrade",
+  "img": "icons/svg/house.svg",
+  "system": {
+    "description": "<p>An official reward with no stated rules. Flavor, or a tiny morale perk if the table wants one.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Entertainment Amenity",
+    "tier": 1,
+    "floor": 4,
+    "price": 25000,
+    "status": "canon",
+    "footprint": "Fixture",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "A popcorn machine. That is the whole upgrade.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "C-016"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!q2JtZ0kXAlD1VVPO",
+  "folder": "Oyd7R3n3iQdfJD8E"
+}

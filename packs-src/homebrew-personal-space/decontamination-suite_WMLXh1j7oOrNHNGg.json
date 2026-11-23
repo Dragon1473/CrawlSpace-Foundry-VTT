@@ -1,0 +1,49 @@
+{
+  "_id": "WMLXh1j7oOrNHNGg",
+  "name": "Decontamination Suite",
+  "type": "spaceUpgrade",
+  "img": "icons/svg/regen.svg",
+  "system": {
+    "description": "<p>Once per day a 10-minute cycle strips one debuff caused by poison, gas, filth, parasites or similar contamination. The GM decides what qualifies; it never touches Divine debuffs, curses, injuries, class or race drawbacks, or story conditions.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Bathroom / Medical",
+    "tier": 2,
+    "floor": 6,
+    "price": 600000,
+    "status": "homebrew",
+    "footprint": "Large room (8 units)",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Once a day, a 10-minute cycle removes one contamination debuff.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "HB-101"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!WMLXh1j7oOrNHNGg",
+  "folder": "DN4Kb1fctxbBlpic"
+}

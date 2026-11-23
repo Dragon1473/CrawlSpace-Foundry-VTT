@@ -33,7 +33,7 @@
       <option value="safeRoom">{{localize "CRAWLSPACE.Upkeep.safeRoom"}}</option>
     </select></div>
     <div class="form-group"><label>{{localize "CRAWLSPACE.Time.Hours"}}</label><input type="number" name="skipHours" min="0" max="30000" step="1" value="1"></div>
-    <div class="time-actors">{{#each actors}}<label class="time-check"><input type="checkbox" name="actor" value="{{id}}"> {{name}}</label>{{/each}}</div>
+    <div class="time-actors">{{#each actors}}<span class="time-actor"><label class="time-check"><input type="checkbox" name="actor" value="{{id}}"> {{name}}</label>{{#if hasSpace}}<label class="time-space" data-tooltip="{{localize 'CRAWLSPACE.Space.TimeToggle'}}"><input type="checkbox" name="inSpace" value="{{id}}" {{#if inSpace}}checked{{/if}}> <i class="fa-solid fa-house-user"></i></label>{{/if}}</span>{{/each}}</div>
     <button type="button" data-action="skip">{{localize "CRAWLSPACE.Time.Apply"}}</button>
   </fieldset>
   {{/if}}

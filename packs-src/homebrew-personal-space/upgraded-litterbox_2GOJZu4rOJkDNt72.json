@@ -1,0 +1,49 @@
+{
+  "_id": "2GOJZu4rOJkDNt72",
+  "name": "Upgraded Litterbox",
+  "type": "spaceUpgrade",
+  "img": "icons/svg/pawprint.svg",
+  "system": {
+    "description": "<p>Litter takes care of itself. No combat benefit.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Pet Amenity",
+    "tier": 2,
+    "floor": 6,
+    "price": 50000,
+    "status": "canon",
+    "footprint": "Fixture",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "A very fancy litterbox.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "C-043"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!2GOJZu4rOJkDNt72",
+  "folder": "DN4Kb1fctxbBlpic"
+}

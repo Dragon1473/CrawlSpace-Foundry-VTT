@@ -3,6 +3,7 @@
  * folder, then characters, homebrew, macros and each chosen party (its crawlers, library, journals
  * and scenes with walls, lights, tiles, drawings, notes and tokens).
  */
+import { withoutGrantedSkills } from '../actors/granted-skills'
 import { characterToActor, convertRow, inventoryToItem } from '../import/convert'
 import { fillDamageData } from '../import/fill-damage'
 import {
@@ -10,11 +11,14 @@ import {
   convertScene,
   extensionFor,
   importKey,
+  importSource,
   journalToFoundry,
   macroToFoundry,
+  matchCrawlers,
   reimportUpdate,
   resolveImages,
   usedImageIds,
+  type CrawlerQuestion,
   type ExportParty,
   type ImportBundle,
 } from '../import/account-import'
@@ -106,16 +110,55 @@ async function folder(name: string, type: string, parent?: any) {
 
 const keyOf = (doc: any) => doc?.flags?.crawlspace?.importKey
 
+/** Ask which uncertain crawlers replace an actor (by default none do). Null when the GM cancels. */
+async function askCrawlers(questions: CrawlerQuestion[]): Promise<Map<number, string> | null> {
+  const rows = questions
+    .map(({ id, name, candidates }) => {
+      const options = candidates
+        .map((actor) => {
+          const replace = t('CrawlerReplace', { name: actor.name, folder: actor.folders[0] ?? t('NoFolder') })
+          return `<option value="${escape(actor.id)}">${escape(replace)}</option>`
+        })
+        .join('')
+      const field = `crawler-${id}`
+      return `<div class="form-group stacked"><label>${escape(name)}</label><select name="${field}"><option value="" selected>${escape(t('CrawlerNew'))}</option>${options}</select></div>`
+    })
+    .join('')
+  return foundry.applications.api.DialogV2.prompt({
+    window: { title: t('CrawlersTitle') },
+    position: { width: 520 },
+    classes: ['crawlspace', 'account-import-dialog'],
+    rejectClose: false,
+    content: `<p>${escape(t('CrawlersHint'))}</p>${rows}`,
+    ok: {
+      label: t('Start'),
+      callback: (_event: Event, button: any) => {
+        const picked = new Map<number, string>()
+        for (const { id } of questions) {
+          const actorId = button.form.elements[`crawler-${id}`].value
+          if (actorId) picked.set(id, actorId)
+        }
+        return picked
+      },
+    },
+  })
+}
+
 /**
  * Create a document, or refresh the one an earlier import of the same export made (found by its
  * import key): its content is replaced, its embedded documents recreated, its folder kept.
  */
-async function upsert(documentName: string, key: string, data: Record<string, any>, options: { pack?: string; keepEmbeddedIds?: boolean } = {}) {
-  const cls = (foundry.documents as any)[documentName]
-  const source = foundry.utils.mergeObject(data, { flags: { crawlspace: { importKey: key } } }, { inplace: false })
+async function upsert(documentName: string, key: string, data: Record<string, any>, options: { pack?: string } = {}) {
   const existing = options.pack
     ? (await game.packs.get(options.pack).getDocuments()).find((doc: any) => keyOf(doc) === key)
     : game.collections.get(documentName).find((doc: any) => keyOf(doc) === key)
+  return write(documentName, key, data, existing, options)
+}
+
+/** Refresh the given document, or create one when there is none. */
+async function write(documentName: string, key: string, data: Record<string, any>, existing: any, options: { pack?: string; keepEmbeddedIds?: boolean } = {}) {
+  const cls = (foundry.documents as any)[documentName]
+  const source = foundry.utils.mergeObject(data, { flags: { crawlspace: { importKey: key } } }, { inplace: false })
   if (!existing) return cls.implementation.create(source, options)
   const { update, embedded } = reimportUpdate(documentName, source)
   await existing.update(update)
@@ -131,6 +174,27 @@ export async function importAccount(bundle: ImportBundle, choice: Choice) {
   const { manifest, files } = bundle
   const parties = choice.parties.map((index) => manifest.parties[index])
   const label = manifest.account.displayName || parties[0]?.party?.name || 'CrawlSpace'
+  // Crawler ids repeat between exports, so settle which actors are replaced before writing anything.
+  const crawlerSource = importSource(manifest)
+  const importing = new Map([...(choice.characters ? manifest.characters : []), ...parties.flatMap((party) => party.characters)].map((character) => [character.id, character]))
+  const match = matchCrawlers(
+    [...importing.values()].map((character) => ({ id: character.id, name: characterToActor({ ...character }).name })),
+    game.actors.map((actor: any) => ({
+      id: actor.id,
+      name: actor.name,
+      key: keyOf(actor),
+      source: actor.flags?.crawlspace?.importSource,
+      folders: actor.folder ? [actor.folder, ...actor.folder.ancestors].map((entry: any) => entry.name) : [],
+    })),
+    crawlerSource,
+    t('Folder', { name: label }),
+  )
+  if (match.ask.length) {
+    const picked = await askCrawlers(match.ask)
+    if (!picked) return null
+    for (const [id, actorId] of picked) match.update.set(id, actorId)
+  }
+
   const progress = ui.notifications.info(t('Working', { step: t('StepImages') }), { progress: true })
   const step = (pct: number, key: string) => progress?.update?.({ pct, message: t('Working', { step: t(key) }) })
   const counts = { images: 0, actors: 0, items: 0, journals: 0, scenes: 0, macros: 0, effects: 0, skipped: 0 }
@@ -168,8 +232,11 @@ export async function importAccount(bundle: ImportBundle, choice: Choice) {
     const data: any = characterToActor({ ...resolve(character), name: character.name })
     await fillDamageData(data.items ?? [])
     data.folder = parent.id
-    data.flags = foundry.utils.mergeObject(data.flags ?? {}, { crawlspace: { appCharacterId: character.id } })
-    const actor = await upsert('Actor', importKey('character', character.id), data, { keepEmbeddedIds: true })
+    data.flags = foundry.utils.mergeObject(data.flags ?? {}, { crawlspace: { appCharacterId: character.id, importSource: crawlerSource } })
+    const existing = game.actors.get(match.update.get(character.id) ?? '')
+    const actor = await withoutGrantedSkills(existing, () =>
+      write('Actor', importKey('character', character.id), data, existing, { keepEmbeddedIds: true }),
+    )
     if (actor) {
       crawlers.set(character.id, actor.id)
       counts.actors++
@@ -362,5 +429,13 @@ async function importParty(
     const imported = (doc: any) => foundry.utils.mergeObject(doc, { flags: { crawlspace: { imported: true } } }, { inplace: false })
     for (const [type, documents] of embedded) if (documents.length) await created.createEmbeddedDocuments(type, documents.map(imported))
     counts.skipped += converted.tokens.filter((token) => !token.actorId).length
+    if (converted.scene.levels[0].background.src || converted.tiles.length) {
+      try {
+        // Foundry only draws a thumbnail for a new scene with a background: not for a re-import or a tiled map.
+        await created.update({ thumb: (await created.createThumbnail()).thumb })
+      } catch (error) {
+        console.warn(`CrawlSpace import: no thumbnail for ${created.name}`, error)
+      }
+    }
   }
 }

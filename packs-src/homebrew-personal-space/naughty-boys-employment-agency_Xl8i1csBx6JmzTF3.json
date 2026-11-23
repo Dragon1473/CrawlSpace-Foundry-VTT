@@ -1,0 +1,49 @@
+{
+  "_id": "Xl8i1csBx6JmzTF3",
+  "name": "Naughty Boys Employment Agency",
+  "type": "spaceUpgrade",
+  "img": "icons/svg/house.svg",
+  "system": {
+    "description": "<p>Only offer it once the crawlers have earned access, and make its jobs strange enough to be worth the price.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Quest / Jobs",
+    "tier": 1,
+    "floor": 4,
+    "price": 500000,
+    "status": "canon",
+    "footprint": "Fixture",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Specialized quests with specialized rewards.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "C-053"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!Xl8i1csBx6JmzTF3",
+  "folder": "Oyd7R3n3iQdfJD8E"
+}

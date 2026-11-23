@@ -4,11 +4,12 @@
  */
 export const SETTING_GROUPS: readonly { id: string; keys: readonly string[] }[] = [
   { id: 'frames', keys: ['crawlerFramePlayers', 'crawlerMarks'] },
-  { id: 'combat', keys: ['autoAdvancePhase'] },
+  { id: 'combat', keys: ['autoAdvancePhase', 'encounterTuner'] },
   { id: 'bosses', keys: ['autoBossBattle', 'bossHealthBar', 'bossBattleSound', 'soundBites'] },
-  { id: 'upkeep', keys: ['upkeepAutomation', 'playerUpkeep'] },
+  { id: 'upkeep', keys: ['upkeepAutomation', 'playerUpkeep', 'dayLength'] },
   { id: 'crafting', keys: ['craftApproval', 'craftRules', 'craftCategories'] },
-  { id: 'compendiums', keys: ['homebrewCompendium'] },
+  { id: 'compendiums', keys: ['homebrewCompendium', 'personalSpaces', 'skillCreator', 'rewardTables'] },
+  { id: 'leaderboard', keys: ['leaderboardTools'] },
 ]
 
 /** The boxes for the settings on show (a player sees fewer than the GM), without empty ones. */

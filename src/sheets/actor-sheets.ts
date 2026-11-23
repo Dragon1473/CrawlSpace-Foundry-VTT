@@ -1,4 +1,6 @@
 import { partyChoices, setCrawlerParty } from '../actors/party'
+import { mobCrawlerCount } from '../actors/elite'
+import { isBossLike, isDeity, mobActionsPerRound, statBudget } from '../rules/mob-kinds'
 import { actorTurnedOff, itemEffectKey } from '../data/effect'
 import { repairShields } from '../rules/repair'
 import { equippedShields } from '../rules/shield-block'
@@ -1161,15 +1163,14 @@ export class CrawlerSheet extends CrawlActorSheet {
 
 /**
  * A mob's stat budget (mobRules.ts getMobDerived): level × 3 points, or the boss tier's points per level, spread over
- * its five stats. Published stat blocks that only give modifiers have no budget to show.
+ * its five stats on top of their base (1 each for mobs, 5 for bosses and deities). Published stat blocks that only
+ * give modifiers have no budget to show.
  */
 export function mobStatBudget(actor: any) {
   const attributes = actor._source.system.attributes ?? {}
   const values = Object.values(attributes).map((attribute: any) => attribute?.value)
   if (actor.type === 'companion' || values.every((value) => value === null || value === undefined)) return null
-  const total = Number(actor.system.statPoints) || 0
-  const assigned = values.reduce((sum: number, value: any) => sum + Math.max(0, Math.floor(Number(value) || 0)), 0)
-  return { total, assigned, remaining: total - assigned, over: assigned > total }
+  return statBudget(actor.system.kind, Number(actor.system.statPoints) || 0, values as (number | null)[])
 }
 
 export class MobSheet extends CrawlActorSheet {
@@ -1230,7 +1231,11 @@ export class MobSheet extends CrawlActorSheet {
         context.kindChoices =
           actor.type === 'companion'
             ? { pet: 'CRAWLSPACE.Companion.pet', mount: 'CRAWLSPACE.Companion.mount', vehicle: 'CRAWLSPACE.Companion.vehicle' }
-            : { mob: 'CRAWLSPACE.Mob.KindMob', boss: 'CRAWLSPACE.Mob.KindBoss' }
+            : { mob: 'CRAWLSPACE.Mob.KindMob', boss: 'CRAWLSPACE.Mob.KindBoss', feralGod: 'CRAWLSPACE.Mob.KindFeralGod', god: 'CRAWLSPACE.Mob.KindGod' }
+        context.isDeity = isDeity(system.kind)
+        context.bossLike = isBossLike(system.kind)
+        // Bosses, deities and Elites act once per crawler in the party.
+        context.actionsPerRound = actor.type === 'companion' ? null : mobActionsPerRound(system, mobCrawlerCount(actor))
         // A mob can be a GM-run crawler, standing with a party.
         if (actor.type === 'mob') context.crawlerParty = { on: !!system.crawler, choices: system.crawler ? partyChoices(actor) : [] }
         context.bossTierChoices = Object.fromEntries(Object.keys(CONFIG.CRAWLSPACE.BOSS_TIERS).map((tier) => [tier, tier]))

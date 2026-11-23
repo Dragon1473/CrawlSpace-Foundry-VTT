@@ -1,0 +1,49 @@
+{
+  "_id": "oqvTnvKEA8gjzZ4p",
+  "name": "Guild Quartermaster Office",
+  "type": "spaceUpgrade",
+  "img": "icons/environment/settlement/castle.webp",
+  "system": {
+    "description": "<p>The quartermaster can also hand out stored gear without a separate scene. One economic Advantage a day; auctions and unique prices are untouched.</p>",
+    "notes": "",
+    "kind": "guild",
+    "category": "Guild / Commerce",
+    "tier": 2,
+    "floor": 6,
+    "price": 3000000,
+    "status": "homebrew",
+    "footprint": "Large room (8 units)",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Once a day, the quartermaster has Advantage on a guild Determine Value check.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "HG-001"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!oqvTnvKEA8gjzZ4p",
+  "folder": "rhFrZBKRvx0iFLeg"
+}

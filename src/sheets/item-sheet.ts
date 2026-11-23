@@ -9,6 +9,7 @@ import { documentIds } from './ids'
 import { bindRecipeEditor, recipeEditorContext } from './recipe-editor'
 import { craftCategories } from '../actors/crafting'
 import { RARITIES } from '../rules/crafting'
+import { UPGRADE_KINDS } from '../rules/personal-space'
 
 const { HandlebarsApplicationMixin } = foundry.applications.api
 const { ItemSheetV2 } = foundry.applications.sheets
@@ -163,6 +164,8 @@ export class CrawlItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
       backgroundSkills: [0, 1, 2].map((index) => ({ index, value: item._source.system.skills?.[index] ?? '' })),
       rarityChoices: Object.fromEntries([['', 'CRAWLSPACE.Craft.Rarity.none'], ...RARITIES.map((rarity) => [rarity, `CRAWLSPACE.Craft.Rarity.${rarity}`])]),
       craftCategoryChoices: Object.fromEntries(craftCategories().map((category) => [category.id, category.label])),
+      spaceKindChoices: Object.fromEntries(UPGRADE_KINDS.map((kind) => [kind, game.i18n.localize(`CRAWLSPACE.Space.KindChoice.${kind}`)])),
+      spaceStatusChoices: { canon: game.i18n.localize('CRAWLSPACE.Space.StatusChoice.canon'), homebrew: game.i18n.localize('CRAWLSPACE.Space.StatusChoice.homebrew') },
       physicalTags: (item._source.system.tags ?? []).join(', '),
       upgradesText: (item._source.system.upgrades ?? []).join(', '),
     })
@@ -249,6 +252,14 @@ export class CrawlItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
         if (item.type === 'craftingTable') {
           row('CRAWLSPACE.Craft.Category', context.craftCategoryChoices?.[system.category] ?? system.category)
           row('CRAWLSPACE.Craft.Tier', system.tier)
+        }
+        if (item.type === 'spaceUpgrade') {
+          row('CRAWLSPACE.Space.Category', system.category)
+          row('CRAWLSPACE.Space.Tier', system.tier || '')
+          row('CRAWLSPACE.Space.Floor', system.floor || '')
+          row('CRAWLSPACE.Space.Price', system.price ? Math.floor(system.price).toLocaleString() : '')
+          row('CRAWLSPACE.Space.Status', game.i18n.localize(`CRAWLSPACE.Space.StatusChoice.${system.status}`))
+          row('CRAWLSPACE.Space.Summary', system.summary)
         }
         if (system.rarity) row('CRAWLSPACE.Craft.RarityLabel', game.i18n.localize(`CRAWLSPACE.Craft.Rarity.${system.rarity}`))
         if (isBuild(item)) {

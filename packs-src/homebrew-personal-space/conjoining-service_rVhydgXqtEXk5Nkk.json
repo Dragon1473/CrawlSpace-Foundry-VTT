@@ -1,0 +1,49 @@
+{
+  "_id": "rVhydgXqtEXk5Nkk",
+  "name": "Conjoining Service",
+  "type": "spaceUpgrade",
+  "img": "icons/environment/settlement/house-two-stories-small.webp",
+  "system": {
+    "description": "<p>Each join of two spaces costs 5,000 gold, so three spaces need two joins. Members share the installed upgrades, but each upgrade still belongs to whoever bought it: if they leave or die, it goes with them and the space may shrink. Record each crawler as an Owner on the space's sheet.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Space Service",
+    "tier": 1,
+    "floor": 4,
+    "price": 5000,
+    "status": "canon",
+    "footprint": "Infrastructure",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Joins two Personal Spaces into one shared base; 5,000 gold per join.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "C-006"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!rVhydgXqtEXk5Nkk",
+  "folder": "Oyd7R3n3iQdfJD8E"
+}

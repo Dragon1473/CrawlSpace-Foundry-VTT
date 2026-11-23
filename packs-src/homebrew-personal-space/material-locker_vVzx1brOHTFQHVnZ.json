@@ -1,0 +1,49 @@
+{
+  "_id": "vVzx1brOHTFQHVnZ",
+  "name": "Material Locker",
+  "type": "spaceUpgrade",
+  "img": "icons/tools/smithing/anvil.webp",
+  "system": {
+    "description": "<p>Sorted bins for leftover parts. Once per day, after a failed project in the space, one Salvage check is made with Advantage. It can't recover what the rules call unsalvageable.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Crafting",
+    "tier": 1,
+    "floor": 4,
+    "price": 50000,
+    "status": "homebrew",
+    "footprint": "Module (2 units)",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Once a day, Advantage on one Salvage check after a failed craft here.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "HB-009"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!vVzx1brOHTFQHVnZ",
+  "folder": "Oyd7R3n3iQdfJD8E"
+}

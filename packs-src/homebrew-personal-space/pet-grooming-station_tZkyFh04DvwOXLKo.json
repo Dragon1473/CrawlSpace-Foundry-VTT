@@ -1,0 +1,72 @@
+{
+  "_id": "tZkyFh04DvwOXLKo",
+  "name": "Pet Grooming Station",
+  "type": "spaceUpgrade",
+  "img": "icons/svg/pawprint.svg",
+  "system": {
+    "description": "<p>Fifteen minutes of grooming gives Advantage on the next Animal Handling check with that pet before the next Long Rest, once per pet per day. (While in the space, the crawler has Advantage on Animal Handling.)</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Pet",
+    "tier": 1,
+    "floor": 4,
+    "price": 50000,
+    "status": "homebrew",
+    "footprint": "Module (2 units)",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "After grooming, Advantage on the next Animal Handling check with that pet.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [
+    {
+      "name": "Pet Grooming Station: Advantage",
+      "img": "icons/svg/pawprint.svg",
+      "type": "base",
+      "transfer": false,
+      "disabled": false,
+      "description": "",
+      "system": {
+        "changes": [
+          {
+            "key": "checkMode:Animal Handling",
+            "type": "crawlspace.rollMode",
+            "value": "advantage",
+            "phase": "initial"
+          }
+        ],
+        "conditionType": "buff"
+      },
+      "flags": {},
+      "_id": "CwZEZHU3WqxR59Mw",
+      "_key": "!items.effects!tZkyFh04DvwOXLKo.CwZEZHU3WqxR59Mw"
+    }
+  ],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "HB-005"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!tZkyFh04DvwOXLKo",
+  "folder": "Oyd7R3n3iQdfJD8E"
+}

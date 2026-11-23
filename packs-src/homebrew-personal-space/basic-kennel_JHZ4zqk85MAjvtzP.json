@@ -1,0 +1,49 @@
+{
+  "_id": "JHZ4zqk85MAjvtzP",
+  "name": "Basic Kennel",
+  "type": "spaceUpgrade",
+  "img": "icons/svg/pawprint.svg",
+  "system": {
+    "description": "<p>Give short pet buffs or Animal Handling help using the normal pet rules.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Pet Facility",
+    "tier": 1,
+    "floor": 4,
+    "price": 100000,
+    "status": "canon",
+    "footprint": "Small room",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "A kennel that gives a pet small buffs.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "C-040"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!JHZ4zqk85MAjvtzP",
+  "folder": "Oyd7R3n3iQdfJD8E"
+}

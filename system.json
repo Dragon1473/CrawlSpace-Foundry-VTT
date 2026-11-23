@@ -35,7 +35,8 @@
       "mob": { "htmlFields": ["description", "notes"] },
       "minion": { "htmlFields": ["description", "notes"] },
       "companion": { "htmlFields": ["description", "notes", "companion.accessories"] },
-      "npc": { "htmlFields": ["description", "notes"] }
+      "npc": { "htmlFields": ["description", "notes"] },
+      "personalSpace": { "htmlFields": ["description", "notes"] }
     },
     "Item": {
       "skill": { "htmlFields": ["description"] },
@@ -54,7 +55,8 @@
       "achievement": { "htmlFields": ["description"] },
       "trap": { "htmlFields": ["description"] },
       "material": { "htmlFields": ["description"] },
-      "craftingTable": { "htmlFields": ["description"] }
+      "craftingTable": { "htmlFields": ["description"] },
+      "spaceUpgrade": { "htmlFields": ["description"] }
     },
     "RegionBehavior": {
       "aura": {}
@@ -103,6 +105,27 @@
       "path": "packs/homebrew-items",
       "type": "Item",
       "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
+    },
+    {
+      "name": "homebrew-personal-space",
+      "label": "Personal Space Upgrades",
+      "path": "packs/homebrew-personal-space",
+      "type": "Item",
+      "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
+    },
+    {
+      "name": "homebrew-space-tables",
+      "label": "Personal Space Tables",
+      "path": "packs/homebrew-space-tables",
+      "type": "RollTable",
+      "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
+    },
+    {
+      "name": "homebrew-hobby-tables",
+      "label": "Hobby Tables",
+      "path": "packs/homebrew-hobby-tables",
+      "type": "RollTable",
+      "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
     }
   ],
   "packFolders": [
@@ -114,7 +137,7 @@
     {
       "name": "CrawlSpace Homebrew",
       "color": "#7a2e1d",
-      "packs": ["homebrew-skills", "homebrew-spells", "homebrew-items"]
+      "packs": ["homebrew-skills", "homebrew-spells", "homebrew-items", "homebrew-personal-space", "homebrew-space-tables", "homebrew-hobby-tables"]
     }
   ],
   "grid": { "distance": 5, "units": "ft" },

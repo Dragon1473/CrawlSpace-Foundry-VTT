@@ -365,11 +365,6 @@ export const createDefaultSheet = () => ({
   },
   importantKills: [] as { id: string; value: string }[],
   achievements: [] as ReturnType<typeof createAchievement>[],
-  personalSpace: {
-    tier: '',
-    size: '',
-  },
-  amenities: [] as { id: string; value: string }[],
   clubs: [] as { id: string; value: string }[],
   deity: '',
   sponsors: ['', '', ''],

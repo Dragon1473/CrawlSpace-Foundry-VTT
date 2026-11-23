@@ -1,0 +1,49 @@
+{
+  "_id": "IUFKZhW0oO8TnNCH",
+  "name": "Private Broadcast Booth",
+  "type": "spaceUpgrade",
+  "img": "icons/svg/house.svg",
+  "system": {
+    "description": "<p>Once per floor a crawler records a short public piece. An Amazing Success or Critical on the Performance check earns +1 Popularity; the GM sets the Difficulty.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Social / Entertainment",
+    "tier": 2,
+    "floor": 6,
+    "price": 600000,
+    "status": "homebrew",
+    "footprint": "Small room (4 units)",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Once per floor, record a performance; an Amazing Success or Critical gains +1 Popularity.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "HB-118"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!IUFKZhW0oO8TnNCH",
+  "folder": "DN4Kb1fctxbBlpic"
+}

@@ -5,7 +5,8 @@
       "mob": "Mob",
       "minion": "Minion",
       "npc": "NPC",
-      "companion": "Pet / Mount"
+      "companion": "Pet / Mount",
+      "personalSpace": "Personal Space"
     },
     "Item": {
       "skill": "Skill",
@@ -24,7 +25,8 @@
       "trap": "Trap",
       "action": "Action",
       "material": "Crafting Material",
-      "craftingTable": "Crafting Table"
+      "craftingTable": "Crafting Table",
+      "spaceUpgrade": "Personal Space Upgrade"
     },
     "JournalEntryPage": {
       "neighborhood": "Neighborhood",
@@ -84,7 +86,8 @@
       "Effect": "CrawlSpace Effect",
       "PortraitHint": "Click to change the image",
       "FillDamage": "Fill skill damage from compendium",
-      "FillDamageDone": "Filled damage for {count} skills and spells."
+      "FillDamageDone": "Filled damage for {count} skills and spells.",
+      "PersonalSpace": "CrawlSpace Personal Space"
     },
     "Section": {
       "Stats": "Stats",
@@ -394,13 +397,24 @@
       "NewAbility": "New Ability",
       "AreaFeet": "Area (ft)",
       "StatBudget": "{assigned} of {total} points · {remaining} left",
-      "StatBudgetHint": "Mobs get 3 stat points per level; bosses get their tier's points per level."
+      "StatBudgetHint": "Every stat starts at 1 for mobs and 5 for bosses and deities. Mobs get 3 more points per level; bosses and deities get their tier's points per level.",
+      "KindFeralGod": "Feral God",
+      "KindGod": "God",
+      "DeityLevelHint": "Feral gods are level 150; gods are level 250.",
+      "Elite": "Elite",
+      "EliteHint": "An Elite takes as many actions a round as there are crawlers in the party, like a boss. It shows as a normal mob on the minimap until the GM reveals it from its token (right-click the token).",
+      "Outsider": "Non-resident",
+      "OutsiderHint": "Not a crawler and not one of the dungeon's residents, like hunters and tourists: purple on the minimap.",
+      "Actions": "{count} actions / round",
+      "ActionsHint": "Bosses, deities and Elites take as many actions a round as there are crawlers in the party (in combat, the crawlers in the encounter)."
     },
     "Npc": {
       "Job": "Job",
       "StatBlock": "Stat block",
       "DropMob": "Drop a Mob actor here to use it as this NPC's stat block.",
-      "ClearStatBlock": "Unlink stat block"
+      "ClearStatBlock": "Unlink stat block",
+      "Important": "Important",
+      "ImportantHint": "An important NPC: a star on the minimap instead of a dot."
     },
     "Roll": {
       "ModLost": "lost",
@@ -490,7 +504,8 @@
       "CleanUpExpiry": "Clean Up phase",
       "Clap": "Blade Clap",
       "ClapAgainst": "Blade Clap against {attack}",
-      "Clapped": "Blade Clap {total}"
+      "Clapped": "Blade Clap {total}",
+      "ActionsUsed": "{declared} of {total} actions"
     },
     "Condition": {
       "Title": "Conditions",
@@ -538,6 +553,182 @@
       "Setting": "Boss health bar",
       "SettingHint": "Show a health bar across the top of the screen for each boss in the combat.",
       "DragHint": "Drag to move, drag the corner to resize; double-click to put it back"
+    },
+    "SkillCreator": {
+      "Title": "Skill Creator",
+      "TitleFor": "Skill Creator: {name}",
+      "Setting": "Skill Creator (homebrew)",
+      "SettingHint": "A step-by-step window for making homebrew skills, following the Homebrew Skill Flow Chart by diffendice & Dungeon Anarchists, plus the \"Make skill\" button on drawn Earth hobbies.",
+      "Off": "The Skill Creator is turned off in the system settings.",
+      "NoPermission": "Only the GM can add skills to the world; a player can make one for a crawler they own.",
+      "Hint": "Answer the chart's questions from the top. The balance check at the bottom updates as you go.",
+      "Name": "Skill name",
+      "RollHobby": "Roll a hobby",
+      "RollHobbyHint": "Name it after a random Earth hobby from the hobby tables.",
+      "Step": {
+        "Want": "What do you want to do?",
+        "Kind": "Attack or utility?",
+        "Limits": "Limitations and cooldown (optional)",
+        "Upgrades": "Rank upgrades (5, 10, 15)",
+        "Balance": "Consider balance"
+      },
+      "IntentLabel": "Purpose",
+      "Intent": {
+        "fight": "Fight stuff",
+        "explode": "Explode stuff",
+        "craft": "Craft stuff",
+        "avoid": "Avoid stuff",
+        "find": "Find stuff",
+        "confuse": "Confuse stuff",
+        "please": "Please stuff",
+        "heal": "Heal stuff",
+        "move": "Movement stuff",
+        "sneak": "Sneaky stuff",
+        "think": "Thinky stuff",
+        "survive": "Survive stuff",
+        "other": "Other stuff"
+      },
+      "Compare": "Compare first, maybe reflavor one of these:",
+      "CompareNone": "No skills for this purpose were found in the world or compendiums.",
+      "CompareFight": "Compare with the ranged, melee and unarmed weapon skills.",
+      "Attack": "Attack",
+      "Utility": "Utility",
+      "Range": "Range",
+      "Melee": "Melee",
+      "Ranged": "Ranged",
+      "NotRanged": "Not ranged",
+      "With": "With",
+      "Weapon": "A weapon",
+      "Unarmed": "Unarmed",
+      "Stat": "Stat",
+      "DamageType": "Damage type",
+      "Die": "Damage die",
+      "AddStat": "Add the stat's modifier",
+      "Passive": "Passive (always on, no roll)",
+      "Targets": "Targets",
+      "Target": {
+        "self": "Self",
+        "allies": "Allies",
+        "enemies": "Enemies",
+        "pets": "Pets",
+        "npcs": "NPCs",
+        "hud": "HUD"
+      },
+      "Limitations": "Limitations",
+      "LimitationsHint": "What circumstances or items does it need?",
+      "CooldownLabel": "Cooldown",
+      "Cooldown": {
+        "none": "None",
+        "round": "Rounds",
+        "scene": "Once per scene (until combat ends)",
+        "hours": "Hours",
+        "day": "Once per day",
+        "days": "Days",
+        "floor": "Once per floor"
+      },
+      "Upgrade": {
+        "rank5": "Rank 5",
+        "rank10": "Rank 10",
+        "rank15": "Rank 15"
+      },
+      "UpgradeHint": "Blank: an attack adds one more die",
+      "Description": "Description",
+      "Balance": {
+        "Ok": "Nothing stands out. Compare it with a similar core skill before it goes into play.",
+        "NoName": "Give the skill a name.",
+        "BigDie": "A d10 or d12 attack with no cooldown hits harder than most core weapon skills.",
+        "PassiveAttack": "Passive attack skills are rare; make sure it can't stack damage every turn.",
+        "UnarmedRanged": "An unarmed ranged attack is unusual: say how it reaches.",
+        "NoTarget": "Pick who the skill works on.",
+        "Upgrades": "Core skills get something at Rank 5, 10 and 15.",
+        "Unlimited": "Used against enemies with no cooldown or limitation, it may be worth giving it one."
+      },
+      "Credit": "Based on the Homebrew Skill Flow Chart by diffendice & Dungeon Anarchists: {link}.",
+      "CreditLink": "diffendice's video about it",
+      "Create": "Create skill",
+      "Cancel": "Cancel",
+      "Created": "Created the skill {name}.",
+      "Folder": "Skill Creator",
+      "Note": "Made with the Skill Creator.",
+      "HobbyNote": "Earth hobby skill ({hobby}), made with the Skill Creator.",
+      "MakeSkill": "Make skill"
+    },
+    "Rewards": {
+      "Setting": "Reward tables for loot boxes (homebrew)",
+      "SettingHint": "Boxes whose type and tier the community d100 reward-box tables cover roll on those tables (the row can hand off to the item generator); its spell lists set which spells each box can hold, and its \"100 random items\" widen what the generator makes. Off: every box uses the generator. Reloads the world.",
+      "Rolled": "d100 {roll}: {label}",
+      "Junk": "Misc. Junk",
+      "Box": "{tier} {type} Box",
+      "Unique": "Unique Item for the Crawler",
+      "UniqueHint": "GM: make something unique and customized for this crawler.",
+      "PickSpell": "GM: no matching scroll or tome is in the database. Pick a spell from: {spells}."
+    },
+    "Leaderboard": {
+      "Title": "Leaderboard & Population",
+      "Setting": "Leaderboard & crawler population",
+      "SettingHint": "The Top Ten leaderboard the GM keeps (shown to players when the GM chooses) and the crawlers-remaining count announced at floor transitions.",
+      "Off": "The leaderboard tools are turned off in the system settings.",
+      "Hidden": "The GM hasn't shown the leaderboard yet.",
+      "Tab": {
+        "board": "Leaderboard",
+        "population": "Crawler population"
+      },
+      "BoardHint": "Anyone can be on it: type names, add crawlers from the world, or start from one of the books' leaderboards and change it however you like.",
+      "Label": "Heading",
+      "Field": {
+        "name": "Crawler",
+        "race": "Race",
+        "className": "Class",
+        "level": "Level",
+        "bounty": "Bounty"
+      },
+      "Up": "Move up",
+      "Down": "Move down",
+      "Remove": "Remove",
+      "AddRow": "Add row",
+      "AddCrawler": "Add a crawler…",
+      "CanonPrefill": "Fill from the books…",
+      "ReplaceConfirm": "Replace the current leaderboard with this one?",
+      "Clear": "Clear",
+      "Full": "The leaderboard already has ten crawlers.",
+      "ShowPlayers": "Show to players",
+      "Post": "Post to chat",
+      "Source": "Book leaderboards as transcribed on the Dungeon Crawler Carl wiki (fandom, CC-BY-SA).",
+      "PopulationHint": "Crawlers alive as each floor opens. When the party first reaches a floor with a count, it is announced in chat. The book counts come from the community crawler population estimator (canon where the books give a number, estimated between).",
+      "Floor": "Floor",
+      "Crawlers": "Crawlers",
+      "Change": "Since the floor before",
+      "PartyHere": "The party is here",
+      "Announce": "Announce in chat",
+      "CanonPopulation": "Fill from the books",
+      "AutoAnnounce": "Announce automatically when the party reaches a new floor",
+      "SystemAI": "System AI",
+      "SystemMessage": "System Message",
+      "Remaining": "Floor {floor}: {count} crawlers remain.",
+      "Lost": "{lost} fewer than the floor before ({percent}%).",
+      "NoCount": "No crawler count is set for floor {floor}."
+    },
+    "Encounter": {
+      "Title": "Encounter Tuner",
+      "Hint": "How many mobs to use for a fight. Headcount matters most: every extra mob is another attack each round.",
+      "PartySize": "Crawlers in the fight",
+      "Crawlers": "Crawlers",
+      "ThreatLabel": "Threat",
+      "Threat": {
+        "weak": "Weak",
+        "moderate": "Moderate",
+        "strong": "Strong",
+        "overwhelming": "Overwhelming"
+      },
+      "Result": "{count} mobs for {crawlers} crawlers.",
+      "ResultOrMore": "{count} or more mobs for {crawlers} crawlers.",
+      "Tip1": "Shift it for the party's tactics and gear, the terrain, the objective and how worn down they are.",
+      "Tip2": "Tune it during the fight: reinforcements, mobs that flee, rivals, distractions.",
+      "Tip3": "Mobs can steal gear or chase a goal instead of finishing off a downed crawler.",
+      "Close": "Done",
+      "Off": "The Encounter Tuner is turned off in the CrawlSpace settings.",
+      "Setting": "Encounter Tuner",
+      "SettingHint": "The GM's Encounter Tuner (token controls): how many mobs to use by threat and party size. CrawlSpace Atlas also uses it to size the mob groups Place Mobs puts in each room."
     },
     "BossBattle": {
       "Button": "Start a boss battle",
@@ -640,8 +831,9 @@
         "frames": "Crawler Frames",
         "combat": "Combat",
         "bosses": "Boss Battles",
-        "upkeep": "Upkeep",
-        "compendiums": "Compendiums",
+        "upkeep": "Upkeep & Time",
+        "compendiums": "Homebrew",
+        "leaderboard": "Leaderboard & Population",
         "other": "Other Settings",
         "crafting": "Crafting"
       },
@@ -668,6 +860,10 @@
       "CraftCategories": {
         "Name": "Extra crafting categories",
         "Hint": "Comma-separated names added to Alchemy, Arcanist, Armorer, Engineering, Metalworking, Sapper's, Writing, Tattoo and Mundane."
+      },
+      "PersonalSpaces": {
+        "Name": "Personal Spaces (homebrew)",
+        "Hint": "Personal Space actors, their upgrades and crafting tables, the Personal Space compendiums, and the rest, grinding and crafting bonuses a crawler gets while in their space. Off: the compendiums are hidden, the types leave the Create dialogs and nothing changes rests or crafting. Existing spaces are kept."
       }
     },
     "Info": {
@@ -1262,8 +1458,14 @@
       "Edit": "Adjust time",
       "Save": "Set timer",
       "SetFloor": "Set floor-collapse timer",
-      "FloorPrompt": "Set the remaining time before this floor collapses. A dungeon day lasts 30 hours.",
-      "OverflowHint": "Overflow is converted automatically: 90 minutes becomes 1 hour 30 minutes; 30 hours becomes 1 day.",
+      "FloorPrompt": "Set the remaining time before this floor collapses. The Days field uses the day length in the system settings.",
+      "OverflowHint": "Overflow is converted automatically: 90 minutes becomes 1 hour 30 minutes, and extra hours roll over into days.",
+      "DayLength": {
+        "24": "24-hour Earth day",
+        "30": "30-hour dungeon day",
+        "Name": "Day length",
+        "Hint": "How many hours a day shows as on timers, cooldowns and time entry. Display only: nothing lasts longer or shorter, and \"1 day\" in rules text is still a 30-hour dungeon day. With 24-hour days, 30 hours reads as 1 day 6 hours."
+      },
       "PickDuration": "Pick a time",
       "Timed": "Timed (set below)",
       "SpecialDuration": "Special duration"
@@ -1949,6 +2151,11 @@
       "Party": "Party: {name} ({scenes} scenes, {crawlers} crawlers)",
       "NoImages": "This file has no images, so maps, tiles and portraits will be blank. Use the .zip from the email's download link to bring them in.",
       "Start": "Import",
+      "CrawlersTitle": "Check these crawlers",
+      "CrawlersHint": "These might already be in this world, but the export can't confirm it. Replacing a crawler resets it to the export, items included.",
+      "CrawlerNew": "Import as a new crawler",
+      "CrawlerReplace": "Replace {name} (folder: {folder})",
+      "NoFolder": "none",
       "Working": "Importing from CrawlSpace: {step}",
       "StepImages": "uploading images",
       "StepCharacters": "characters",
@@ -2268,6 +2475,100 @@
         "neighborhood": "neighborhood journal",
         "scene": "scene"
       }
+    },
+    "Space": {
+      "DefaultName": "{name}'s Personal Space",
+      "FromSheet": "Moved from the character sheet.",
+      "Level": "Space Level",
+      "LevelN": "Level {level}",
+      "LevelHint": "Suggested price {price} gold. Holds about {tables} crafting tables.",
+      "Conjoined": "Conjoined: {unions} union(s), {cost} gold",
+      "Legacy": "From the old character sheet: tier \"{tier}\", size \"{size}\".",
+      "Benefits": "While a crawler is here",
+      "BenefitsHint": "Only crawlers whose \"here\" toggle is on get these, on the GM's rest and grinding panel or on this sheet. The best of each kind counts; they don't stack.",
+      "BenefitLongRest": "A Long Rest takes {hours} hour(s) ({list}).",
+      "BenefitGoodSleep": "A Long Rest also grants Good Sleep for {hours} hours ({list}).",
+      "BenefitShortRest": "A Short Rest heals {slots} more Health Bar slot(s) ({list}).",
+      "BenefitTraining": "Once a day, one grinding hour counts as {hours} ({list}).",
+      "Members": "Owners and members",
+      "Here": "Here",
+      "Away": "Away",
+      "HereHint": "Is this crawler in the space right now? Rest, grinding and crafting bonuses only apply while they are.",
+      "InstallLibrary": "Install the upgrades and tables this crawler kept from a space they left",
+      "RemoveTitle": "Leaves or died",
+      "RemoveHint": "{name} leaves the space. The upgrades and crafting tables they own go with them (kept on their character for another space). Everything else stays.",
+      "Removed": "{name} left. They took: {list}.",
+      "RemovedNothing": "{name} left. They owned nothing here.",
+      "Installed": "Installed",
+      "HasLibrary": "{name} has upgrades kept from another space. Use the box button on their row to install them.",
+      "DropCrawler": "Drop a crawler here. The first one owns the space.",
+      "Upgrades": "Upgrades",
+      "OpenCatalog": "Open the Personal Space Upgrades compendium",
+      "DropUpgrade": "Drop upgrades from the Personal Space Upgrades compendium.",
+      "Tables": "Crafting tables",
+      "DropTable": "Drop crafting tables here. They count for crafting while a member is here.",
+      "TablesOver": "More tables than a space of this level usually holds ({limit}).",
+      "Broken": "Broken",
+      "Homebrew": "Homebrew",
+      "HasEffects": "Gives its effects to crawlers while they are here",
+      "AttachedTo": "Crafting table it is attached to",
+      "NotAttached": "Not attached",
+      "Owner": "Owner (it leaves with them)",
+      "SpaceOwned": "The space",
+      "Missing": "(missing crawler)",
+      "TierN": "Tier {tier}",
+      "WrongItem": "Only Personal Space upgrades and crafting tables go in a Personal Space.",
+      "LevelRaised": "The space is now Level {level}.",
+      "GmNotes": "GM notes",
+      "Role": {
+        "owner": "Owner",
+        "member": "Member",
+        "guest": "Guest"
+      },
+      "Kind": "Kind",
+      "Category": "Category",
+      "Tier": "Upgrade Tier",
+      "Floor": "Earliest floor",
+      "Price": "GM price (gold)",
+      "Status": "Source",
+      "Footprint": "Footprint",
+      "Summary": "Summary",
+      "Automation": "While a crawler is in the space",
+      "StatusChoice": {
+        "canon": "Canon",
+        "homebrew": "Homebrew"
+      },
+      "KindChoice": {
+        "upgrade": "Upgrade",
+        "attachment": "Table attachment",
+        "level": "Space level",
+        "tableUpgrade": "Table tier upgrade",
+        "guild": "Guild",
+        "coupon": "Coupon",
+        "feature": "Feature"
+      },
+      "LongRestHours": "Long Rest hours",
+      "LongRestHoursHint": "A Long Rest in the space takes this many hours instead of 8. 0 is instant. Blank leaves it at 8.",
+      "GoodSleepHours": "Good Sleep hours",
+      "GoodSleepHoursHint": "A Long Rest in the space also grants the Good Sleep buff for this many hours.",
+      "ShortRestSlots": "Extra Short Rest slots",
+      "ShortRestSlotsHint": "A Short Rest in the space heals this many more Health Bar slots.",
+      "TrainingHours": "Training hour counts as",
+      "TrainingHoursHint": "Once a day, one productive grinding hour in the space counts as this many hours.",
+      "EffectsHint": "This upgrade's Active Effects (the Rules tab) go to each crawler while they are in the space, for example Advantage on a named check.",
+      "ExtraSlots": "+{slots} Health Bar slot(s) from {list}.",
+      "GoodSleep": "Good Sleep for {hours} hours from {list}.",
+      "QuickRest": "Rested in {hours} hour(s) thanks to {list}.",
+      "Hours": "{hours} hours",
+      "TrainingResult": "+{hours} grinding hour(s) from {list}.",
+      "TimeToggle": "In their Personal Space (rest and grinding bonuses)",
+      "LibraryInstalled": "Installed {count} kept upgrade(s) from {name}."
+    },
+    "Elite": {
+      "Reveal": "Reveal as Elite",
+      "Hide": "Hide Elite (show as a normal mob)",
+      "Revealed": "Revealed as an Elite on the minimap.",
+      "Hidden": "Shows as a normal mob on the minimap again."
     }
   }
 }

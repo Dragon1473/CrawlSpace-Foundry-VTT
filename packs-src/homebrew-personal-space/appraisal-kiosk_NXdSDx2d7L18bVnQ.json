@@ -1,0 +1,72 @@
+{
+  "_id": "NXdSDx2d7L18bVnQ",
+  "name": "Appraisal Kiosk",
+  "type": "spaceUpgrade",
+  "img": "icons/commodities/currency/coins-plain-stack-gold.webp",
+  "system": {
+    "description": "<p>Once per day, one Determine Value check on an item examined in the space has Advantage. It reveals nothing Determine Value wouldn't. (While in the space, the crawler has Advantage on Determine Value.)</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Commerce",
+    "tier": 1,
+    "floor": 4,
+    "price": 50000,
+    "status": "homebrew",
+    "footprint": "Fixture (1 unit)",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Once a day, Advantage on a Determine Value check here.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [
+    {
+      "name": "Appraisal Kiosk: Advantage",
+      "img": "icons/commodities/currency/coins-plain-stack-gold.webp",
+      "type": "base",
+      "transfer": false,
+      "disabled": false,
+      "description": "",
+      "system": {
+        "changes": [
+          {
+            "key": "checkMode:Determine Value",
+            "type": "crawlspace.rollMode",
+            "value": "advantage",
+            "phase": "initial"
+          }
+        ],
+        "conditionType": "buff"
+      },
+      "flags": {},
+      "_id": "NpOLVQXSj0DoTN7a",
+      "_key": "!items.effects!NXdSDx2d7L18bVnQ.NpOLVQXSj0DoTN7a"
+    }
+  ],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "HB-003"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!NXdSDx2d7L18bVnQ",
+  "folder": "Oyd7R3n3iQdfJD8E"
+}

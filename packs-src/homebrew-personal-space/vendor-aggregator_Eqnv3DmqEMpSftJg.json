@@ -1,0 +1,49 @@
+{
+  "_id": "Eqnv3DmqEMpSftJg",
+  "name": "Vendor Aggregator",
+  "type": "spaceUpgrade",
+  "img": "icons/commodities/currency/coins-plain-stack-gold.webp",
+  "system": {
+    "description": "<p>After a successful Determine Value check, one purchase or sale shifts 10% in the party's favor, to at most 50,000 gold. The GM may exclude unique, quest, sponsor or auction items.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Commerce",
+    "tier": 2,
+    "floor": 6,
+    "price": 600000,
+    "status": "homebrew",
+    "footprint": "Module (2 units)",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Once a day, after a Determine Value check, a 10% better deal (up to 50,000 gold).",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "HB-110"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!Eqnv3DmqEMpSftJg",
+  "folder": "DN4Kb1fctxbBlpic"
+}

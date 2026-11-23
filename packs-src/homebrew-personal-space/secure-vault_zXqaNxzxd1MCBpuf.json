@@ -1,0 +1,49 @@
+{
+  "_id": "zXqaNxzxd1MCBpuf",
+  "name": "Secure Vault",
+  "type": "spaceUpgrade",
+  "img": "icons/svg/house.svg",
+  "system": {
+    "description": "<p>Keeps guests and ordinary NPCs out of the party's valuables. It does not stop the System, plot events or abilities that explicitly bypass Personal Space security.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Storage / Security",
+    "tier": 2,
+    "floor": 6,
+    "price": 350000,
+    "status": "homebrew",
+    "footprint": "Small room (4 units)",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Storage only listed owners and people they authorize can open.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "HB-111"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!zXqaNxzxd1MCBpuf",
+  "folder": "DN4Kb1fctxbBlpic"
+}

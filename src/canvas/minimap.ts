@@ -6,12 +6,45 @@
  *
  * The CrawlSpace Atlas module replaces it: with Atlas active, this minimap and its toggle aren't set up at all.
  */
+import { MARKER_ANIMATED, drawMarker, minimapMarker, type MarkerShape } from '../rules/mob-kinds'
+import { eliteRevealed } from '../actors/elite'
+
 const t = (key: string) => game.i18n.localize(`CRAWLSPACE.Minimap.${key}`)
+
+/** A defeated token (the Defeated status), shown as a corpse. */
+const isDead = (token: any) => {
+  const dead = CONFIG.specialStatusEffects?.DEFEATED ?? 'dead'
+  return !!(token?.actor?.statuses?.has?.(dead) || token?.document?.hasStatusEffect?.(dead))
+}
+
+/**
+ * How a token shows on a minimap, by its actor's type: crawlers blue (you green), mobs red, NPCs white, hunters and
+ * tourists purple, pets orange, minions white with a green X; Elites a cross once revealed, important NPCs a star,
+ * gods a spinning star, the dead a black X.
+ */
+export function minimapMarkerFor(token: any, options: { own?: boolean } = {}) {
+  const actor = token?.actor
+  const document = token?.document ?? token
+  return minimapMarker({
+    actorType: actor?.type ?? '',
+    system: actor?.system,
+    disposition: document?.disposition,
+    dead: isDead(token),
+    eliteRevealed: eliteRevealed(document),
+    own: options.own,
+  })
+}
+
+/** For the CrawlSpace Atlas minimap: the same markers, drawn the same way. */
+export const minimapMarkerApi = {
+  of: minimapMarkerFor,
+  draw: drawMarker,
+  animated: (shape: MarkerShape) => MARKER_ANIMATED.has(shape),
+}
 
 /** The radar's inside diameter in CSS pixels (the app's 190 px circle less its border). */
 const SIZE = 180
 const BACKGROUND = '#102d50'
-const COLORS = { own: '#44f275', crawler: '#4395ff', hostile: '#ff405e', other: '#ffffff' }
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 
@@ -160,24 +193,21 @@ class Minimap extends foundry.applications.api.ApplicationV2 {
     context.lineWidth = 1
     context.strokeRect(left, top, rect.width * scale, rect.height * scale)
 
-    // A dot per token with an actor; yours on top.
+    // A marker per token with an actor; yours on top.
     const tokens = (canvas.tokens?.placeables ?? []).filter((token: any) => token.actor && (game.user.isGM || token.isVisible))
     tokens.sort((a: any, b: any) => Number(a.isOwner && !game.user.isGM) - Number(b.isOwner && !game.user.isGM))
+    const now = performance.now()
+    let animated = false
     for (const token of tokens) {
       const x = left + (token.center.x - rect.x) * scale
       const y = top + (token.center.y - rect.y) * scale
-      const hostile = token.document.disposition === CONST.TOKEN_DISPOSITIONS.HOSTILE
-      const own = token.isOwner && !game.user.isGM
-      const color = own ? COLORS.own : hostile ? COLORS.hostile : token.actor.type === 'crawler' ? COLORS.crawler : COLORS.other
+      const marker = minimapMarkerFor(token, { own: token.isOwner && !game.user.isGM })
+      if (MARKER_ANIMATED.has(marker.shape)) animated = true
       context.globalAlpha = token.document.hidden ? 0.45 : 1
-      context.beginPath()
-      context.arc(x, y, Math.max(2.5, (token.w / 2) * scale), 0, Math.PI * 2)
-      context.fillStyle = color
-      context.fill()
-      context.lineWidth = 1
-      context.strokeStyle = '#164667'
-      context.stroke()
+      drawMarker(context, marker, x, y, Math.max(2.5, (token.w / 2) * scale), now)
     }
+    // A god's star keeps turning.
+    if (animated) this.draw()
     context.globalAlpha = 1
   }
 }
@@ -218,5 +248,5 @@ export function registerMinimap() {
   })
   Hooks.on('canvasReady', sync)
   const redraw = () => minimap?.rendered && minimap.draw()
-  for (const hook of ['refreshToken', 'createToken', 'deleteToken', 'updateScene', 'sightRefresh']) Hooks.on(hook, redraw)
+  for (const hook of ['refreshToken', 'createToken', 'updateToken', 'deleteToken', 'updateActor', 'updateScene', 'sightRefresh']) Hooks.on(hook, redraw)
 }

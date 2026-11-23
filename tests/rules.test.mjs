@@ -181,3 +181,21 @@ test('Armor Piercing damage ignores DR, except the DR of Anti-Piercing armor', a
   assert.equal(applySlotDamage(20, [], 0, 3, slots, { armorPiercing: true, piercingDr: 15 }).slotsLost, 1)
   assert.equal(applySlotDamage(20, [], 0, 8, slots, {}).slotsLost, 1)
 })
+
+test('the day length setting changes how time reads, never how long it is', async () => {
+  const { timeParts, timePartsSeconds, formatTime, durationText, durationSeconds, setDisplayDayHours } = await import('../src/rules/time.ts')
+  const thirtyHours = 30 * 3600
+  setDisplayDayHours(30)
+  assert.deepEqual(timeParts(thirtyHours), { days: 1, hours: 0, minutes: 0, seconds: 0 })
+  assert.equal(formatTime(thirtyHours), '01:00:00:00')
+  assert.equal(durationText(thirtyHours), '1 day')
+  setDisplayDayHours(24)
+  assert.deepEqual(timeParts(thirtyHours), { days: 1, hours: 6, minutes: 0, seconds: 0 })
+  assert.equal(formatTime(thirtyHours), '01:06:00:00')
+  assert.equal(timePartsSeconds({ days: 1, hours: 6, minutes: 0, seconds: 0 }), thirtyHours)
+  // Field text stays readable back to the same seconds, and "1 day" in rules text is still thirty hours.
+  assert.equal(durationText(thirtyHours), '30 hours')
+  assert.equal(durationSeconds(durationText(thirtyHours)), thirtyHours)
+  assert.equal(durationSeconds('1 day'), thirtyHours)
+  setDisplayDayHours(30)
+})

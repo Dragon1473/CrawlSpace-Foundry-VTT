@@ -1,0 +1,49 @@
+{
+  "_id": "kcd1rHHbyQz8fbMo",
+  "name": "Banquet Engine",
+  "type": "spaceUpgrade",
+  "img": "icons/consumables/food/bowl-stew-brown.webp",
+  "system": {
+    "description": "<p>The kitchen plans a meal around the eater's day. Once per day each crawler picks a stat and gains +1 to it for 8 hours. An internal buff; it does not stack with another meal buff from the same kitchen line.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Kitchen",
+    "tier": 3,
+    "floor": 9,
+    "price": 5000000,
+    "status": "homebrew",
+    "footprint": "Large room (8 units)",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Once a day per crawler: +1 to a chosen stat for 8 hours.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "HB-202"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!kcd1rHHbyQz8fbMo",
+  "folder": "Mwql17X180xYnF9f"
+}

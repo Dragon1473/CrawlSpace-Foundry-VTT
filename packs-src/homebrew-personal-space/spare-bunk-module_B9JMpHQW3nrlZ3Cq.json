@@ -1,0 +1,49 @@
+{
+  "_id": "B9JMpHQW3nrlZ3Cq",
+  "name": "Spare Bunk Module",
+  "type": "spaceUpgrade",
+  "img": "icons/svg/house.svg",
+  "system": {
+    "description": "<p>Four fold-out bunks. Guests the owners allow in can take normal rests here, but get no shared upgrades, ownership or manager status unless granted separately.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Guest / Retinue",
+    "tier": 1,
+    "floor": 4,
+    "price": 100000,
+    "status": "homebrew",
+    "footprint": "Small room (4 units)",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Four guest bunks for normal rests.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "HB-014"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!B9JMpHQW3nrlZ3Cq",
+  "folder": "Oyd7R3n3iQdfJD8E"
+}

@@ -20,6 +20,7 @@
     <li class="{{#if done}}done{{/if}}">
       <img src="{{img}}" alt="">
       <span>{{name}}</span>
+      {{#if actions}}<small class="crawl-actions {{#if actions.spent}}spent{{/if}}" data-tooltip="{{localize 'CRAWLSPACE.Mob.ActionsHint'}}">{{actions.declared}}/{{actions.total}}</small>{{/if}}
       {{#if canToggle}}<a data-action="crawlDone" data-combatant-id="{{id}}" data-tooltip="{{localize 'CRAWLSPACE.Combat.MarkDone'}}"><i class="fa-solid {{#if done}}fa-square-check{{else}}fa-square{{/if}}"></i></a>{{/if}}
     </li>
     {{/each}}

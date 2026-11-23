@@ -1,0 +1,49 @@
+{
+  "_id": "hLuc3S5QDeSJnpFX",
+  "name": "Crafting Table Upgrade Coupon",
+  "type": "spaceUpgrade",
+  "img": "icons/sundries/documents/document-sealed-signatures-red.webp",
+  "system": {
+    "description": "<p>Use the + on the table's row on the space's sheet.</p>",
+    "notes": "",
+    "kind": "coupon",
+    "category": "Coupon",
+    "tier": 1,
+    "floor": 4,
+    "price": 0,
+    "status": "canon",
+    "footprint": "Coupon",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Raises one crafting table by a tier (worth about 250,000 gold).",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "C-082"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!hLuc3S5QDeSJnpFX",
+  "folder": "1Pw3BpXvvjEJXxF2"
+}

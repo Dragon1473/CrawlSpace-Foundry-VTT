@@ -1,7 +1,8 @@
 <header class="pf-actor-header">
   <div class="pf-actor-title">
     <input class="pf-name" type="text" name="name" value="{{document.name}}">
-    <div class="pf-level-badge">{{localize "CRAWLSPACE.Crawler.Level"}} <input type="number" name="system.level" value="{{systemSource.level}}" min="0" aria-label="{{localize 'CRAWLSPACE.Crawler.Level'}}"></div>
+    <div class="pf-level-badge">{{localize "CRAWLSPACE.Crawler.Level"}} {{#if isDeity}}<input type="number" value="{{system.level}}" disabled aria-label="{{localize 'CRAWLSPACE.Crawler.Level'}}" data-tooltip="{{localize 'CRAWLSPACE.Mob.DeityLevelHint'}}">{{else}}<input type="number" name="system.level" value="{{systemSource.level}}" min="0" aria-label="{{localize 'CRAWLSPACE.Crawler.Level'}}">{{/if}}</div>
+    {{#if actionsPerRound}}<div class="pf-level-badge mob-actions" data-tooltip="{{localize 'CRAWLSPACE.Mob.ActionsHint'}}"><i class="fa-solid fa-bolt"></i> {{localize "CRAWLSPACE.Mob.Actions" count=actionsPerRound}}</div>{{/if}}
   </div>
   {{#if follower}}
   <div class="minion-banner {{#unless follower.raised}}companion-banner{{/unless}}">
@@ -27,9 +28,13 @@
     <label><span>{{localize "CRAWLSPACE.Mob.Kind"}}</span>
       <span class="pf-kind">
         <select name="system.kind">{{selectOptions kindChoices selected=systemSource.kind localize=true}}</select>
-        {{#if (eq systemSource.kind "boss")}}<select name="system.bossTier" aria-label="{{localize 'CRAWLSPACE.Mob.BossTier'}}" data-tooltip="{{localize 'CRAWLSPACE.Mob.BossTier'}}">{{selectOptions bossTierChoices selected=systemSource.bossTier}}</select>{{/if}}
+        {{#if bossLike}}<select name="system.bossTier" aria-label="{{localize 'CRAWLSPACE.Mob.BossTier'}}" data-tooltip="{{localize 'CRAWLSPACE.Mob.BossTier'}}">{{selectOptions bossTierChoices selected=systemSource.bossTier}}</select>{{/if}}
       </span>
     </label>
+    {{#unless companion}}
+    <label data-tooltip="{{localize 'CRAWLSPACE.Mob.EliteHint'}}"><span>{{localize "CRAWLSPACE.Mob.Elite"}}</span><span class="pf-kind"><input type="checkbox" name="system.elite" {{checked systemSource.elite}}></span></label>
+    <label data-tooltip="{{localize 'CRAWLSPACE.Mob.OutsiderHint'}}"><span>{{localize "CRAWLSPACE.Mob.Outsider"}}</span><span class="pf-kind"><input type="checkbox" name="system.outsider" {{checked systemSource.outsider}}></span></label>
+    {{/unless}}
     {{#if crawlerParty}}
     <label><span>{{localize "CRAWLSPACE.Mob.Crawler"}}</span>
       <span class="pf-kind">

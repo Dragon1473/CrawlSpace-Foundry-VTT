@@ -1,0 +1,49 @@
+{
+  "_id": "YUJCL7XMUGoolZky",
+  "name": "Retinue Wing",
+  "type": "spaceUpgrade",
+  "img": "icons/svg/house.svg",
+  "system": {
+    "description": "<p>Eight small rooms off one hall house hired NPCs or mercenaries, who rest normally here. They do not count as housed in guild barracks for guild training.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Guest / Retinue",
+    "tier": 3,
+    "floor": 9,
+    "price": 3000000,
+    "status": "homebrew",
+    "footprint": "Large room (8 units)",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Quarters for up to eight hired NPCs or mercenaries.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "HB-211"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!YUJCL7XMUGoolZky",
+  "folder": "Mwql17X180xYnF9f"
+}

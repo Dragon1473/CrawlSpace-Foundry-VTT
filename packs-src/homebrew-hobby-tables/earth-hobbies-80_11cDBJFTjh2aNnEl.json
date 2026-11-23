@@ -1,0 +1,1468 @@
+{
+  "_id": "11cDBJFTjh2aNnEl",
+  "name": "Earth Hobbies (80)",
+  "img": "icons/sundries/gaming/dice-runed-brown.webp",
+  "description": "<p>Eighty odd Earth hobbies with a line each, from the community \"Earth Hobbies\" sheet (four d20 tables; this table rolls them as one d80). Draw one, then use <strong>Make skill</strong> on the chat card to build the hobby skill with the Skill Creator.</p>",
+  "formula": "1d80",
+  "replacement": true,
+  "displayRoll": true,
+  "results": [
+    {
+      "_id": "aIrhJF02siRyxHJz",
+      "type": "text",
+      "name": "Camel Beauty Pageants",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Beauty pageants, but for camels",
+      "range": [
+        1,
+        1
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Camel Beauty Pageants"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.aIrhJF02siRyxHJz"
+    },
+    {
+      "_id": "LzvMF19kbBHpd7XV",
+      "type": "text",
+      "name": "Chronophilology",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Watches, clocks, and timepieces",
+      "range": [
+        2,
+        2
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Chronophilology"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.LzvMF19kbBHpd7XV"
+    },
+    {
+      "_id": "6yzchfLv0goKfHGS",
+      "type": "text",
+      "name": "Conchology",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Shells",
+      "range": [
+        3,
+        3
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Conchology"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.6yzchfLv0goKfHGS"
+    },
+    {
+      "_id": "rb21tbgZj35yjzqy",
+      "type": "text",
+      "name": "Deltiology",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Postcards",
+      "range": [
+        4,
+        4
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Deltiology"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.rb21tbgZj35yjzqy"
+    },
+    {
+      "_id": "ca6Gvd7lG4YAXFhC",
+      "type": "text",
+      "name": "Lepidopterology",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Butterflies and moths",
+      "range": [
+        5,
+        5
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Lepidopterology"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.ca6Gvd7lG4YAXFhC"
+    },
+    {
+      "_id": "NH9w9vTtlT17fNuO",
+      "type": "text",
+      "name": "Numismatics",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Coins",
+      "range": [
+        6,
+        6
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Numismatics"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.NH9w9vTtlT17fNuO"
+    },
+    {
+      "_id": "8GDBnTNPmek11f3A",
+      "type": "text",
+      "name": "Oenology",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Wine",
+      "range": [
+        7,
+        7
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Oenology"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.8GDBnTNPmek11f3A"
+    },
+    {
+      "_id": "px0rl1LbZnyHjHDQ",
+      "type": "text",
+      "name": "Pato",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Argentinian polo/basketball hybrid",
+      "range": [
+        8,
+        8
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Pato"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.px0rl1LbZnyHjHDQ"
+    },
+    {
+      "_id": "aw46NT9qo0VanpA5",
+      "type": "text",
+      "name": "Philately",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Stamps",
+      "range": [
+        9,
+        9
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Philately"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.aw46NT9qo0VanpA5"
+    },
+    {
+      "_id": "LZ8WbBCtBPB4tdfV",
+      "type": "text",
+      "name": "Philumeny",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Matchboxes and matchbooks",
+      "range": [
+        10,
+        10
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Philumeny"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.LZ8WbBCtBPB4tdfV"
+    },
+    {
+      "_id": "N32jlqEvx6qFvniQ",
+      "type": "text",
+      "name": "Plangonology",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Doll collecting",
+      "range": [
+        11,
+        11
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Plangonology"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.N32jlqEvx6qFvniQ"
+    },
+    {
+      "_id": "cMz37sbTOtDiDJtZ",
+      "type": "text",
+      "name": "Pogonotrophy",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Beards",
+      "range": [
+        12,
+        12
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Pogonotrophy"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.cMz37sbTOtDiDJtZ"
+    },
+    {
+      "_id": "rjvd7wenxW8yR1VV",
+      "type": "text",
+      "name": "Pomology",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Fruit",
+      "range": [
+        13,
+        13
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Pomology"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.rjvd7wenxW8yR1VV"
+    },
+    {
+      "_id": "62syLuBsiNKTDFH6",
+      "type": "text",
+      "name": "Scripophily",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Stocks and bonds",
+      "range": [
+        14,
+        14
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Scripophily"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.62syLuBsiNKTDFH6"
+    },
+    {
+      "_id": "PlH9l6LuxuTGrFj7",
+      "type": "text",
+      "name": "Sepak Takraw",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Southeast Asian volleyball/soccer hybrid",
+      "range": [
+        15,
+        15
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Sepak Takraw"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.PlH9l6LuxuTGrFj7"
+    },
+    {
+      "_id": "e4DTpIw3WBKlh99p",
+      "type": "text",
+      "name": "Vexillology",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Flags",
+      "range": [
+        16,
+        16
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Vexillology"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.e4DTpIw3WBKlh99p"
+    },
+    {
+      "_id": "tN9ohsmvtm5XNvNv",
+      "type": "text",
+      "name": "Voice Acting",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Acting with your voice",
+      "range": [
+        17,
+        17
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Voice Acting"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.tN9ohsmvtm5XNvNv"
+    },
+    {
+      "_id": "8k6OJg6rGbg5ntXV",
+      "type": "text",
+      "name": "Wife Carrying",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Obstacle racing while carrying a partner",
+      "range": [
+        18,
+        18
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Wife Carrying"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.8k6OJg6rGbg5ntXV"
+    },
+    {
+      "_id": "RhV8V49Wrsw4zF6P",
+      "type": "text",
+      "name": "Yelp Reviewing",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Specific online review style",
+      "range": [
+        19,
+        19
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Yelp Reviewing"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.RhV8V49Wrsw4zF6P"
+    },
+    {
+      "_id": "g0RSf4y7eDtnV9xO",
+      "type": "text",
+      "name": "Zythology",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Beer",
+      "range": [
+        20,
+        20
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Zythology"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.g0RSf4y7eDtnV9xO"
+    },
+    {
+      "_id": "Q8eoFaQvSFOQ3jXT",
+      "type": "text",
+      "name": "Extreme Ironing",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Pressing clothes in remote, hazardous locations (underwater, cliff sides)",
+      "range": [
+        21,
+        21
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Extreme Ironing"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.Q8eoFaQvSFOQ3jXT"
+    },
+    {
+      "_id": "BpiURIBKV0dQhVLZ",
+      "type": "text",
+      "name": "Cryptotaxidermy",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Preservation and mounting of mythical or non-existent beasts",
+      "range": [
+        22,
+        22
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Cryptotaxidermy"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.BpiURIBKV0dQhVLZ"
+    },
+    {
+      "_id": "uWXAdsLfsbUtzFiQ",
+      "type": "text",
+      "name": "Competitive Dog Grooming",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Sculpting and dyeing hair into intricate 3D designs",
+      "range": [
+        23,
+        23
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Competitive Dog Grooming"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.uWXAdsLfsbUtzFiQ"
+    },
+    {
+      "_id": "f9bZhmwQPyyOlhub",
+      "type": "text",
+      "name": "Speedcubing",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Solving puzzle cubes as fast as humanly possible",
+      "range": [
+        24,
+        24
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Speedcubing"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.f9bZhmwQPyyOlhub"
+    },
+    {
+      "_id": "OUQenmrOGnGFXXWs",
+      "type": "text",
+      "name": "Geocaching",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Using GPS coordinates to hunt for hidden containers in strange places",
+      "range": [
+        25,
+        25
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Geocaching"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.OUQenmrOGnGFXXWs"
+    },
+    {
+      "_id": "97U47UQjXGFQxh3B",
+      "type": "text",
+      "name": "Pyrography",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "The art of decorating wood or leather with burn marks",
+      "range": [
+        26,
+        26
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Pyrography"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.97U47UQjXGFQxh3B"
+    },
+    {
+      "_id": "soJjHSi4URcWHHAg",
+      "type": "text",
+      "name": "Microbrewery Hop-Scouting",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Identifying specific strains, bitterness units, and aromatic profiles of hops",
+      "range": [
+        27,
+        27
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Microbrewery Hop-Scouting"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.soJjHSi4URcWHHAg"
+    },
+    {
+      "_id": "dVMPxwm7Diub334S",
+      "type": "text",
+      "name": "Cardistry",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Non-magical, high-dexterity manipulation and flourishing of playing cards",
+      "range": [
+        28,
+        28
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Cardistry"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.dVMPxwm7Diub334S"
+    },
+    {
+      "_id": "Um7Eh4CC6Hhdzd5s",
+      "type": "text",
+      "name": "Lockpicking (Historical)",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Mechanics and vulnerabilities of antique warded and lever locks",
+      "range": [
+        29,
+        29
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Lockpicking (Historical)"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.Um7Eh4CC6Hhdzd5s"
+    },
+    {
+      "_id": "FTAtxELCb6Nrl3HC",
+      "type": "text",
+      "name": "Soapboxing",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Delivering impassioned, improvised street speeches on elevated platforms",
+      "range": [
+        30,
+        30
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Soapboxing"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.FTAtxELCb6Nrl3HC"
+    },
+    {
+      "_id": "TXG8pMSIp8nuT3tE",
+      "type": "text",
+      "name": "Anaglyphics",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Creating and interpreting 3D stereoscopic images and filters",
+      "range": [
+        31,
+        31
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Anaglyphics"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.TXG8pMSIp8nuT3tE"
+    },
+    {
+      "_id": "iuDivqoHeXzjlrma",
+      "type": "text",
+      "name": "Fermentation Engineering",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Culturing wild yeasts, ferments, and fermented food safety",
+      "range": [
+        32,
+        32
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Fermentation Engineering"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.iuDivqoHeXzjlrma"
+    },
+    {
+      "_id": "zvOTBejJnAbpFLsS",
+      "type": "text",
+      "name": "Topiary Sculpting",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Clipping and training living trees and shrubs into geometric or animal shapes",
+      "range": [
+        33,
+        33
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Topiary Sculpting"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.zvOTBejJnAbpFLsS"
+    },
+    {
+      "_id": "EEKnxsfAOnCq5tNc",
+      "type": "text",
+      "name": "Urban Exploration",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Navigating, mapping, and assessing structural integrity of abandoned human ruins",
+      "range": [
+        34,
+        34
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Urban Exploration"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.EEKnxsfAOnCq5tNc"
+    },
+    {
+      "_id": "VFVYR4f33uqlrbR2",
+      "type": "text",
+      "name": "Ventriloquism",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Throwing your voice and projecting dialogue into inert objects",
+      "range": [
+        35,
+        35
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Ventriloquism"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.VFVYR4f33uqlrbR2"
+    },
+    {
+      "_id": "kYRt9ijj4pzqJT6Q",
+      "type": "text",
+      "name": "Falconry",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Training, housing, and hunting alongside birds of prey",
+      "range": [
+        36,
+        36
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Falconry"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.kYRt9ijj4pzqJT6Q"
+    },
+    {
+      "_id": "1Zcd5Q4WzeQ1hnTD",
+      "type": "text",
+      "name": "Kintsugi",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Repairing broken pottery with lacquer dusted with powdered gold or metallic dust",
+      "range": [
+        37,
+        37
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Kintsugi"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.1Zcd5Q4WzeQ1hnTD"
+    },
+    {
+      "_id": "GsYyXG4JQ5xZPn3d",
+      "type": "text",
+      "name": "Bog Snorkeling",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Swimming through peat bogs in minimum time using flippers and a snorkel",
+      "range": [
+        38,
+        38
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Bog Snorkeling"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.GsYyXG4JQ5xZPn3d"
+    },
+    {
+      "_id": "PtojxSGi72D2jLA3",
+      "type": "text",
+      "name": "Model Rocketry",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Building, launching, and recovery math for low-altitude solid-fuel rockets",
+      "range": [
+        39,
+        39
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Model Rocketry"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.PtojxSGi72D2jLA3"
+    },
+    {
+      "_id": "eGkJVQ4Xg31gVh9E",
+      "type": "text",
+      "name": "Speed-Stacking",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Rapidly stacking and unstacking specially designed plastic cups in set sequences",
+      "range": [
+        40,
+        40
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Speed-Stacking"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.eGkJVQ4Xg31gVh9E"
+    },
+    {
+      "_id": "WgsUZ4KTgVmhjzo2",
+      "type": "text",
+      "name": "Trainspotting",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Categorizing locomotive model numbers, track routes, and transit schedules",
+      "range": [
+        41,
+        41
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Trainspotting"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.WgsUZ4KTgVmhjzo2"
+    },
+    {
+      "_id": "HJwtlSLgPcSLblhp",
+      "type": "text",
+      "name": "Sandcastle Engineering",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Arch structural integrity, moisture ratios, and compaction in loose sediment",
+      "range": [
+        42,
+        42
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Sandcastle Engineering"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.HJwtlSLgPcSLblhp"
+    },
+    {
+      "_id": "2I09xqMOM5nylBmw",
+      "type": "text",
+      "name": "Competitive Soap Box Racing",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Unpowered gravity vehicle aerodynamics, steering linkages, and downhill drift lines",
+      "range": [
+        43,
+        43
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Competitive Soap Box Racing"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.2I09xqMOM5nylBmw"
+    },
+    {
+      "_id": "nz3opG28xmd2FPPW",
+      "type": "text",
+      "name": "Hydroponic Gardening",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Soil-free plant cultivation, nutrient pH balancing, and fluid circulation setups",
+      "range": [
+        44,
+        44
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Hydroponic Gardening"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.nz3opG28xmd2FPPW"
+    },
+    {
+      "_id": "UKeenaEIUdGGZDtF",
+      "type": "text",
+      "name": "Historical Reenactment",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Period-accurate tailoring, archaic camp cooking, and living history theater",
+      "range": [
+        45,
+        45
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Historical Reenactment"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.UKeenaEIUdGGZDtF"
+    },
+    {
+      "_id": "F1iKdS0rHGEJBdo1",
+      "type": "text",
+      "name": "Competitive Duck Calls",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Mimicking waterfowl vocalizations using wooden reed instruments",
+      "range": [
+        46,
+        46
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Competitive Duck Calls"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.F1iKdS0rHGEJBdo1"
+    },
+    {
+      "_id": "00lZbkutmxj2jFjm",
+      "type": "text",
+      "name": "Bonsai Training",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Wiring, pruning, and root-binding miniature trees for aesthetic balance",
+      "range": [
+        47,
+        47
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Bonsai Training"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.00lZbkutmxj2jFjm"
+    },
+    {
+      "_id": "lhpEJIuHHEicRBLm",
+      "type": "text",
+      "name": "Whittling",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Carving functional or ornamental shapes out of small pieces of wood using a single pocket knife",
+      "range": [
+        48,
+        48
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Whittling"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.lhpEJIuHHEicRBLm"
+    },
+    {
+      "_id": "S2Q4jAst8x8GjbYP",
+      "type": "text",
+      "name": "Soap Carving",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Sculpting fine details into bars of domestic soap using basic hand tools",
+      "range": [
+        49,
+        49
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Soap Carving"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.S2Q4jAst8x8GjbYP"
+    },
+    {
+      "_id": "DfTUFY2cLWF4jrie",
+      "type": "text",
+      "name": "Metal Detecting",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Interpreting ground-conductivity tones to hunt for buried metallic scrap and relics",
+      "range": [
+        50,
+        50
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Metal Detecting"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.DfTUFY2cLWF4jrie"
+    },
+    {
+      "_id": "XVcAlgf6rwTIH52I",
+      "type": "text",
+      "name": "Amateur Radio Operations",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Tuning frequencies, Morse code protocols, and long-range broadcast chatter",
+      "range": [
+        51,
+        51
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Amateur Radio Operations"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.XVcAlgf6rwTIH52I"
+    },
+    {
+      "_id": "moYUxkQCsLcR5hIW",
+      "type": "text",
+      "name": "Stone Skipping",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Flat-rock selection, spin rates, and launch angles for maximum water bounces",
+      "range": [
+        52,
+        52
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Stone Skipping"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.moYUxkQCsLcR5hIW"
+    },
+    {
+      "_id": "1BV5tcTaxCIeZbL9",
+      "type": "text",
+      "name": "Lapidary Arts",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Cutting, grinding, and polishing rough rocks and minerals into gemstones",
+      "range": [
+        53,
+        53
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Lapidary Arts"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.1BV5tcTaxCIeZbL9"
+    },
+    {
+      "_id": "GURPbMHyIp3ebdUB",
+      "type": "text",
+      "name": "Taxidermy (Traditional)",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Mounting and preserving real animal skins on sculpted molds",
+      "range": [
+        54,
+        54
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Taxidermy (Traditional)"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.GURPbMHyIp3ebdUB"
+    },
+    {
+      "_id": "VnOj1ocp3wXqbxEW",
+      "type": "text",
+      "name": "Origami",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "High-precision paper folding without cutting, glueing, or marking",
+      "range": [
+        55,
+        55
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Origami"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.VnOj1ocp3wXqbxEW"
+    },
+    {
+      "_id": "kAKKrS0V2poFXlSo",
+      "type": "text",
+      "name": "Competitive Lawn Mowing",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Striping patterns, blade height calibration, and turf management aesthetics",
+      "range": [
+        56,
+        56
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Competitive Lawn Mowing"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.kAKKrS0V2poFXlSo"
+    },
+    {
+      "_id": "zTGe5OKRPuEHZbD6",
+      "type": "text",
+      "name": "Ferret Racing",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Constructing tube networks and coaxing small mammals through obstacle courses",
+      "range": [
+        57,
+        57
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Ferret Racing"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.zTGe5OKRPuEHZbD6"
+    },
+    {
+      "_id": "EqDF3e5765BFD7uJ",
+      "type": "text",
+      "name": "Gurning",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Exaggerated facial contortions, jaw-jutting, and grotesque expressions for public display",
+      "range": [
+        58,
+        58
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Gurning"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.EqDF3e5765BFD7uJ"
+    },
+    {
+      "_id": "Tr9kvgknXgfuNBIc",
+      "type": "text",
+      "name": "Model Shipbuilding",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Assembling rigging, planking, and miniature scale detail inside narrow glass bottles",
+      "range": [
+        59,
+        59
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Model Shipbuilding"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.Tr9kvgknXgfuNBIc"
+    },
+    {
+      "_id": "iE6LBirkeNyyVFQY",
+      "type": "text",
+      "name": "Speed Knitting",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Rapid-fire needle work, yarn tension control, and quick garment fabrication",
+      "range": [
+        60,
+        60
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Speed Knitting"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.iE6LBirkeNyyVFQY"
+    },
+    {
+      "_id": "KaOGRMJ3sTDB5BNK",
+      "type": "text",
+      "name": "Competitive Table Setting",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Formal cutlery alignment, napkin origami, and centerpiece proportions",
+      "range": [
+        61,
+        61
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Competitive Table Setting"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.KaOGRMJ3sTDB5BNK"
+    },
+    {
+      "_id": "5HRvfqg1l8RX5RZh",
+      "type": "text",
+      "name": "Pigeon Fancying",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Breeding, racing, and tracking homing pigeons",
+      "range": [
+        62,
+        62
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Pigeon Fancying"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.5HRvfqg1l8RX5RZh"
+    },
+    {
+      "_id": "oyGbPeBqMXbz1Hoq",
+      "type": "text",
+      "name": "Whittling Miniature Furniture",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Precision scale-carving of tables, chairs, and cabinets from scrap wood",
+      "range": [
+        63,
+        63
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Whittling Miniature Furniture"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.oyGbPeBqMXbz1Hoq"
+    },
+    {
+      "_id": "ZbK0zudwD89bVDuA",
+      "type": "text",
+      "name": "Competitive Meat Smoking",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Pit temperature control, wood-smoke pairing, and bark formation",
+      "range": [
+        64,
+        64
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Competitive Meat Smoking"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.ZbK0zudwD89bVDuA"
+    },
+    {
+      "_id": "MIcgJgh2qjXAJHgG",
+      "type": "text",
+      "name": "Bell Ringing (Change Ringing)",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Mathematical bell-chiming patterns in church towers",
+      "range": [
+        65,
+        65
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Bell Ringing (Change Ringing)"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.MIcgJgh2qjXAJHgG"
+    },
+    {
+      "_id": "7zfMze83dwcM3RlK",
+      "type": "text",
+      "name": "Mushroom Foraging",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Identifying edible vs. lethal fungi, spore printing, and damp soil scouting",
+      "range": [
+        66,
+        66
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Mushroom Foraging"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.7zfMze83dwcM3RlK"
+    },
+    {
+      "_id": "qcVlZwwLUR5YtXN1",
+      "type": "text",
+      "name": "Kite Buggying",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Steering three-wheeled unpowered buggies towed by large traction kites",
+      "range": [
+        67,
+        67
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Kite Buggying"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.qcVlZwwLUR5YtXN1"
+    },
+    {
+      "_id": "bJYRvI6TPMgAPN1Z",
+      "type": "text",
+      "name": "Taxidermy (Rogue/Anthropomorphic)",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Dressing mounted rodents in tiny human clothes for dioramas",
+      "range": [
+        68,
+        68
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Taxidermy (Rogue/Anthropomorphic)"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.bJYRvI6TPMgAPN1Z"
+    },
+    {
+      "_id": "OEqfZulmiLio3Put",
+      "type": "text",
+      "name": "Bookbinding",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Hand-stitching signatures, applying leather covers, and gold-foil embossing",
+      "range": [
+        69,
+        69
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Bookbinding"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.OEqfZulmiLio3Put"
+    },
+    {
+      "_id": "9vuLF26vRYNGNXvu",
+      "type": "text",
+      "name": "Competitive Pumpkin Growing",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Soil nutrient balancing, vine pruning, and weight maximization for giant squashes",
+      "range": [
+        70,
+        70
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Competitive Pumpkin Growing"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.9vuLF26vRYNGNXvu"
+    },
+    {
+      "_id": "NH0AVwCH7Ek7hdrO",
+      "type": "text",
+      "name": "Stone Stacking (Balancing)",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Finding center-of-gravity balance points for irregular river rocks",
+      "range": [
+        71,
+        71
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Stone Stacking (Balancing)"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.NH0AVwCH7Ek7hdrO"
+    },
+    {
+      "_id": "cawVT2q9CBku1Frf",
+      "type": "text",
+      "name": "Amateur Astronomy",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Identifying constellations, tracking satellite passes, and mirror alignment",
+      "range": [
+        72,
+        72
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Amateur Astronomy"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.cawVT2q9CBku1Frf"
+    },
+    {
+      "_id": "tb7FF8H6N03fNvnN",
+      "type": "text",
+      "name": "Candle Making",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Wax melting points, wick braid selection, and scent oil saturation",
+      "range": [
+        73,
+        73
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Candle Making"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.tb7FF8H6N03fNvnN"
+    },
+    {
+      "_id": "8y3qPuoVcrVkxLJh",
+      "type": "text",
+      "name": "Marionette Craft & Control",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Carving jointed wooden puppets and operating multi-string control bars",
+      "range": [
+        74,
+        74
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Marionette Craft & Control"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.8y3qPuoVcrVkxLJh"
+    },
+    {
+      "_id": "LZlkr4WOFY4qDrIf",
+      "type": "text",
+      "name": "Cheese Aging (Affinage)",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Humidity control, mold cultivation, and rind scrubbing for cheese wheels",
+      "range": [
+        75,
+        75
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Cheese Aging (Affinage)"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.LZlkr4WOFY4qDrIf"
+    },
+    {
+      "_id": "awiKjQViGxxIjpAF",
+      "type": "text",
+      "name": "Competitive Boomwhacking",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Playing rhythmic music by striking tuned plastic tubes on surfaces or people",
+      "range": [
+        76,
+        76
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Competitive Boomwhacking"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.awiKjQViGxxIjpAF"
+    },
+    {
+      "_id": "rxs55sR7PAeQDBwU",
+      "type": "text",
+      "name": "Yo-Yo Trick Artistry",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Non-responsive string tricks, slacks, loops, and high-speed return maneuvers",
+      "range": [
+        77,
+        77
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Yo-Yo Trick Artistry"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.rxs55sR7PAeQDBwU"
+    },
+    {
+      "_id": "6GpQN8UKMr2775U0",
+      "type": "text",
+      "name": "Glassblowing",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Gathering, shaping, and blowing molten glass using blowpipes and marvers",
+      "range": [
+        78,
+        78
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Glassblowing"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.6GpQN8UKMr2775U0"
+    },
+    {
+      "_id": "RvSadsyA5SZ4tvwa",
+      "type": "text",
+      "name": "Competitive Tree Climbing",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Arborist-style rope ascending, limb walking, and canopy navigation",
+      "range": [
+        79,
+        79
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Competitive Tree Climbing"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.RvSadsyA5SZ4tvwa"
+    },
+    {
+      "_id": "gEPuxIxUSvvEP5mN",
+      "type": "text",
+      "name": "Paper Airplane Engineering",
+      "img": "icons/sundries/gaming/dice-runed-brown.webp",
+      "description": "Aerodynamic folding techniques for distance, hang-time, and stunt flights",
+      "range": [
+        80,
+        80
+      ],
+      "weight": 1,
+      "flags": {
+        "crawlspace": {
+          "hobby": "Paper Airplane Engineering"
+        }
+      },
+      "_key": "!tables.results!11cDBJFTjh2aNnEl.gEPuxIxUSvvEP5mN"
+    }
+  ],
+  "flags": {
+    "crawlspace": {
+      "hobbies": true
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!tables!11cDBJFTjh2aNnEl"
+}

@@ -10,6 +10,8 @@ import { combatAction } from '../socket'
 import { shieldBlockAllowed, shieldBlockFor, shieldBlockSkill } from '../rules/shield-block'
 import { wearShields } from '../rules/repair'
 import { endConditionsOn } from '../effects/end-triggers'
+import { mobActionsPerRound } from '../rules/mob-kinds'
+import { mobCrawlerCount } from '../actors/elite'
 
 export type DefenseKind = 'evade' | 'tank' | 'block' | 'clap'
 export type DeclarationTarget = {
@@ -403,6 +405,14 @@ export class CrawlCombat extends Combat {
 }
 
 /** Default "Declare Attack" dialog for the GM, optionally opened on one mob and one of its attacks. */
+/** A mob's name in the declare dialog, with its actions this round when it acts once per crawler. */
+function actionsLabel(combat: CrawlCombat, mob: any) {
+  const total = mobActionsPerRound(mob.actor?.system, mobCrawlerCount(mob.actor, combat))
+  if (!total) return mob.name
+  const declared = combat.crawl.declarations.filter((entry) => entry.round === combat.round && entry.mobCombatantId === mob.id).length
+  return `${mob.name} (${game.i18n.format('CRAWLSPACE.Combat.ActionsUsed', { declared, total })})`
+}
+
 export async function promptDeclaration(combat: CrawlCombat, mobCombatantId?: string, attackId?: string) {
   const mobs = combat.combatants.filter((c: any) => combatantSide(c) === 'mob' && c.actor?.system?.attacks?.length)
   if (!mobs.length) return ui.notifications.warn(game.i18n.localize('CRAWLSPACE.Combat.NoMobAttacks'))
@@ -411,7 +421,7 @@ export async function promptDeclaration(combat: CrawlCombat, mobCombatantId?: st
   const content = await foundry.applications.handlebars.renderTemplate('systems/crawlspace/templates/dialogs/declare.hbs', {
     mobs: mobs.map((mob: any) => ({
       id: mob.id,
-      name: mob.name,
+      name: actionsLabel(combat, mob),
       selected: mob.id === mobCombatantId,
       attacks: mob.actor.system.attacks.map((attack: any, index: number) => ({
         id: attack.id,

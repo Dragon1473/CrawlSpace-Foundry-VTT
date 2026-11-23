@@ -4,18 +4,31 @@ export const DAY_SECONDS = 108000
 
 export type TimeParts = { days: number; hours: number; minutes: number; seconds: number }
 
-/** Accept overflow in any field, then normalize using a thirty-hour dungeon day. */
-export function timePartsSeconds(parts: TimeParts): number {
+/**
+ * How many hours a day has on screen: the dungeon's thirty (default) or an Earth day of twenty-four (the `dayLength`
+ * world setting, apps/time.ts). It only changes how time reads and how the day field of a time entry counts. Every
+ * duration, cooldown, rest and timer keeps its length in seconds, and "1 day" in rules text stays a thirty-hour
+ * dungeon day (DAY_SECONDS).
+ */
+export const DAY_LENGTHS = [30, 24] as const
+let dayHours = 30
+export const displayDayHours = () => dayHours
+export function setDisplayDayHours(hours: unknown) {
+  dayHours = Number(hours) === 24 ? 24 : 30
+}
+
+/** Accept overflow in any field, then normalize, a day field counting the display day's hours. */
+export function timePartsSeconds(parts: TimeParts, hoursPerDay = dayHours): number {
   if (Object.values(parts).some((value) => !Number.isSafeInteger(value) || value < 0)) throw new Error('Invalid time fields')
-  const total = parts.days * DAY_SECONDS + parts.hours * 3600 + parts.minutes * 60 + parts.seconds
+  const total = parts.days * hoursPerDay * 3600 + parts.hours * 3600 + parts.minutes * 60 + parts.seconds
   if (!Number.isSafeInteger(total)) throw new Error('Invalid time fields')
   return total
 }
 
-/** Break game seconds into normalized day/hour/minute/second fields. */
-export function timeParts(value: number): TimeParts {
+/** Break game seconds into normalized day/hour/minute/second fields (display days). */
+export function timeParts(value: number, hoursPerDay = dayHours): TimeParts {
   const seconds = Math.max(0, Math.floor(value))
-  return { days: Math.floor(seconds / DAY_SECONDS), hours: Math.floor(seconds / 3600) % 30, minutes: Math.floor(seconds / 60) % 60, seconds: seconds % 60 }
+  return { days: Math.floor(seconds / (hoursPerDay * 3600)), hours: Math.floor(seconds / 3600) % hoursPerDay, minutes: Math.floor(seconds / 60) % 60, seconds: seconds % 60 }
 }
 
 /** Explicit quantities only; conditional prose stays manual. A dungeon day is thirty hours. */
@@ -60,9 +73,22 @@ export function restSeconds(kind: string, hours = 1): number {
   return ({ short: 7200, long: 28800, full: DAY_SECONDS } as Record<string, number>)[kind] ?? hours * 3600
 }
 
-/** Compact thirty-hour-day display, shared by cooldowns and the GM clock. */
-export function formatTime(value: number): string {
-  const seconds = Math.max(0, Math.floor(value))
-  return [Math.floor(seconds / DAY_SECONDS), Math.floor(seconds / 3600) % 30, Math.floor(seconds / 60) % 60, seconds % 60]
+/** Compact dd:hh:mm:ss display (display days), shared by cooldowns and the GM clock. */
+export function formatTime(value: number, hoursPerDay = dayHours): string {
+  const { days, hours, minutes, seconds } = timeParts(value, hoursPerDay)
+  return [days, hours, minutes, seconds]
     .map((part) => String(part).padStart(2, '0')).join(':')
+}
+
+/**
+ * Duration text for a number of seconds, which durationSeconds reads back to the same seconds: "1 day 2 hours" with
+ * thirty-hour display days, and whole hours with twenty-four ("30 hours", since "1 day" in rules text means thirty).
+ */
+export function durationText(value: number, hoursPerDay = dayHours): string {
+  const seconds = Math.max(0, Math.floor(value))
+  const parts = hoursPerDay === 30 ? timeParts(seconds, 30) : { days: 0, hours: Math.floor(seconds / 3600), minutes: Math.floor(seconds / 60) % 60, seconds: seconds % 60 }
+  const unit = (amount: number, one: string, many: string) => (amount ? `${amount} ${amount === 1 ? one : many}` : '')
+  return [unit(parts.days, 'day', 'days'), unit(parts.hours, 'hour', 'hours'), unit(parts.minutes, 'minute', 'minutes'), unit(parts.seconds, 'second', 'seconds')]
+    .filter(Boolean)
+    .join(' ')
 }

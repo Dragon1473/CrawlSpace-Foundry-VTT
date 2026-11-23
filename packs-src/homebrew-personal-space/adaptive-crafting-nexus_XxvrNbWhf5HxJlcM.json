@@ -1,0 +1,49 @@
+{
+  "_id": "XxvrNbWhf5HxJlcM",
+  "name": "Adaptive Crafting Nexus",
+  "type": "spaceUpgrade",
+  "img": "icons/tools/smithing/anvil.webp",
+  "system": {
+    "description": "<p>Once per day, every table one project needs counts one tier higher (to Tier 10), applied before the lowest-table rule. One project only.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Crafting",
+    "tier": 3,
+    "floor": 9,
+    "price": 5000000,
+    "status": "homebrew",
+    "footprint": "Major room (12 units)",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Once a day, one project treats every required table as one tier higher.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "HB-207"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!XxvrNbWhf5HxJlcM",
+  "folder": "Mwql17X180xYnF9f"
+}

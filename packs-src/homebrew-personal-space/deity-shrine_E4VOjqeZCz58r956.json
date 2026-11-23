@@ -1,0 +1,49 @@
+{
+  "_id": "E4VOjqeZCz58r956",
+  "name": "Deity Shrine",
+  "type": "spaceUpgrade",
+  "img": "icons/svg/house.svg",
+  "system": {
+    "description": "<p>A shrine to the crawler's god shows up in the space so daily offerings and tithes can go on. It is never bought; use the normal worship rules.</p>",
+    "notes": "",
+    "kind": "feature",
+    "category": "Faith Facility",
+    "tier": 0,
+    "floor": 3,
+    "price": 0,
+    "status": "canon",
+    "footprint": "Small shrine",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Appears on its own when a crawler's worship needs it.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "C-018"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!E4VOjqeZCz58r956",
+  "folder": "RTR2H5ZLV7MQj79g"
+}

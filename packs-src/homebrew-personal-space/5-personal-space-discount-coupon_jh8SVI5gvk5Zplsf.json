@@ -1,0 +1,49 @@
+{
+  "_id": "jh8SVI5gvk5Zplsf",
+  "name": "5% Personal Space Discount Coupon",
+  "type": "spaceUpgrade",
+  "img": "icons/sundries/documents/document-sealed-signatures-red.webp",
+  "system": {
+    "description": "<p>Read the coupon as written.</p>",
+    "notes": "",
+    "kind": "coupon",
+    "category": "Coupon",
+    "tier": 0,
+    "floor": 4,
+    "price": 0,
+    "status": "canon",
+    "footprint": "Coupon",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Takes 5% off a qualifying Personal Space purchase.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "C-086"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!jh8SVI5gvk5Zplsf",
+  "folder": "1Pw3BpXvvjEJXxF2"
+}

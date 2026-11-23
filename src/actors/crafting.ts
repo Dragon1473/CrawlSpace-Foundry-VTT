@@ -24,6 +24,7 @@ import {
   type Take,
 } from '../rules/crafting'
 import { rollCheck } from '../dice/rolls'
+import { spaceTables } from './personal-space'
 
 export const RECIPES_FLAG = 'recipes'
 export const TEACHES_FLAG = 'teaches'
@@ -65,13 +66,14 @@ function heldQuantities(actor: any) {
 }
 
 /**
- * The crafting tables a crawler can use. Every owned table counts for now; when personal spaces exist this is the
- * one place that will narrow it to the tables placed in the crawler's personal space.
+ * The crafting tables a crawler can use: the tables they carry, plus the tables of the Personal Space they are in
+ * right now (actors/personal-space.ts; none outside a space or with Personal Spaces off).
  */
 export function availableTables(actor: any) {
-  return actor.items
+  const own = actor.items
     .filter((item: any) => item.type === 'craftingTable' && !item.system.broken && (Number(item.system.quantity) || 0) > 0)
     .map((item: any) => ({ id: item.id, name: item.name, category: item.system.category, tier: Math.floor(Number(item.system.tier) || 1), upgrades: item.system.upgrades ?? [] }))
+  return [...own, ...spaceTables(actor)]
 }
 
 export function craftContext(actor: any): CraftContext {
@@ -90,6 +92,9 @@ export function craftContext(actor: any): CraftContext {
       liquid: !!item.system.liquid,
       table: item.type === 'craftingTable' ? { category: item.system.category, tier: Math.floor(Number(item.system.tier) || 1), upgrades: item.system.upgrades ?? [] } : undefined,
     }))
+  // The tables of the Personal Space the crawler is in count for 'table' unlocks, but never as stock (quantity 0).
+  for (const table of spaceTables(actor))
+    items.push({ id: `space-${table.space}-${table.id}`, name: table.name, type: 'craftingTable', quantity: 0, table: { category: table.category, tier: table.tier, upgrades: table.upgrades } })
   const skills = new Map<string, number>()
   for (const item of actor.items)
     if (item.type === 'skill' || item.type === 'spell') {

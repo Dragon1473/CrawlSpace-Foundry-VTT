@@ -1,0 +1,49 @@
+{
+  "_id": "TDjVRpaf3JKNVTsd",
+  "name": "Speed Multiplier Attachment",
+  "type": "spaceUpgrade",
+  "img": "icons/tools/smithing/anvil.webp",
+  "system": {
+    "description": "<p>Attach it to a table. Work done there takes 25% less time, rounded down to the half hour, but never below 30 minutes unless the project was already shorter.</p>",
+    "notes": "",
+    "kind": "attachment",
+    "category": "Crafting Attachment",
+    "tier": 2,
+    "floor": 6,
+    "price": 600000,
+    "status": "homebrew",
+    "footprint": "Module (2 units)",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Projects at this table take a quarter less time.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "HB-113"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!TDjVRpaf3JKNVTsd",
+  "folder": "gClMjGykKB3HVtHa"
+}

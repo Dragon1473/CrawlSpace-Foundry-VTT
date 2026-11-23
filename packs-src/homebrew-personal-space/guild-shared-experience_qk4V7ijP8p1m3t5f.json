@@ -1,0 +1,49 @@
+{
+  "_id": "qk4V7ijP8p1m3t5f",
+  "name": "Guild Shared Experience",
+  "type": "spaceUpgrade",
+  "img": "icons/environment/settlement/castle.webp",
+  "system": {
+    "description": "<p>Only use it with a clear shared-leveling house rule; the novels' experience math doesn't exist here.</p>",
+    "notes": "",
+    "kind": "guild",
+    "category": "Guild Service",
+    "tier": 0,
+    "floor": 6,
+    "price": 1000000,
+    "status": "canon",
+    "footprint": "Guild service",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Guild members advance more like one party.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "C-072"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!qk4V7ijP8p1m3t5f",
+  "folder": "rhFrZBKRvx0iFLeg"
+}

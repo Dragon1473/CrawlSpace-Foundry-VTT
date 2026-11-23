@@ -1,0 +1,49 @@
+{
+  "_id": "mKrRFjfTigEy1Ndw",
+  "name": "Arcane Crucible",
+  "type": "spaceUpgrade",
+  "img": "icons/skills/melee/weapons-crossed-swords-yellow.webp",
+  "system": {
+    "description": "<p>After an hour of practice, once per floor, make one magic or spell advancement check that is already allowed with Advantage. It never creates an extra roll.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Magic / Training",
+    "tier": 3,
+    "floor": 9,
+    "price": 5000000,
+    "status": "homebrew",
+    "footprint": "Major room (12 units)",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Once per floor, one eligible magic advancement check with Advantage.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "HB-206"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!mKrRFjfTigEy1Ndw",
+  "folder": "Mwql17X180xYnF9f"
+}

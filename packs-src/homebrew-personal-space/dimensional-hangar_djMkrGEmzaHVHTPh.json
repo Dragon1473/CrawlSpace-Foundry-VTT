@@ -1,0 +1,49 @@
+{
+  "_id": "djMkrGEmzaHVHTPh",
+  "name": "Dimensional Hangar",
+  "type": "spaceUpgrade",
+  "img": "icons/environment/settlement/castle.webp",
+  "system": {
+    "description": "<p>Airships can be docked, repaired and upgraded there. Track the three airports and where each ship is.</p>",
+    "notes": "",
+    "kind": "guild",
+    "category": "Guild Travel",
+    "tier": 3,
+    "floor": 9,
+    "price": 25000000,
+    "status": "canon",
+    "footprint": "Guild infrastructure",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "An elevator to a hangar for airships; up to three member spaces become airports.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "C-077"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!djMkrGEmzaHVHTPh",
+  "folder": "rhFrZBKRvx0iFLeg"
+}

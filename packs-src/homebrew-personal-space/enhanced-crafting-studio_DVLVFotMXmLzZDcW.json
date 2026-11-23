@@ -1,0 +1,49 @@
+{
+  "_id": "DVLVFotMXmLzZDcW",
+  "name": "Enhanced Crafting Studio",
+  "type": "spaceUpgrade",
+  "img": "icons/tools/smithing/anvil.webp",
+  "system": {
+    "description": "<p>A large shared crafting floor. It gives no bonus of its own; it is where the tables live.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Crafting Facility",
+    "tier": 1,
+    "floor": 4,
+    "price": 255000,
+    "status": "canon",
+    "footprint": "Large room",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "A dedicated workshop that houses the party's crafting tables.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "C-020"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!DVLVFotMXmLzZDcW",
+  "folder": "Oyd7R3n3iQdfJD8E"
+}

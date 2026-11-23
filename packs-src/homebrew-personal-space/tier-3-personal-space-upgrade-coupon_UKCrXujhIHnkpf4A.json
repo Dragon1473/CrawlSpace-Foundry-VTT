@@ -1,0 +1,49 @@
+{
+  "_id": "UKCrXujhIHnkpf4A",
+  "name": "Tier 3 Personal Space Upgrade Coupon",
+  "type": "spaceUpgrade",
+  "img": "icons/sundries/documents/document-sealed-signatures-red.webp",
+  "system": {
+    "description": "<p>Read the coupon as written.</p>",
+    "notes": "",
+    "kind": "coupon",
+    "category": "Coupon",
+    "tier": 3,
+    "floor": 9,
+    "price": 0,
+    "status": "canon",
+    "footprint": "Coupon",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Pays for one Tier 3 upgrade (suggested cap 5,000,000 gold).",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "C-085"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!UKCrXujhIHnkpf4A",
+  "folder": "1Pw3BpXvvjEJXxF2"
+}

@@ -1,0 +1,135 @@
+{
+  "_id": "0U4epHdtQ8pQ1P7S",
+  "name": "Crafting Table",
+  "img": "icons/svg/d20-grey.svg",
+  "description": "<p>Homebrew Personal Space reward table.</p>",
+  "formula": "1d8",
+  "replacement": true,
+  "displayRoll": true,
+  "results": [
+    {
+      "type": "document",
+      "name": "Alchemy Table",
+      "img": "icons/skills/toxins/cauldron-pot-bubbles-green.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-items.Item.iSd15Ftw0GwYZn1B",
+      "description": "",
+      "range": [
+        1,
+        1
+      ],
+      "weight": 1,
+      "_id": "oWZFzPdm2U1Zb9vF",
+      "_key": "!tables.results!0U4epHdtQ8pQ1P7S.oWZFzPdm2U1Zb9vF"
+    },
+    {
+      "type": "document",
+      "name": "Arcanist Table",
+      "img": "icons/skills/ranged/wand-attack-beam-blue.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-items.Item.eWdFRuOg6VARpphs",
+      "description": "",
+      "range": [
+        2,
+        2
+      ],
+      "weight": 1,
+      "_id": "fpy1Ho3oRGSjNhPh",
+      "_key": "!tables.results!0U4epHdtQ8pQ1P7S.fpy1Ho3oRGSjNhPh"
+    },
+    {
+      "type": "document",
+      "name": "Armorer Table",
+      "img": "icons/skills/trades/smithing-anvil-silver-red.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-items.Item.TVDNNP7HbhIxHLIt",
+      "description": "",
+      "range": [
+        3,
+        3
+      ],
+      "weight": 1,
+      "_id": "PxiYjHLb7Z3eD3hN",
+      "_key": "!tables.results!0U4epHdtQ8pQ1P7S.PxiYjHLb7Z3eD3hN"
+    },
+    {
+      "type": "document",
+      "name": "Engineering Table",
+      "img": "icons/tools/hand/wrench-adjustable-toothed.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-items.Item.gKihvF8b8u9cP9yZ",
+      "description": "",
+      "range": [
+        4,
+        4
+      ],
+      "weight": 1,
+      "_id": "NFMcF5dCF3ALHbnf",
+      "_key": "!tables.results!0U4epHdtQ8pQ1P7S.NFMcF5dCF3ALHbnf"
+    },
+    {
+      "type": "document",
+      "name": "Metalworking Table",
+      "img": "icons/skills/trades/smithing-anvil-brown.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-items.Item.VFWN1W6qPqu7Ttk3",
+      "description": "",
+      "range": [
+        5,
+        5
+      ],
+      "weight": 1,
+      "_id": "5J7BtYi57UDoJHMj",
+      "_key": "!tables.results!0U4epHdtQ8pQ1P7S.5J7BtYi57UDoJHMj"
+    },
+    {
+      "type": "document",
+      "name": "Sapper's Table",
+      "img": "icons/commodities/tech/smoke-bomb-red-yellow.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-items.Item.YSRtdUgc6XDRf7bw",
+      "description": "",
+      "range": [
+        6,
+        6
+      ],
+      "weight": 1,
+      "_id": "HDSLxARtZsgvrF6j",
+      "_key": "!tables.results!0U4epHdtQ8pQ1P7S.HDSLxARtZsgvrF6j"
+    },
+    {
+      "type": "document",
+      "name": "Writing Table",
+      "img": "icons/tools/scribal/ink-quill-red.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-items.Item.5dUaTjjYxBKr112y",
+      "description": "",
+      "range": [
+        7,
+        7
+      ],
+      "weight": 1,
+      "_id": "fNcYNz2GZxohbLyR",
+      "_key": "!tables.results!0U4epHdtQ8pQ1P7S.fNcYNz2GZxohbLyR"
+    },
+    {
+      "type": "text",
+      "name": "GM's choice: a specialty table (the rules allow more kinds than the seven listed).",
+      "img": "icons/svg/d20-grey.svg",
+      "description": "GM's choice: a specialty table (the rules allow more kinds than the seven listed).",
+      "range": [
+        8,
+        8
+      ],
+      "weight": 1,
+      "_id": "OS2FTS16MHuxVVVp",
+      "_key": "!tables.results!0U4epHdtQ8pQ1P7S.OS2FTS16MHuxVVVp"
+    }
+  ],
+  "flags": {},
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!tables!0U4epHdtQ8pQ1P7S"
+}

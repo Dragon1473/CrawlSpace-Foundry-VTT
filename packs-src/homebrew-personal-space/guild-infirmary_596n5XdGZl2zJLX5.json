@@ -1,0 +1,49 @@
+{
+  "_id": "596n5XdGZl2zJLX5",
+  "name": "Guild Infirmary",
+  "type": "spaceUpgrade",
+  "img": "icons/environment/settlement/castle.webp",
+  "system": {
+    "description": "<p>Only while resting in the infirmary. One Minor Injury per Long Rest.</p>",
+    "notes": "",
+    "kind": "guild",
+    "category": "Guild / Medical",
+    "tier": 2,
+    "floor": 6,
+    "price": 5000000,
+    "status": "homebrew",
+    "footprint": "Major room (12 units)",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Short Rests here heal 1 more slot; a Long Rest mends one Minor Injury.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 1
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "HG-002"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!596n5XdGZl2zJLX5",
+  "folder": "rhFrZBKRvx0iFLeg"
+}

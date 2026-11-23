@@ -3,6 +3,8 @@
  * how module entries and the world actors made from them merge, and what the toolbar filters show.
  */
 
+import { isBossLike } from './mob-kinds.ts'
+
 export type BestiaryCategory = 'Mob' | 'Boss' | 'Crawler' | 'NPC'
 export const BESTIARY_CATEGORIES = ['main', 'Mob', 'Boss', 'Crawler', 'NPC', 'all'] as const
 export type BestiaryCategoryFilter = (typeof BESTIARY_CATEGORIES)[number]
@@ -49,7 +51,7 @@ export function actorCategory(actor: { type: string; system?: any }): BestiaryCa
   if (actor.type === 'npc') return 'NPC'
   if (actor.type !== 'mob' || system.master || system.minion?.temporary) return null
   if (system.crawler) return 'Crawler'
-  return system.kind === 'boss' ? 'Boss' : 'Mob'
+  return isBossLike(system.kind) ? 'Boss' : 'Mob'
 }
 
 /** The link a world actor keeps to the module entry it was made from (flags.crawlspace.bestiary). */

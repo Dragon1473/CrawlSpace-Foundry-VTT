@@ -1,0 +1,49 @@
+{
+  "_id": "njW7f1AH5VbTdnUR",
+  "name": "Performance Galley",
+  "type": "spaceUpgrade",
+  "img": "icons/consumables/food/bowl-stew-brown.webp",
+  "system": {
+    "description": "<p>Order a meal built for one stat: +1 to it for 4 hours, once per day per crawler. An internal buff that does not stack with another meal from this upgrade.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Kitchen",
+    "tier": 2,
+    "floor": 6,
+    "price": 600000,
+    "status": "homebrew",
+    "footprint": "Large room (8 units)",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Once a day per crawler: +1 to a chosen stat for 4 hours.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "HB-102"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!njW7f1AH5VbTdnUR",
+  "folder": "DN4Kb1fctxbBlpic"
+}

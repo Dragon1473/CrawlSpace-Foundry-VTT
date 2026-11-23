@@ -1,0 +1,374 @@
+{
+  "_id": "vDKQXi2NnMHoDLqJ",
+  "name": "Personal Space Upgrade (Tier 2)",
+  "img": "icons/svg/d20-grey.svg",
+  "description": "<p>Homebrew Personal Space reward table.</p>",
+  "formula": "1d100",
+  "replacement": true,
+  "displayRoll": true,
+  "results": [
+    {
+      "type": "document",
+      "name": "Tier 2 Instant-Rest Bed",
+      "img": "icons/svg/sleep.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.3L1DHwsJrGmdRfFX",
+      "description": "Press the button: an immediate Long Rest.",
+      "range": [
+        1,
+        4
+      ],
+      "weight": 4,
+      "_id": "rNNdd12AlLXfRlLN",
+      "_key": "!tables.results!vDKQXi2NnMHoDLqJ.rNNdd12AlLXfRlLN"
+    },
+    {
+      "type": "document",
+      "name": "Decontamination Suite",
+      "img": "icons/svg/regen.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.WMLXh1j7oOrNHNGg",
+      "description": "Once a day, a 10-minute cycle removes one contamination debuff.",
+      "range": [
+        5,
+        8
+      ],
+      "weight": 4,
+      "_id": "wsKTfZ07eUUJ93U6",
+      "_key": "!tables.results!vDKQXi2NnMHoDLqJ.wsKTfZ07eUUJ93U6"
+    },
+    {
+      "type": "document",
+      "name": "NPC Workroom",
+      "img": "icons/svg/house.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.goRPPtfMSABHvnqb",
+      "description": "Once a day, one interruption doesn't halve the manager's crafting output.",
+      "range": [
+        9,
+        12
+      ],
+      "weight": 4,
+      "_id": "fPr95g3q9U7cDJAN",
+      "_key": "!tables.results!vDKQXi2NnMHoDLqJ.fPr95g3q9U7cDJAN"
+    },
+    {
+      "type": "document",
+      "name": "Performance Galley",
+      "img": "icons/consumables/food/bowl-stew-brown.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.njW7f1AH5VbTdnUR",
+      "description": "Once a day per crawler: +1 to a chosen stat for 4 hours.",
+      "range": [
+        13,
+        16
+      ],
+      "weight": 4,
+      "_id": "RnAbvcl1NiZp3xr8",
+      "_key": "!tables.results!vDKQXi2NnMHoDLqJ.RnAbvcl1NiZp3xr8"
+    },
+    {
+      "type": "document",
+      "name": "Recovery Clinic",
+      "img": "icons/svg/regen.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.22SSrFhyGoy5h3KT",
+      "description": "Short Rests heal 6 slots instead of 5; a Long Rest also mends a Minor Injury.",
+      "range": [
+        17,
+        20
+      ],
+      "weight": 4,
+      "_id": "T3ittB9utH72hhWE",
+      "_key": "!tables.results!vDKQXi2NnMHoDLqJ.T3ittB9utH72hhWE"
+    },
+    {
+      "type": "document",
+      "name": "Secure Vault",
+      "img": "icons/svg/house.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.zXqaNxzxd1MCBpuf",
+      "description": "Storage only listed owners and people they authorize can open.",
+      "range": [
+        21,
+        24
+      ],
+      "weight": 4,
+      "_id": "scWPtecyS5WgzlPM",
+      "_key": "!tables.results!vDKQXi2NnMHoDLqJ.scWPtecyS5WgzlPM"
+    },
+    {
+      "type": "document",
+      "name": "Cauldron Attachment",
+      "img": "icons/tools/smithing/anvil.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.CCYk1tevIYzRDz3C",
+      "description": "Extra potions in a batch take half the usual extra time.",
+      "range": [
+        25,
+        28
+      ],
+      "weight": 4,
+      "_id": "XV8DPl1wlHdPdvDm",
+      "_key": "!tables.results!vDKQXi2NnMHoDLqJ.XV8DPl1wlHdPdvDm"
+    },
+    {
+      "type": "document",
+      "name": "Infusion Station",
+      "img": "icons/tools/smithing/anvil.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.xpcAlLJ935ih9lSr",
+      "description": "Once per floor, reroll a failed Alchemy or Arcane crafting check at this table.",
+      "range": [
+        29,
+        32
+      ],
+      "weight": 4,
+      "_id": "gyPqNmnkAjcsvpwi",
+      "_key": "!tables.results!vDKQXi2NnMHoDLqJ.gyPqNmnkAjcsvpwi"
+    },
+    {
+      "type": "document",
+      "name": "Precision Fabrication Lab",
+      "img": "icons/tools/smithing/anvil.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.iWfpTRQFKuGMpBlv",
+      "description": "Once a day, one project treats its tables as one tier higher.",
+      "range": [
+        33,
+        36
+      ],
+      "weight": 4,
+      "_id": "nBtF15lUd9CP73nJ",
+      "_key": "!tables.results!vDKQXi2NnMHoDLqJ.nBtF15lUd9CP73nJ"
+    },
+    {
+      "type": "document",
+      "name": "Speed Multiplier Attachment",
+      "img": "icons/tools/smithing/anvil.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.TDjVRpaf3JKNVTsd",
+      "description": "Projects at this table take a quarter less time.",
+      "range": [
+        37,
+        40
+      ],
+      "weight": 4,
+      "_id": "aoWE9tuNASlDbbyq",
+      "_key": "!tables.results!vDKQXi2NnMHoDLqJ.aoWE9tuNASlDbbyq"
+    },
+    {
+      "type": "document",
+      "name": "Bomber's Studio",
+      "img": "icons/skills/melee/weapons-crossed-swords-yellow.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.9JGFvOkTRmfsvzUy",
+      "description": "Safe practice with explosives, which a Training Room can't handle.",
+      "range": [
+        41,
+        44
+      ],
+      "weight": 4,
+      "_id": "uWpynIU8ONI3zDL6",
+      "_key": "!tables.results!vDKQXi2NnMHoDLqJ.uWpynIU8ONI3zDL6"
+    },
+    {
+      "type": "document",
+      "name": "Magic Workshop",
+      "img": "icons/skills/melee/weapons-crossed-swords-yellow.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.s05un68OyzrPrDLa",
+      "description": "Spell training and magic-boosting functions.",
+      "range": [
+        45,
+        48
+      ],
+      "weight": 4,
+      "_id": "GWCMVnDv4OfCtZsK",
+      "_key": "!tables.results!vDKQXi2NnMHoDLqJ.GWCMVnDv4OfCtZsK"
+    },
+    {
+      "type": "document",
+      "name": "Adaptive Combat Simulator",
+      "img": "icons/skills/melee/weapons-crossed-swords-yellow.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.pNkIVBJOtJ02vlza",
+      "description": "Once a day, one hour counts as 2 grinding hours toward a combat skill.",
+      "range": [
+        49,
+        52
+      ],
+      "weight": 4,
+      "_id": "VXm9D8Z47aEkbVNW",
+      "_key": "!tables.results!vDKQXi2NnMHoDLqJ.VXm9D8Z47aEkbVNW"
+    },
+    {
+      "type": "document",
+      "name": "Skill Lab",
+      "img": "icons/skills/melee/weapons-crossed-swords-yellow.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.4kgsRJC90e2BTnMp",
+      "description": "Once a day, one hour counts as 2 grinding hours toward a non-combat skill.",
+      "range": [
+        53,
+        56
+      ],
+      "weight": 4,
+      "_id": "ESXfzYyrox70pfhi",
+      "_key": "!tables.results!vDKQXi2NnMHoDLqJ.ESXfzYyrox70pfhi"
+    },
+    {
+      "type": "document",
+      "name": "Spell Practice Chamber",
+      "img": "icons/skills/melee/weapons-crossed-swords-yellow.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.DPwnlFveLp1ttJ0N",
+      "description": "Once a day, one hour counts as 2 grinding hours toward a spell or magic skill.",
+      "range": [
+        57,
+        60
+      ],
+      "weight": 4,
+      "_id": "UU8a7P0DGsYKF9d0",
+      "_key": "!tables.results!vDKQXi2NnMHoDLqJ.UU8a7P0DGsYKF9d0"
+    },
+    {
+      "type": "document",
+      "name": "Upgraded Litterbox",
+      "img": "icons/svg/pawprint.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.2GOJZu4rOJkDNt72",
+      "description": "A very fancy litterbox.",
+      "range": [
+        61,
+        64
+      ],
+      "weight": 4,
+      "_id": "dBbKtxLtXfDp3V15",
+      "_key": "!tables.results!vDKQXi2NnMHoDLqJ.dBbKtxLtXfDp3V15"
+    },
+    {
+      "type": "document",
+      "name": "Upgraded Pet Shower",
+      "img": "icons/svg/pawprint.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.ntSjTM7w34GAX7k5",
+      "description": "Washes dungeon grime and blood out of a pet's coat.",
+      "range": [
+        65,
+        68
+      ],
+      "weight": 4,
+      "_id": "mKhHHwxTGxciTBTU",
+      "_key": "!tables.results!vDKQXi2NnMHoDLqJ.mKhHHwxTGxciTBTU"
+    },
+    {
+      "type": "document",
+      "name": "Beast Recovery Den",
+      "img": "icons/svg/pawprint.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.JlddHrxhzhnMhZTB",
+      "description": "A bonded pet's Long Rest here restores it to full Health.",
+      "range": [
+        69,
+        72
+      ],
+      "weight": 4,
+      "_id": "9P7LzDgs5HQofFqf",
+      "_key": "!tables.results!vDKQXi2NnMHoDLqJ.9P7LzDgs5HQofFqf"
+    },
+    {
+      "type": "document",
+      "name": "Recovery Stable",
+      "img": "icons/environment/settlement/stable.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.Y4Zxb5YoKsW5PXzu",
+      "description": "A mount's Short Rest here heals 2 slots; after a Long Rest, Advantage on its first Riding check.",
+      "range": [
+        73,
+        76
+      ],
+      "weight": 4,
+      "_id": "nb2t1U491asalFEd",
+      "_key": "!tables.results!vDKQXi2NnMHoDLqJ.nb2t1U491asalFEd"
+    },
+    {
+      "type": "document",
+      "name": "Marketplace Interface (Tier 2)",
+      "img": "icons/commodities/currency/coins-plain-stack-gold.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.zRmdn21sd4Nk5fXf",
+      "description": "The same marketplace, a tier up, at twice the price.",
+      "range": [
+        77,
+        80
+      ],
+      "weight": 4,
+      "_id": "FB2yJRS9HBueBVV7",
+      "_key": "!tables.results!vDKQXi2NnMHoDLqJ.FB2yJRS9HBueBVV7"
+    },
+    {
+      "type": "document",
+      "name": "Audience Analytics Suite",
+      "img": "icons/svg/house.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.SmsOBBl74EozBzNM",
+      "description": "Learn a current audience trend; playing into it gives Advantage on a Popularity check.",
+      "range": [
+        81,
+        84
+      ],
+      "weight": 4,
+      "_id": "MKGp1HzcM01DdPwg",
+      "_key": "!tables.results!vDKQXi2NnMHoDLqJ.MKGp1HzcM01DdPwg"
+    },
+    {
+      "type": "document",
+      "name": "Private Broadcast Booth",
+      "img": "icons/svg/house.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.IUFKZhW0oO8TnNCH",
+      "description": "Once per floor, record a performance; an Amazing Success or Critical gains +1 Popularity.",
+      "range": [
+        85,
+        88
+      ],
+      "weight": 4,
+      "_id": "1bIGd41eFOGqdvi2",
+      "_key": "!tables.results!vDKQXi2NnMHoDLqJ.1bIGd41eFOGqdvi2"
+    },
+    {
+      "type": "document",
+      "name": "Quest Operations Desk",
+      "img": "icons/svg/house.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.3BJ01HTujB6ntLgl",
+      "description": "Once a day, a clean summary of one active quest.",
+      "range": [
+        89,
+        92
+      ],
+      "weight": 4,
+      "_id": "LbqsPI9Jtg0QRnNj",
+      "_key": "!tables.results!vDKQXi2NnMHoDLqJ.LbqsPI9Jtg0QRnNj"
+    },
+    {
+      "type": "document",
+      "name": "Tactical Map Room",
+      "img": "icons/svg/house.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.RVV55vfgbxvvl5u0",
+      "description": "After 15 minutes of planning, Advantage on an Investigation, Survival or Tactics check.",
+      "range": [
+        93,
+        96
+      ],
+      "weight": 4,
+      "_id": "1D40RoJcPmMSpp6p",
+      "_key": "!tables.results!vDKQXi2NnMHoDLqJ.1D40RoJcPmMSpp6p"
+    },
+    {
+      "type": "document",
+      "name": "Vendor Aggregator",
+      "img": "icons/commodities/currency/coins-plain-stack-gold.webp",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.Eqnv3DmqEMpSftJg",
+      "description": "Once a day, after a Determine Value check, a 10% better deal (up to 50,000 gold).",
+      "range": [
+        97,
+        100
+      ],
+      "weight": 4,
+      "_id": "pde55KEIrE7WpfIg",
+      "_key": "!tables.results!vDKQXi2NnMHoDLqJ.pde55KEIrE7WpfIg"
+    }
+  ],
+  "flags": {},
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!tables!vDKQXi2NnMHoDLqJ"
+}

@@ -8,6 +8,7 @@
  * It appears only once the combat has started, and never while the boss battle splash is up: when an encounter
  * starts with a boss, the bar waits for the splash to come and go.
  */
+import { isBossLike } from '../rules/mob-kinds'
 import { barPercent, barWidth, bossBarBox, bossBarVisible, bossCombatants, bossNameShown, healthColor, lossTrail, type BarBox } from '../rules/boss-bar'
 import { bossBattleOpen, splashExpected } from './boss-battle'
 
@@ -39,7 +40,7 @@ function bosses() {
   const entries: { id: string; tokenId: string; kind?: string; hidden: boolean; combatant: any }[] = combat.combatants.contents.map((combatant: any) => ({
     id: combatant.id,
     tokenId: combatant.tokenId,
-    kind: combatant.actor?.type === 'mob' ? combatant.actor.system?.kind : undefined,
+    kind: combatant.actor?.type === 'mob' ? (isBossLike(combatant.actor.system?.kind) ? 'boss' : combatant.actor.system?.kind) : undefined,
     hidden: combatant.hidden || combatant.token?.hidden,
     combatant,
   }))

@@ -1,0 +1,49 @@
+{
+  "_id": "QWFxhxFb0AEXdVWG",
+  "name": "Compact Practice Nook",
+  "type": "spaceUpgrade",
+  "img": "icons/skills/melee/weapons-crossed-swords-yellow.webp",
+  "system": {
+    "description": "<p>A cramped practice corner. One session a day is a grinding hour for one non-combat skill at Rank 5 or below; no spells, passives or combat skills.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Training",
+    "tier": 1,
+    "floor": 4,
+    "price": 100000,
+    "status": "homebrew",
+    "footprint": "Small room (4 units)",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "One hour a day counts as a grinding hour for a non-combat skill of Rank 5 or lower.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 1
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "HB-015"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!QWFxhxFb0AEXdVWG",
+  "folder": "Oyd7R3n3iQdfJD8E"
+}

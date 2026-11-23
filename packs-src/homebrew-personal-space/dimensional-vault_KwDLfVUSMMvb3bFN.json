@@ -1,0 +1,49 @@
+{
+  "_id": "KwDLfVUSMMvb3bFN",
+  "name": "Dimensional Vault",
+  "type": "spaceUpgrade",
+  "img": "icons/svg/house.svg",
+  "system": {
+    "description": "<p>Whichever saferoom the party came in through, the vault holds the same contents. Shared storage only: no duplicating items and no reaching it from the field.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Storage / Security",
+    "tier": 3,
+    "floor": 9,
+    "price": 3000000,
+    "status": "homebrew",
+    "footprint": "Small room (4 units)",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "The same vault from every entrance to the space.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "HB-208"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!KwDLfVUSMMvb3bFN",
+  "folder": "Mwql17X180xYnF9f"
+}

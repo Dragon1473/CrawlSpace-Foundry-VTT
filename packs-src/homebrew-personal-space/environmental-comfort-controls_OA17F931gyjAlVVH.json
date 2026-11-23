@@ -1,0 +1,49 @@
+{
+  "_id": "OA17F931gyjAlVVH",
+  "name": "Environmental Comfort Controls",
+  "type": "spaceUpgrade",
+  "img": "icons/svg/house.svg",
+  "system": {
+    "description": "<p>Mundane environmental trouble does not interfere with resting in the space. It grants no Resistance and does nothing against magical hazards.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Utility / Rest",
+    "tier": 1,
+    "floor": 4,
+    "price": 50000,
+    "status": "homebrew",
+    "footprint": "Infrastructure (0 units)",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Heat, cold, noise and damp never spoil a rest here.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "HB-011"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!OA17F931gyjAlVVH",
+  "folder": "Oyd7R3n3iQdfJD8E"
+}

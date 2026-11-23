@@ -1,0 +1,49 @@
+{
+  "_id": "SmsOBBl74EozBzNM",
+  "name": "Audience Analytics Suite",
+  "type": "spaceUpgrade",
+  "img": "icons/svg/house.svg",
+  "system": {
+    "description": "<p>Once a session the GM shares one real audience trend about the party. A crawler who leans into it makes their next check that could earn Popularity with Advantage, if used before the session ends.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Social",
+    "tier": 2,
+    "floor": 6,
+    "price": 350000,
+    "status": "homebrew",
+    "footprint": "Module (2 units)",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Learn a current audience trend; playing into it gives Advantage on a Popularity check.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "HB-109"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!SmsOBBl74EozBzNM",
+  "folder": "DN4Kb1fctxbBlpic"
+}

@@ -1,0 +1,49 @@
+{
+  "_id": "s05un68OyzrPrDLa",
+  "name": "Magic Workshop",
+  "type": "spaceUpgrade",
+  "img": "icons/skills/melee/weapons-crossed-swords-yellow.webp",
+  "system": {
+    "description": "<p>Practice here uses the normal spell and skill advancement rules. It teaches no new spells by itself.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Magic Training",
+    "tier": 2,
+    "floor": 6,
+    "price": 1000000,
+    "status": "canon",
+    "footprint": "Major room",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Spell training and magic-boosting functions.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "C-032"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!s05un68OyzrPrDLa",
+  "folder": "DN4Kb1fctxbBlpic"
+}

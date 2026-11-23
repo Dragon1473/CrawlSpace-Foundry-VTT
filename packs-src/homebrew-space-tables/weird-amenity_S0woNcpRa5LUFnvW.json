@@ -1,0 +1,135 @@
+{
+  "_id": "S0woNcpRa5LUFnvW",
+  "name": "Weird Amenity",
+  "img": "icons/svg/d20-grey.svg",
+  "description": "<p>Homebrew Personal Space reward table.</p>",
+  "formula": "1d8",
+  "replacement": true,
+  "displayRoll": true,
+  "results": [
+    {
+      "type": "document",
+      "name": "Popcorn Machine",
+      "img": "icons/svg/house.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.q2JtZ0kXAlD1VVPO",
+      "description": "A popcorn machine. That is the whole upgrade.",
+      "range": [
+        1,
+        1
+      ],
+      "weight": 1,
+      "_id": "YwlcrriS0C6ylJYX",
+      "_key": "!tables.results!S0woNcpRa5LUFnvW.YwlcrriS0C6ylJYX"
+    },
+    {
+      "type": "document",
+      "name": "Pudding Machine",
+      "img": "icons/svg/house.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.bjNYLaQFd4kXjLim",
+      "description": "A sponsored pudding dispenser.",
+      "range": [
+        2,
+        2
+      ],
+      "weight": 1,
+      "_id": "lBieNRhN9Z6t7FhZ",
+      "_key": "!tables.results!S0woNcpRa5LUFnvW.lBieNRhN9Z6t7FhZ"
+    },
+    {
+      "type": "document",
+      "name": "Cleaner Bot",
+      "img": "icons/svg/house.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.KMCyR2sT0rM0P7x2",
+      "description": "A flying robot that keeps the space clean.",
+      "range": [
+        3,
+        3
+      ],
+      "weight": 1,
+      "_id": "9l2iZ9D9DrIsBfw8",
+      "_key": "!tables.results!S0woNcpRa5LUFnvW.9l2iZ9D9DrIsBfw8"
+    },
+    {
+      "type": "document",
+      "name": "Upgraded Litterbox",
+      "img": "icons/svg/pawprint.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.2GOJZu4rOJkDNt72",
+      "description": "A very fancy litterbox.",
+      "range": [
+        4,
+        4
+      ],
+      "weight": 1,
+      "_id": "2GTFdE3FwFeOT3t6",
+      "_key": "!tables.results!S0woNcpRa5LUFnvW.2GTFdE3FwFeOT3t6"
+    },
+    {
+      "type": "document",
+      "name": "Recap Theater",
+      "img": "icons/svg/house.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.PBrdfFaVXXGizh0P",
+      "description": "After a recap, ask the GM one question about what was broadcast.",
+      "range": [
+        5,
+        5
+      ],
+      "weight": 1,
+      "_id": "iaVV5Fcwe2RZRJqn",
+      "_key": "!tables.results!S0woNcpRa5LUFnvW.iaVV5Fcwe2RZRJqn"
+    },
+    {
+      "type": "document",
+      "name": "Trophy Display Wall",
+      "img": "icons/svg/house.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.cqanx7QsM6CcFjp3",
+      "description": "Once per floor, mounting a new boss or quest trophy gives an owner +1 Popularity.",
+      "range": [
+        6,
+        6
+      ],
+      "weight": 1,
+      "_id": "d7Crz79Y7FDvrVI7",
+      "_key": "!tables.results!S0woNcpRa5LUFnvW.d7Crz79Y7FDvrVI7"
+    },
+    {
+      "type": "document",
+      "name": "Wardrobe & Costume Wall",
+      "img": "icons/svg/house.svg",
+      "documentUuid": "Compendium.crawlspace.homebrew-personal-space.Item.dXxhFBr0LNfTT99u",
+      "description": "Once a session, Advantage on a check where the outfit matters.",
+      "range": [
+        7,
+        7
+      ],
+      "weight": 1,
+      "_id": "uUIE5PD5Wq1FzLGQ",
+      "_key": "!tables.results!S0woNcpRa5LUFnvW.uUIE5PD5Wq1FzLGQ"
+    },
+    {
+      "type": "text",
+      "name": "GM's choice: something branded, useful and a little ridiculous.",
+      "img": "icons/svg/d20-grey.svg",
+      "description": "GM's choice: something branded, useful and a little ridiculous.",
+      "range": [
+        8,
+        8
+      ],
+      "weight": 1,
+      "_id": "L77WJzZPpHHvltAF",
+      "_key": "!tables.results!S0woNcpRa5LUFnvW.L77WJzZPpHHvltAF"
+    }
+  ],
+  "flags": {},
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!tables!S0woNcpRa5LUFnvW"
+}

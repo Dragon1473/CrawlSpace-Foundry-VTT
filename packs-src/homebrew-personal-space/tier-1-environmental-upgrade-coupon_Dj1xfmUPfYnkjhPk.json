@@ -1,0 +1,49 @@
+{
+  "_id": "Dj1xfmUPfYnkjhPk",
+  "name": "Tier 1 Environmental Upgrade Coupon",
+  "type": "spaceUpgrade",
+  "img": "icons/sundries/documents/document-sealed-signatures-red.webp",
+  "system": {
+    "description": "<p>Two coupons can't be combined on one purchase.</p>",
+    "notes": "",
+    "kind": "coupon",
+    "category": "Coupon",
+    "tier": 1,
+    "floor": 4,
+    "price": 0,
+    "status": "canon",
+    "footprint": "Coupon",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Pays for one Tier 1 upgrade up to 250,000 gold.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "C-080"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!Dj1xfmUPfYnkjhPk",
+  "folder": "1Pw3BpXvvjEJXxF2"
+}

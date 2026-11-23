@@ -1,0 +1,49 @@
+{
+  "_id": "JlddHrxhzhnMhZTB",
+  "name": "Beast Recovery Den",
+  "type": "spaceUpgrade",
+  "img": "icons/svg/pawprint.svg",
+  "system": {
+    "description": "<p>A bonded pet that takes a Long Rest here returns to full Health, and its owner has Advantage on the next Animal Handling check with it before the following Long Rest. No undoing level loss, death, curses or special conditions.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Pet",
+    "tier": 2,
+    "floor": 6,
+    "price": 350000,
+    "status": "homebrew",
+    "footprint": "Small room (4 units)",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "A bonded pet's Long Rest here restores it to full Health.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "HB-104"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!JlddHrxhzhnMhZTB",
+  "folder": "DN4Kb1fctxbBlpic"
+}

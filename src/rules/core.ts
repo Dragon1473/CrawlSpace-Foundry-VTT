@@ -1,3 +1,4 @@
+import { isBossLike, mobBaseStat } from './mob-kinds.ts'
 /** Pure rules ported from CrawlSpace `src/shared`. No Foundry globals here, so tests can import it directly. */
 
 /** abilityScores.ts: crawler/creature ability score bands. Blank or invalid values give 0. */
@@ -219,7 +220,8 @@ export function mobDerived(input: {
   publishedSurprise?: number | null
   publishedHealthSlots?: number | null
 }) {
-  const isBoss = input.kind === 'boss'
+  // Feral gods and gods are boss-like: a tier's health slots and points per level.
+  const isBoss = isBossLike(input.kind)
   return {
     healthSlots:
       input.publishedHealthSlots ?? (isBoss ? input.bossTier.healthSlots + input.floor : Math.min(input.level, 10)),
@@ -227,6 +229,8 @@ export function mobDerived(input: {
     evade: input.publishedEvade ?? 10 + input.dexMod + input.floor,
     surprise: input.publishedSurprise ?? 10 + input.intMod + input.floor,
     statPoints: input.level * (isBoss ? input.bossTier.statsPerLevel : 3),
+    /** Every stat starts here before the level's points: 1 for mobs, 5 for bosses and deities. */
+    baseStat: mobBaseStat(input.kind),
   }
 }
 

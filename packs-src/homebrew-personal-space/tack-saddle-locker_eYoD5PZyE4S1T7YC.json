@@ -1,0 +1,72 @@
+{
+  "_id": "eYoD5PZyE4S1T7YC",
+  "name": "Tack & Saddle Locker",
+  "type": "spaceUpgrade",
+  "img": "icons/environment/settlement/stable.webp",
+  "system": {
+    "description": "<p>Fifteen minutes of preparation gives Advantage on the next Riding check with that mount before the next Long Rest, once per mount per day. A proper saddle and a rideable mount are still needed. (While in the space, the crawler has Advantage on Riding.)</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Mount",
+    "tier": 1,
+    "floor": 4,
+    "price": 50000,
+    "status": "homebrew",
+    "footprint": "Module (2 units)",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "After preparing, Advantage on the next Riding check with that mount.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [
+    {
+      "name": "Tack & Saddle Locker: Advantage",
+      "img": "icons/environment/settlement/stable.webp",
+      "type": "base",
+      "transfer": false,
+      "disabled": false,
+      "description": "",
+      "system": {
+        "changes": [
+          {
+            "key": "checkMode:Riding",
+            "type": "crawlspace.rollMode",
+            "value": "advantage",
+            "phase": "initial"
+          }
+        ],
+        "conditionType": "buff"
+      },
+      "flags": {},
+      "_id": "EilEr5z8ISHNFLmB",
+      "_key": "!items.effects!eYoD5PZyE4S1T7YC.EilEr5z8ISHNFLmB"
+    }
+  ],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "HB-006"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!eYoD5PZyE4S1T7YC",
+  "folder": "Oyd7R3n3iQdfJD8E"
+}

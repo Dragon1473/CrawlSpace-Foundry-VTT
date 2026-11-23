@@ -1,0 +1,49 @@
+{
+  "_id": "DPwnlFveLp1ttJ0N",
+  "name": "Spell Practice Chamber",
+  "type": "spaceUpgrade",
+  "img": "icons/skills/melee/weapons-crossed-swords-yellow.webp",
+  "system": {
+    "description": "<p>One 1-hour session a day counts as two grinding hours for one spell or magic skill. It doesn't waive mana costs in real fights or grant spells.</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Magic / Training",
+    "tier": 2,
+    "floor": 6,
+    "price": 1000000,
+    "status": "homebrew",
+    "footprint": "Major room (12 units)",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Once a day, one hour counts as 2 grinding hours toward a spell or magic skill.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 2
+    }
+  },
+  "effects": [],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "HB-108"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!DPwnlFveLp1ttJ0N",
+  "folder": "DN4Kb1fctxbBlpic"
+}

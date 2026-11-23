@@ -1,0 +1,72 @@
+{
+  "_id": "nnFXfNMdzJggzngK",
+  "name": "Holo-Scenario Archive",
+  "type": "spaceUpgrade",
+  "img": "icons/skills/melee/weapons-crossed-swords-yellow.webp",
+  "system": {
+    "description": "<p>Store up to three Mob or Boss profiles from real fights. Once a day, a 30-minute review gives Advantage on one Tactics or Perception check about one of them before the next Long Rest. It never reveals what the party didn't see. (While in the space, the crawler has Advantage on Tactics and Perception; keep the once-a-day limit yourself.)</p>",
+    "notes": "",
+    "kind": "upgrade",
+    "category": "Training / Tactical",
+    "tier": 3,
+    "floor": 9,
+    "price": 3000000,
+    "status": "homebrew",
+    "footprint": "Large room (8 units)",
+    "spaceLevel": 0,
+    "owner": "",
+    "installed": true,
+    "attachedTo": "",
+    "summary": "Replays up to three fought foes; reviewing one gives Advantage on a Tactics or Perception check.",
+    "rest": {
+      "longRestHours": null,
+      "goodSleepHours": 0,
+      "shortRestSlots": 0
+    },
+    "training": {
+      "hours": 0
+    }
+  },
+  "effects": [
+    {
+      "name": "Holo-Scenario Archive: Advantage",
+      "img": "icons/skills/melee/weapons-crossed-swords-yellow.webp",
+      "type": "base",
+      "transfer": false,
+      "disabled": false,
+      "description": "",
+      "system": {
+        "changes": [
+          {
+            "key": "checkMode:Tactics, Perception",
+            "type": "crawlspace.rollMode",
+            "value": "advantage",
+            "phase": "initial"
+          }
+        ],
+        "conditionType": "buff"
+      },
+      "flags": {},
+      "_id": "hjIAhGpb3wJSVDL8",
+      "_key": "!items.effects!nnFXfNMdzJggzngK.hjIAhGpb3wJSVDL8"
+    }
+  ],
+  "flags": {
+    "crawlspace": {
+      "catalogRef": "HB-216"
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.370",
+    "systemId": "crawlspace",
+    "systemVersion": "0.9.8.33",
+    "createdTime": null,
+    "modifiedTime": null,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  },
+  "_key": "!items!nnFXfNMdzJggzngK",
+  "folder": "Mwql17X180xYnF9f"
+}
