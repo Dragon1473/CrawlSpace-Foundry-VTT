@@ -3731,6 +3731,9 @@
     border-radius: 2px;
     text-shadow: none;
   }
+  /* Roll-table draws: core paints the table's description dark grey and the rows' rules parchment tan. */
+  :is(#sidebar, .chat-popout, #chat-notifications) .chat-message .table-draw .table-description { color: #c0dfef; border-top-color: rgb(131 223 255 / 30%); }
+  :is(#sidebar, .chat-popout, #chat-notifications) .chat-message .table-draw ul.table-results li { color: #f2fcff; border-bottom-color: rgb(131 223 255 / 30%); }
   /* The chat box: a dark HUD well with light text, its format menu and the message-mode buttons in HUD blue. */
   #sidebar .chat-form { border-top: 1px solid rgb(131 223 255 / 40%); }
   :is(#sidebar, #chat-notifications) .chat-form :is(textarea, prose-mirror, #chat-message) {
@@ -4621,7 +4624,10 @@
   .crawl-skill-creator .form-group.stacked { flex-direction: column; align-items: stretch; }
   .crawl-skill-creator textarea { width: 100%; resize: vertical; }
   .crawl-skill-creator input[name='cooldownAmount'] { flex: 0 0 60px; }
-  .crawl-skill-creator .crawl-skill-compare a { margin-right: 4px; }
+  /* The form scrolls inside the dialog, so the buttons stay on screen. */
+  .crawl-skill-creator { max-height: calc(100vh - 160px); overflow-y: auto; padding-right: 4px; }
+  .crawl-skill-creator .crawl-skill-compare-open { flex: none; align-self: center; padding: 0 4px; }
+  .crawl-skill-creator .crawl-skill-compare-hint:empty { display: none; }
   .crawl-skill-creator .crawl-skill-balance ul { margin: 0; padding-left: 18px; }
   .crawl-skill-creator .crawl-skill-balance li.ok { list-style: none; margin-left: -18px; opacity: 0.8; }
   .crawl-skill-creator .crawl-skill-credit { font-size: 0.85em; text-align: center; margin-top: 6px; }

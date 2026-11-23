@@ -73,11 +73,12 @@
     <p class="hint">{{localize "CRAWLSPACE.Loot.EarthHint"}}</p>
     {{else}}
     <dl class="loot-tier-summary">
-      <dt>{{localize "CRAWLSPACE.Loot.ContentsLabel"}}</dt><dd>{{localize "CRAWLSPACE.Loot.Counts" items=settings.items consumables=settings.consumables potions=settings.potions}}</dd>
+      <dt>{{localize "CRAWLSPACE.Loot.ContentsLabel"}}</dt><dd>{{#if fromTable}}{{localize "CRAWLSPACE.Rewards.FromTable"}}{{else}}{{localize "CRAWLSPACE.Loot.Counts" items=settings.items consumables=settings.consumables potions=settings.potions}}{{/if}}</dd>
       <dt>{{localize "CRAWLSPACE.Crawler.Gold"}}</dt><dd>{{gold}}</dd>
       <dt>{{localize "CRAWLSPACE.Loot.PropertyRolls"}}</dt><dd>{{propertyRolls}}</dd>
       <dt>{{localize "CRAWLSPACE.Loot.XValuesLabel" floor=floor}}</dt><dd>{{xValues}}</dd>
     </dl>
+    {{#unless fromTable}}
     <details class="loot-quantities">
       <summary>{{localize "CRAWLSPACE.Loot.Adjust"}}</summary>
       <div class="loot-quantity-row">
@@ -87,6 +88,7 @@
         <button type="button" data-action="resetQuantities">{{localize "CRAWLSPACE.Loot.Reset"}}</button>
       </div>
     </details>
+    {{/unless}}
     {{/if}}
     <div class="loot-actions">
       <button type="button" data-action="generate" {{disabled loading}}><i class="fa-solid fa-dice"></i> {{#if loading}}{{localize "CRAWLSPACE.Awards.Loading"}}{{else}}{{localize "CRAWLSPACE.Loot.Generate"}}{{/if}}<small>{{localize "CRAWLSPACE.Loot.GenerateHint"}}</small></button>

@@ -6,7 +6,8 @@
  * Prepare mode fills a loot box item's contents ahead of time; awarding it later hands out exactly those.
  * Compendium "database picker" choices are drag and drop here: items onto the preview, achievements onto theirs.
  */
-import { rewardContents } from '../loot/reward-tables'
+import { rewardContents, rewardTablesOn } from '../loot/reward-tables'
+import { rewardTable } from '../rules/reward-tables'
 import { lootTiers, lootTypes, tierRules, type LootTier, type LootType } from '../crawlspace-shared/shared/lootData'
 import { generateLoot, generateLootEntry, goldAllowed, rollLootGold, xValueLabel, type LootEntry, type LootSettings } from '../crawlspace-shared/shared/lootGenerator'
 import { describeInventoryItem, finalizeLootItem } from '../crawlspace-shared/shared/inventoryItems'
@@ -136,6 +137,8 @@ export class CrawlerAwards extends HandlebarsApplicationMixin(ApplicationV2) {
       types: Object.fromEntries(lootTypes.filter((value) => value !== 'Earth' || tier === 'Silver').map((value) => [value, value])),
       settings: this.settings,
       earth: type === 'Earth',
+      // A box the reward tables cover rolls its d100 row, so the generator's counts don't apply.
+      fromTable: rewardTablesOn() && !!rewardTable(type, tier),
       gold: goldAllowed(tier, floor, type) ? tierRules[tier].gold : tier === 'Celestial' ? t('NoGold') : t('NoGoldFloor'),
       propertyRolls: tierRules[tier].rolls || t('Mundane'),
       xValues: tier === 'Bronze' ? '—' : t('XValues', { stat: xValueLabel(tier, false, floor), skill: xValueLabel(tier, true, floor), passive: Math.min(15, floor) }),

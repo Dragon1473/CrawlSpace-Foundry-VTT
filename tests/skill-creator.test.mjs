@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { balanceHints, checkTypeFor, cooldownText, damageFormulas, defaultAnswers, hobbyAnswers, INTENTS, intentOf, skillItemData } from '../src/rules/skill-creator.ts'
+import { balanceHints, checkTypeFor, cooldownText, damageFormulas, defaultAnswers, compareChoices, hobbyAnswers, INTENTS, intentOf, skillItemData } from '../src/rules/skill-creator.ts'
 import { durationSeconds, durationEvent } from '../src/rules/time.ts'
 import { EARTH_HOBBIES, THOUSAND_HOBBIES } from '../src/rules/hobby-lists.ts'
 
@@ -55,4 +55,18 @@ test('the chart groups core skills by purpose, and hobbies make utility skills',
   assert.equal(skillItemData(hobby, labels).flags.crawlspace.hobby, 'Falconry')
   assert.equal(EARTH_HOBBIES.length, 80)
   assert.equal(THOUSAND_HOBBIES.length, 1000)
+})
+
+test("the compare box lists each skill once, this purpose's skills first, then the rest by name", () => {
+  const skills = [
+    { name: 'Zoology', uuid: 'Item.z', intent: null },
+    { name: 'stealth', uuid: 'Compendium.a.Item.s', intent: null },
+    { name: 'Stealth', uuid: 'Item.s', intent: null },
+    { name: 'Pickpocket', uuid: 'Item.p', intent: 'sneak' },
+    { name: 'Alchemy', uuid: 'Item.a', intent: null },
+  ]
+  assert.deepEqual(compareChoices(skills, 'sneak').map((skill) => skill.name), ['Pickpocket', 'Stealth', 'Alchemy', 'Zoology'])
+  // A world copy beats a compendium one of the same name.
+  assert.equal(compareChoices(skills, 'sneak').find((skill) => skill.name === 'Stealth').uuid, 'Item.s')
+  assert.deepEqual(compareChoices(skills, 'fight').map((skill) => skill.name), ['Alchemy', 'Pickpocket', 'Stealth', 'Zoology'])
 })

@@ -152,6 +152,25 @@ export function skillItemData(input: SkillAnswers, labels: { range: string; targ
 /** The intent a skill name belongs to on the chart, if it is a core skill there. */
 export const intentOf = (name: string) => INTENTS.find((intent) => intent.skills.some((skill) => skill.toLowerCase() === name.trim().toLowerCase()))?.id ?? null
 
+export type CompareSkill = { name: string; uuid: string; intent?: string | null }
+
+/**
+ * The Skill Creator's compare box: every skill once by name (a world copy over a compendium one), the ones for this
+ * purpose first (the chart's core skills, or skills the Creator tagged with it), then the rest by name.
+ */
+export function compareChoices(skills: CompareSkill[], intent: string): CompareSkill[] {
+  const byName = new Map<string, CompareSkill>()
+  for (const skill of skills) {
+    const key = skill.name.trim().toLowerCase()
+    const had = byName.get(key)
+    if (!key || (had && (had.uuid.startsWith('Item.') || !skill.uuid.startsWith('Item.')))) continue
+    byName.set(key, { ...skill, intent: had?.intent ?? skill.intent })
+  }
+  const core = new Set((INTENTS.find((entry) => entry.id === intent)?.skills ?? []).map((name) => name.toLowerCase()))
+  const first = (skill: CompareSkill) => (core.has(skill.name.trim().toLowerCase()) || skill.intent === intent ? 0 : 1)
+  return [...byName.values()].sort((a, b) => first(a) - first(b) || a.name.localeCompare(b.name))
+}
+
 /** A hobby's skill: a utility skill named for the hobby, described by its table line. */
 export function hobbyAnswers(hobby: string, description = ''): SkillAnswers {
   return { ...defaultAnswers(), name: hobby, intent: 'other', kind: 'utility', stat: 'INT', targets: ['self'], description, hobby }

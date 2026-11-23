@@ -34,6 +34,9 @@ const NEW_ROWS: Record<string, () => Record<string, unknown>> = {
 
 const isBuild = (item: any) => item.type === 'race' || item.type === 'class'
 
+/** A list field shown as "a, b, c"; anything that isn't a list (a class's text tags, a skill's rank upgrades) shows blank. */
+const listText = (value: unknown) => (Array.isArray(value) ? value.join(', ') : '')
+
 /** CrawlSpace's build totals for a race or class item (raceClassRules.ts). */
 export const itemBuild = (item: any) => getRaceClassBuild(item.type === 'race' ? 'races' : 'classes', item._source.system)
 
@@ -166,8 +169,9 @@ export class CrawlItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
       craftCategoryChoices: Object.fromEntries(craftCategories().map((category) => [category.id, category.label])),
       spaceKindChoices: Object.fromEntries(UPGRADE_KINDS.map((kind) => [kind, game.i18n.localize(`CRAWLSPACE.Space.KindChoice.${kind}`)])),
       spaceStatusChoices: { canon: game.i18n.localize('CRAWLSPACE.Space.StatusChoice.canon'), homebrew: game.i18n.localize('CRAWLSPACE.Space.StatusChoice.homebrew') },
-      physicalTags: (item._source.system.tags ?? []).join(', '),
-      upgradesText: (item._source.system.upgrades ?? []).join(', '),
+      // Lists on physical items only: a class's tags are text and a skill's upgrades are rank fields.
+      physicalTags: listText(item._source.system.tags),
+      upgradesText: listText(item._source.system.upgrades),
     })
     return context
   }

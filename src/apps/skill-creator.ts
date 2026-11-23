@@ -1,7 +1,7 @@
 /**
  * The Skill Creator window (homebrew, the `skillCreator` world setting; rules/skill-creator.ts has the rules). It
  * follows the "Homebrew Skill Flow Chart" by diffendice & Dungeon Anarchists, shows the skills already made for the
- * same purpose (reflavor instead?), and creates the skill in the world (GM) or on a crawler. Its "Roll a hobby" button,
+ * same purpose in a compare box that autocompletes from every skill (reflavor instead?), and creates the skill in the world (GM) or on a crawler. Its "Roll a hobby" button,
  * and the "Make skill" button on a drawn hobby-table card, start a hobby skill from the Earth hobby tables.
  * Opened from the Items directory, a hobby card, or game.crawlspace.skillCreator.open().
  */
@@ -9,6 +9,7 @@ import { stableId } from '../import/convert'
 import { EARTH_HOBBIES, THOUSAND_HOBBIES } from '../rules/hobby-lists'
 import {
   balanceHints,
+  compareChoices,
   COOLDOWNS,
   CREDIT_URL,
   DAMAGE_TYPES,
@@ -19,6 +20,7 @@ import {
   skillItemData,
   STATS,
   TARGETS,
+  type CompareSkill,
   type SkillAnswers,
 } from '../rules/skill-creator'
 
@@ -40,20 +42,15 @@ export function randomHobby(): { name: string; description: string } {
   return { name: THOUSAND_HOBBIES[pick - EARTH_HOBBIES.length], description: '' }
 }
 
-/** Skills already in the world or compendiums that are for this purpose: by the chart's list, or a Creator tag. */
-async function similarSkills(intent: string): Promise<{ name: string; uuid: string }[]> {
-  const names = new Set((INTENTS.find((entry) => entry.id === intent)?.skills ?? []).map((name) => name.toLowerCase()))
-  const found = new Map<string, { name: string; uuid: string }>()
-  const consider = (name: string, uuid: string, type: string, tag?: string) => {
-    if (type !== 'skill' || found.has(name.toLowerCase())) return
-    if (names.has(name.toLowerCase()) || tag === intent) found.set(name.toLowerCase(), { name, uuid })
-  }
+/** Every skill in the world and the Item compendiums, with the purpose the Creator tagged it with. */
+async function allSkills(): Promise<CompareSkill[]> {
+  const skills: CompareSkill[] = []
   for (const pack of game.packs) {
     if (pack.documentName !== 'Item') continue
-    for (const entry of await pack.getIndex({ fields: ['flags.crawlspace.intent'] })) consider(entry.name, entry.uuid, entry.type, entry.flags?.crawlspace?.intent)
+    for (const entry of await pack.getIndex({ fields: ['flags.crawlspace.intent'] })) if (entry.type === 'skill') skills.push({ name: entry.name, uuid: entry.uuid, intent: entry.flags?.crawlspace?.intent })
   }
-  for (const item of game.items) consider(item.name, item.uuid, item.type, item.getFlag('crawlspace', 'intent'))
-  return [...found.values()].sort((a, b) => a.name.localeCompare(b.name))
+  for (const item of game.items) if (item.type === 'skill') skills.push({ name: item.name, uuid: item.uuid, intent: item.getFlag('crawlspace', 'intent') })
+  return skills
 }
 
 function form(answers: SkillAnswers) {
@@ -71,7 +68,9 @@ function form(answers: SkillAnswers) {
     <input type="hidden" name="hobby" value="${esc(answers.hobby ?? '')}">
     <fieldset><legend>${esc(t('Step.Want'))}</legend>
       <div class="form-group"><label>${esc(t('IntentLabel'))}</label><select name="intent">${intents}</select></div>
-      <p class="crawl-skill-compare hint"></p>
+      <div class="form-group"><label>${esc(t('CompareLabel'))}</label><div class="form-fields"><input type="text" class="crawl-skill-compare" list="crawl-skill-compare-list" placeholder="${esc(t('ComparePlaceholder'))}" autocomplete="off"><a class="crawl-skill-compare-open" hidden data-tooltip="${esc(t('CompareOpen'))}"><i class="fa-solid fa-book-open"></i></a></div></div>
+      <datalist id="crawl-skill-compare-list"></datalist>
+      <p class="crawl-skill-compare-hint hint"></p>
     </fieldset>
     <fieldset><legend>${esc(t('Step.Kind'))}</legend>
       <div class="form-group"><label class="checkbox"><input type="radio" name="kind" value="attack" ${answers.kind === 'attack' ? 'checked' : ''}> ${esc(t('Attack'))}</label><label class="checkbox"><input type="radio" name="kind" value="utility" ${answers.kind === 'utility' ? 'checked' : ''}> ${esc(t('Utility'))}</label></div>
@@ -162,7 +161,19 @@ export async function openSkillCreator(options: { actor?: any; answers?: Partial
     render: (_event: Event, dialog: any) => {
       const root: HTMLElement = dialog.element
       const panel = root.querySelector<HTMLElement>('.crawl-skill-creator')!
-      const compare = root.querySelector<HTMLElement>('.crawl-skill-compare')!
+      const compare = root.querySelector<HTMLInputElement>('.crawl-skill-compare')!
+      const compareList = root.querySelector<HTMLDataListElement>('#crawl-skill-compare-list')!
+      const compareOpen = root.querySelector<HTMLAnchorElement>('.crawl-skill-compare-open')!
+      const compareHint = root.querySelector<HTMLElement>('.crawl-skill-compare-hint')!
+      const skills = allSkills()
+      let choices: CompareSkill[] = []
+      const picked = () => choices.find((skill) => skill.name.toLowerCase() === compare.value.trim().toLowerCase())
+      // The compare box isn't part of the skill: its typing only shows or hides the open button.
+      compare.addEventListener('input', (event) => {
+        event.stopPropagation()
+        compareOpen.hidden = !picked()
+      })
+      compareOpen.addEventListener('click', async () => (await fromUuid(picked()?.uuid ?? ''))?.sheet?.render(true))
       const balance = root.querySelector<HTMLElement>('.crawl-skill-balance ul')!
       let shownIntent = ''
       const update = async () => {
@@ -172,13 +183,10 @@ export async function openSkillCreator(options: { actor?: any; answers?: Partial
         balance.innerHTML = hints.length ? hints.map((hint) => `<li>${esc(t(`Balance.${hint}`))}</li>`).join('') : `<li class="ok">${esc(t('Balance.Ok'))}</li>`
         if (current.intent === shownIntent) return
         shownIntent = current.intent
-        const similar = current.intent === 'fight' ? [] : await similarSkills(current.intent)
-        compare.innerHTML =
-          current.intent === 'fight'
-            ? esc(t('CompareFight'))
-            : similar.length
-              ? `${esc(t('Compare'))} ${similar.map((skill) => `<a class="content-link" data-uuid="${esc(skill.uuid)}" data-link><i class="fa-solid fa-book"></i> ${esc(skill.name)}</a>`).join(' ')}`
-              : esc(t('CompareNone'))
+        choices = compareChoices(await skills, current.intent)
+        compareList.replaceChildren(...choices.map((skill) => Object.assign(document.createElement('option'), { value: skill.name })))
+        compareOpen.hidden = !picked()
+        compareHint.textContent = current.intent === 'fight' ? t('CompareFight') : choices.length ? '' : t('CompareNone')
       }
       root.addEventListener('input', () => void update())
       root.addEventListener('change', () => void update())
