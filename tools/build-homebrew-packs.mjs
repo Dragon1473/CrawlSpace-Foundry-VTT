@@ -99,6 +99,31 @@ const STARTING_RECORDS = [
   },
 ]
 
+/** What each starter table is for, in the system's own words. */
+const TABLE_USES = {
+  alchemy: 'Brew potions and poisons.',
+  arcanist: 'Bind a spell into an item.',
+  armorer: 'Make and improve armor.',
+  engineering: 'Build things with moving parts, fluids or chemicals, such as ammunition.',
+  metalworking: 'Forge and improve weapons.',
+  sappers: 'Make explosives, and keep their parts stable.',
+  writing: 'Write spell scrolls.',
+  tattoo: 'Ink magical tattoos.',
+  mundane: 'A sturdy workbench for everyday building.',
+}
+
+const TABLE_ICONS = {
+  alchemy: 'icons/skills/toxins/cauldron-pot-bubbles-green.webp',
+  arcanist: 'icons/skills/ranged/wand-attack-beam-blue.webp',
+  armorer: 'icons/skills/trades/smithing-anvil-silver-red.webp',
+  engineering: 'icons/tools/hand/wrench-adjustable-toothed.webp',
+  metalworking: 'icons/skills/trades/smithing-anvil-brown.webp',
+  sappers: 'icons/commodities/tech/smoke-bomb-red-yellow.webp',
+  writing: 'icons/tools/scribal/ink-quill-red.webp',
+  tattoo: 'icons/commodities/cloth/thread-and-needle.webp',
+  mundane: 'icons/tools/hand/wrench-adjustable.webp',
+}
+
 applyBuilderFixes()
 await writeBuilderBackgrounds(path.join(SRC, 'homebrew-items'))
 writeCraftingStarters(path.join(SRC, 'homebrew-items'))
@@ -154,31 +179,6 @@ async function writeBuilderBackgrounds(dir) {
   }
   for (const { file, doc } of existing) if (doc.flags?.crawlspace?.builderBackground && !keep.has(file)) fs.rmSync(path.join(dir, file))
   console.log(`homebrew-items: ${docs.length} builder backgrounds`)
-}
-
-/** What each starter table is for, in the system's own words. */
-const TABLE_USES = {
-  alchemy: 'Brew potions and poisons.',
-  arcanist: 'Bind a spell into an item.',
-  armorer: 'Make and improve armor.',
-  engineering: 'Build things with moving parts, fluids or chemicals, such as ammunition.',
-  metalworking: 'Forge and improve weapons.',
-  sappers: 'Make explosives, and keep their parts stable.',
-  writing: 'Write spell scrolls.',
-  tattoo: 'Ink magical tattoos.',
-  mundane: 'A sturdy workbench for everyday building.',
-}
-
-const TABLE_ICONS = {
-  alchemy: 'icons/skills/toxins/cauldron-pot-bubbles-green.webp',
-  arcanist: 'icons/skills/ranged/wand-attack-beam-blue.webp',
-  armorer: 'icons/skills/trades/smithing-anvil-silver-red.webp',
-  engineering: 'icons/tools/hand/wrench-adjustable-toothed.webp',
-  metalworking: 'icons/skills/trades/smithing-anvil-brown.webp',
-  sappers: 'icons/commodities/tech/smoke-bomb-red-yellow.webp',
-  writing: 'icons/tools/scribal/ink-quill-red.webp',
-  tattoo: 'icons/commodities/cloth/thread-and-needle.webp',
-  mundane: 'icons/tools/hand/wrench-adjustable.webp',
 }
 
 /**

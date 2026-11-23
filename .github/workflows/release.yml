@@ -24,6 +24,8 @@ jobs:
       # Homebrew and rules packs compile from the committed packs-src. The book-text content module is never built here.
       - run: npm run packs:homebrew -- --offline
       - run: npm run packs:actions
+      - run: npm run packs:space
+      - run: npm run packs:hobbies
       - run: npm run release -- "${{ github.ref_name }}"
       - name: Publish the release
         env:
