@@ -4,7 +4,7 @@
   "type": "spaceUpgrade",
   "img": "icons/environment/settlement/stable.webp",
   "system": {
-    "description": "<p>A mount resting briefly here heals 2 Health Bar slots, never past its maximum. After a Long Rest, the first Riding check with it has Advantage.</p>",
+    "description": "<p>A mount resting briefly here heals 2 Health Bar slots, never past its maximum. After a Long Rest, the first Riding check with it has Advantage.</p><p class=\"crawl-credit\"><em>Personal Space system and tables by TallJustin (Crawler #7641; Discord: justinthegiant2).</em></p>",
     "notes": "",
     "kind": "upgrade",
     "category": "Mount",
@@ -36,7 +36,7 @@
   "_stats": {
     "coreVersion": "14.370",
     "systemId": "crawlspace",
-    "systemVersion": "0.9.8.33",
+    "systemVersion": "0.9.8.39",
     "createdTime": null,
     "modifiedTime": null,
     "lastModifiedBy": null,

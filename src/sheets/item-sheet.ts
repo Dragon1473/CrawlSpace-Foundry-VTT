@@ -10,6 +10,10 @@ import { bindRecipeEditor, recipeEditorContext } from './recipe-editor'
 import { craftCategories } from '../actors/crafting'
 import { RARITIES } from '../rules/crafting'
 import { UPGRADE_KINDS } from '../rules/personal-space'
+import { historyContext, originLine, seesValue, valuePerk } from '../actors/item-value'
+import { PIECES_FLAG, setsFor } from '../actors/gear-sets'
+import { addMember, piecesFor } from '../rules/gear-sets'
+import { unitValue } from '../rules/item-value'
 
 const { HandlebarsApplicationMixin } = foundry.applications.api
 const { ItemSheetV2 } = foundry.applications.sheets
@@ -17,6 +21,9 @@ const { ItemSheetV2 } = foundry.applications.sheets
 import { damageEffectSettings } from '../rules/damage-effects'
 
 const PHYSICAL = ['weapon', 'equipment', 'consumable', 'tattoo', 'loot', 'material', 'craftingTable']
+
+/** An item's History tab: the GM, or an owner with Determine Value 5 (actors/item-value.ts). */
+const hasHistory = (item: any) => PHYSICAL.includes(item.type) && valuePerk(item, 'history')
 
 /** Only the GM edits recipes, on things that can be crafted (or taught: books are loot). */
 const hasCrafting = (item: any) => game.user.isGM && PHYSICAL.includes(item.type)
@@ -64,6 +71,7 @@ export class CrawlItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
       copyId: CrawlItemSheet.#onCopyId,
       prepareLoot: CrawlItemSheet.#onPrepareLoot,
       openBox: CrawlItemSheet.#onOpenBox,
+      removeSetMember: CrawlItemSheet.#onRemoveSetMember,
     },
   }
 
@@ -76,11 +84,12 @@ export class CrawlItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     build: { template: 'systems/crawlspace/templates/item/build.hbs', scrollable: [''] },
     rules: { template: 'systems/crawlspace/templates/item/effects.hbs', scrollable: [''] },
     crafting: { template: 'systems/crawlspace/templates/item/crafting.hbs', scrollable: [''] },
+    history: { template: 'systems/crawlspace/templates/item/history.hbs', scrollable: [''] },
   }
 
   static TABS = {
     primary: {
-      tabs: [{ id: 'description' }, { id: 'details' }, { id: 'build' }, { id: 'rules' }, { id: 'crafting' }],
+      tabs: [{ id: 'description' }, { id: 'details' }, { id: 'build' }, { id: 'rules' }, { id: 'crafting' }, { id: 'history' }],
       initial: 'description',
       labelPrefix: 'CRAWLSPACE.Tab',
     },
@@ -95,13 +104,14 @@ export class CrawlItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     const parts = super._configureRenderParts(options)
     if (!isBuild(this.item)) delete parts.build
     if (!hasCrafting(this.item)) delete parts.crafting
+    if (!hasHistory(this.item)) delete parts.history
     return parts
   }
 
   _getTabsConfig(group: string) {
     const config = super._getTabsConfig(group)
     if (!config) return config
-    const drop = new Set([...(isBuild(this.item) ? [] : ['build']), ...(hasCrafting(this.item) ? [] : ['crafting'])])
+    const drop = new Set([...(isBuild(this.item) ? [] : ['build']), ...(hasCrafting(this.item) ? [] : ['crafting']), ...(hasHistory(this.item) ? [] : ['history'])])
     return { ...config, tabs: config.tabs.filter((tab: any) => !drop.has(tab.id)) }
   }
 
@@ -171,6 +181,12 @@ export class CrawlItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
       spaceStatusChoices: { canon: game.i18n.localize('CRAWLSPACE.Space.StatusChoice.canon'), homebrew: game.i18n.localize('CRAWLSPACE.Space.StatusChoice.homebrew') },
       // Lists on physical items only: a class's tags are text and a skill's upgrades are rank fields.
       physicalTags: listText(item._source.system.tags),
+      // Gold value: the GM edits it; others see it only when shown to them (or at Determine Value 15).
+      valueShown: PHYSICAL.includes(item.type) && seesValue(item),
+      goldValue: unitValue(system),
+      origin: PHYSICAL.includes(item.type) && valuePerk(item, 'origin') ? originLine(item) : '',
+      gearSets: PHYSICAL.includes(item.type) ? setsFor(item) : [],
+      setMembers: item.type === 'gearSet' ? (system.members ?? []).map((member: any, index: number) => ({ ...member, index })) : [],
       upgradesText: listText(item._source.system.upgrades),
     })
     return context
@@ -288,6 +304,9 @@ export class CrawlItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
       case 'crafting':
         context.craft = recipeEditorContext(item)
         break
+      case 'history':
+        context.history = historyContext(item)
+        break
       case 'rules':
         context.ids = documentIds(item)
         context.ruleTypes = ruleTypeChoices()
@@ -299,6 +318,8 @@ export class CrawlItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
           disabled: effect.disabled,
           transfer: effect.transfer,
           requiredRank: effect.system?.requiredRank,
+          // A gear set's bonus needs this many pieces equipped.
+          setPieces: item.type === 'gearSet' ? piecesFor(effect.getFlag('crawlspace', PIECES_FLAG)) : null,
           rules: rulesContext(effect),
         }))
         break
@@ -316,6 +337,17 @@ export class CrawlItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
         zone.addEventListener('dragover', (event) => event.preventDefault())
         zone.addEventListener('drop', (event) => this.#onBuildDrop(event, (zone as HTMLElement).dataset.dropList as string))
       }
+    if (this.isEditable && this.item.type === 'gearSet') {
+      const zone = this.element.querySelector('[data-set-members]')
+      zone?.addEventListener('dragover', (event) => event.preventDefault())
+      zone?.addEventListener('drop', (event) => this.#onSetMemberDrop(event as DragEvent))
+      for (const input of (this.element as HTMLElement).querySelectorAll<HTMLInputElement>('input[data-set-pieces]'))
+        input.addEventListener('change', (event) => {
+          event.stopPropagation()
+          const effect = this.item.effects.get((input.closest('[data-effect-id]') as HTMLElement | null)?.dataset.effectId)
+          effect?.setFlag('crawlspace', PIECES_FLAG, piecesFor(input.value))
+        })
+    }
     if (this.isEditable)
       for (const zone of this.element.querySelectorAll('[data-link-list]')) {
         const { linkList, index } = (zone as HTMLElement).dataset
@@ -386,6 +418,28 @@ export class CrawlItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
       }
     }
     return data
+  }
+
+  /** An item dropped on a gear set becomes one of its pieces. */
+  async #onSetMemberDrop(event: DragEvent) {
+    const data = foundry.applications.ux.TextEditor.implementation.getDragEventData(event)
+    if (data?.type !== 'Item') return
+    event.preventDefault()
+    event.stopPropagation()
+    const dropped: any = await fromUuid(data.uuid)
+    if (!dropped || !PHYSICAL.includes(dropped.type)) return ui.notifications.warn(game.i18n.localize('CRAWLSPACE.GearSet.WrongDrop'))
+    const members = this.item.system.toObject().members
+    const next = addMember(members, { name: dropped.name, uuid: dropped.uuid, img: dropped.img })
+    if (next === members) return ui.notifications.info(game.i18n.format('CRAWLSPACE.Build.AlreadyListed', { name: dropped.name }))
+    await this.item.update({ 'system.members': next })
+  }
+
+  static async #onRemoveSetMember(this: CrawlItemSheet, _event: PointerEvent, target: HTMLElement) {
+    const index = Number(target.closest<HTMLElement>('[data-member-index]')?.dataset.memberIndex)
+    const members = this.item.system.toObject().members
+    if (!Number.isInteger(index) || !members[index]) return
+    members.splice(index, 1)
+    await this.item.update({ 'system.members': members })
   }
 
   static async #onCreateEffect(this: CrawlItemSheet) {

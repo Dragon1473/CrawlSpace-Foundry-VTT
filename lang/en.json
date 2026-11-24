@@ -26,7 +26,8 @@
       "action": "Action",
       "material": "Crafting Material",
       "craftingTable": "Crafting Table",
-      "spaceUpgrade": "Personal Space Upgrade"
+      "spaceUpgrade": "Personal Space Upgrade",
+      "gearSet": "Gear Set"
     },
     "JournalEntryPage": {
       "neighborhood": "Neighborhood",
@@ -55,7 +56,8 @@
       "notes": "Notes",
       "rules": "Rules",
       "build": "Build",
-      "crafting": "Crafting"
+      "crafting": "Crafting",
+      "history": "History"
     },
     "Sheet": {
       "EffectiveHint": "With its effects and buffs. The box holds the base number.",
@@ -878,8 +880,20 @@
         "Hint": "Comma-separated names added to Alchemy, Arcanist, Armorer, Engineering, Metalworking, Sapper's, Writing, Tattoo and Mundane."
       },
       "PersonalSpaces": {
-        "Name": "Personal Spaces (homebrew)",
-        "Hint": "Personal Space actors, their upgrades and crafting tables, the Personal Space compendiums, and the rest, grinding and crafting bonuses a crawler gets while in their space. Off: the compendiums are hidden, the types leave the Create dialogs and nothing changes rests or crafting. Existing spaces are kept."
+        "Name": "Personal Spaces (homebrew by TallJustin)",
+        "Hint": "Personal Space actors, their upgrades and crafting tables, the Personal Space compendiums, and the rest, grinding and crafting bonuses a crawler gets while in their space. Off: the compendiums are hidden, the types leave the Create dialogs and nothing changes rests or crafting. Existing spaces are kept. The Personal Space system and tables are by TallJustin (Crawler #7641; Discord: justinthegiant2)."
+      },
+      "ShowItemValues": {
+        "Name": "Players see item gold values",
+        "Hint": "Item gold values are homebrew. Off (the default): only the GM sees them, apart from Determine Value's rank 15 toast. On: every player sees an item's value on its sheet."
+      },
+      "DetermineValuePerks": {
+        "Name": "Determine Value perks at ranks 1 and 5 (homebrew)",
+        "Hint": "Rank 1 sorts the inventory by value (without showing it); rank 5 opens an item's History tab (former owners and uses). Ranks 10 (the loot box an item came from) and 15 (a new item's value in a toast) work either way. Items keep their History whether this is on or off."
+      },
+      "GearSets": {
+        "Name": "Gear sets (homebrew)",
+        "Hint": "The Gear Set item type: the GM lists a set's pieces and gives it bonuses (Active Effects) that need a number of pieces equipped. Off: the type leaves the Create dialog and no set bonuses apply. Reloads the world."
       }
     },
     "Info": {
@@ -2611,13 +2625,46 @@
       "ConjoinTitle": "Conjoin Personal Spaces",
       "ConjoinHint": "Conjoin {source} into {target}? Its members, upgrades and tables move here, keeping their owners, and {source} is deleted. The join costs {cost} gold.",
       "ConjoinDone": "{source} is conjoined. The space is now Level {level}.",
-      "ConjoinedLevelDrop": "This space is conjoined: the owner whose space it upgrades drops it, or the GM raises that owner's Level in the members list."
+      "ConjoinedLevelDrop": "This space is conjoined: the owner whose space it upgrades drops it, or the GM raises that owner's Level in the members list.",
+      "Credit": "The Personal Space system and tables are homebrew by TallJustin (Crawler #7641; Discord: justinthegiant2)."
     },
     "Elite": {
       "Reveal": "Reveal as Elite",
       "Hide": "Hide Elite (show as a normal mob)",
       "Revealed": "Revealed as an Elite on the minimap.",
       "Hidden": "Shows as a normal mob on the minimap again."
+    },
+    "Value": {
+      "Label": "Gold value",
+      "GmHint": "Gold value of one unit. Players don't see it unless the world shows values or their Determine Value is rank 15.",
+      "Worth": "Worth {value} gold each",
+      "Sort": "By value",
+      "SortHint": "Determine Value: sort the inventory by gold value, most valuable first. Click again for your own order.",
+      "OriginHint": "Determine Value rank 10: the loot box this came from, or the kind it would have come from.",
+      "CameFrom": "Came from a {box} box",
+      "LikelyFrom": "Would have come from a {box} box",
+      "FormerOwners": "Former owners",
+      "NoFormerOwners": "No one else has owned this.",
+      "Usage": "Usage",
+      "UseCount": "Used {count} times.",
+      "UsedBy": "Used by {name} ×{count}",
+      "OwnedBy": "Owned by {name}",
+      "FromBox": "Came out of {name}",
+      "NoHistory": "Nothing recorded yet.",
+      "HistoryHint": "Determine Value rank 5. Items record owners and uses as they happen.",
+      "ToastTitle": "{name}'s new loot:",
+      "ToastLine": "{name} ({value} gold)",
+      "ToastLineMany": "{name} ×{quantity} ({value} gold each)"
+    },
+    "GearSet": {
+      "Pieces": "Pieces",
+      "PiecesHint": "How many of the set's pieces must be equipped for this bonus.",
+      "AtPieces": "{pieces} pieces",
+      "Equipped": "{equipped}/{total} equipped",
+      "Remove": "Remove piece",
+      "DropHint": "Drop weapons, armor and other gear here to make them pieces of the set. Pieces match by name, so every copy counts.",
+      "WrongDrop": "Only physical items (weapons, equipment, tattoos and the like) can be set pieces.",
+      "EffectsHint": "Each effect is a set bonus. Set how many pieces it needs; a crawler with that many pieces equipped gets it."
     }
   }
 }

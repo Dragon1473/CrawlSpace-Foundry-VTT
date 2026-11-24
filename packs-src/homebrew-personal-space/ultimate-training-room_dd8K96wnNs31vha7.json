@@ -4,7 +4,7 @@
   "type": "spaceUpgrade",
   "img": "icons/skills/melee/weapons-crossed-swords-yellow.webp",
   "system": {
-    "description": "<p>The top training room: up to six hours a day spread over up to six skills or spells, covering regular, magic, explosives and crafting practice, and it shows progress toward each advancement. Keep the normal advancement limits. No normal floor unlocks it.</p>",
+    "description": "<p>The top training room: up to six hours a day spread over up to six skills or spells, covering regular, magic, explosives and crafting practice, and it shows progress toward each advancement. Keep the normal advancement limits. No normal floor unlocks it.</p><p class=\"crawl-credit\"><em>Personal Space system and tables by TallJustin (Crawler #7641; Discord: justinthegiant2).</em></p>",
     "notes": "",
     "kind": "upgrade",
     "category": "Training",
@@ -36,7 +36,7 @@
   "_stats": {
     "coreVersion": "14.370",
     "systemId": "crawlspace",
-    "systemVersion": "0.9.8.33",
+    "systemVersion": "0.9.8.39",
     "createdTime": null,
     "modifiedTime": null,
     "lastModifiedBy": null,

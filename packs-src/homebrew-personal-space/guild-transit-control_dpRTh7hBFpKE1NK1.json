@@ -4,7 +4,7 @@
   "type": "spaceUpgrade",
   "img": "icons/environment/settlement/castle.webp",
   "system": {
-    "description": "<p>Adds no destinations; every endpoint must already be legal under an installed travel upgrade.</p>",
+    "description": "<p>Adds no destinations; every endpoint must already be legal under an installed travel upgrade.</p><p class=\"crawl-credit\"><em>Personal Space system and tables by TallJustin (Crawler #7641; Discord: justinthegiant2).</em></p>",
     "notes": "",
     "kind": "guild",
     "category": "Guild / Travel",
@@ -36,7 +36,7 @@
   "_stats": {
     "coreVersion": "14.370",
     "systemId": "crawlspace",
-    "systemVersion": "0.9.8.33",
+    "systemVersion": "0.9.8.39",
     "createdTime": null,
     "modifiedTime": null,
     "lastModifiedBy": null,

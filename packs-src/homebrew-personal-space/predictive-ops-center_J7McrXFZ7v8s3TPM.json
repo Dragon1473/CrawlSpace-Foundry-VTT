@@ -4,7 +4,7 @@
   "type": "spaceUpgrade",
   "img": "icons/svg/house.svg",
   "system": {
-    "description": "<p>Ask one concrete question about an active quest, known foe or mapped area; the GM gives one clue the party could reasonably work out. No hidden System facts, future events or private thoughts.</p>",
+    "description": "<p>Ask one concrete question about an active quest, known foe or mapped area; the GM gives one clue the party could reasonably work out. No hidden System facts, future events or private thoughts.</p><p class=\"crawl-credit\"><em>Personal Space system and tables by TallJustin (Crawler #7641; Discord: justinthegiant2).</em></p>",
     "notes": "",
     "kind": "upgrade",
     "category": "Quest / Tactical",
@@ -36,7 +36,7 @@
   "_stats": {
     "coreVersion": "14.370",
     "systemId": "crawlspace",
-    "systemVersion": "0.9.8.33",
+    "systemVersion": "0.9.8.39",
     "createdTime": null,
     "modifiedTime": null,
     "lastModifiedBy": null,

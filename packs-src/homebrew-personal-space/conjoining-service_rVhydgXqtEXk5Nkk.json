@@ -4,7 +4,7 @@
   "type": "spaceUpgrade",
   "img": "icons/environment/settlement/house-two-stories-small.webp",
   "system": {
-    "description": "<p>Each join of two spaces costs 5,000 gold, so three spaces need two joins. Members share the installed upgrades, but each upgrade still belongs to whoever bought it: if they leave or die, it goes with them and the space may shrink. Record each crawler as an Owner on the space's sheet.</p>",
+    "description": "<p>Each join of two spaces costs 5,000 gold, so three spaces need two joins. Members share the installed upgrades, but each upgrade still belongs to whoever bought it: if they leave or die, it goes with them and the space may shrink. Record each crawler as an Owner on the space's sheet.</p><p class=\"crawl-credit\"><em>Personal Space system and tables by TallJustin (Crawler #7641; Discord: justinthegiant2).</em></p>",
     "notes": "",
     "kind": "upgrade",
     "category": "Space Service",
@@ -36,7 +36,7 @@
   "_stats": {
     "coreVersion": "14.370",
     "systemId": "crawlspace",
-    "systemVersion": "0.9.8.33",
+    "systemVersion": "0.9.8.39",
     "createdTime": null,
     "modifiedTime": null,
     "lastModifiedBy": null,

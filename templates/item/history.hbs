@@ -1,0 +1,18 @@
+<section class="tab history {{tab.cssClass}}" data-group="{{tab.group}}" data-tab="{{tab.id}}">
+  <h3 class="pf-section">{{localize "CRAWLSPACE.Value.FormerOwners"}}</h3>
+  {{#if history.owners.length}}
+  <ul class="item-owners">{{#each history.owners}}<li><i class="fa-solid fa-user"></i> {{this}}</li>{{/each}}</ul>
+  {{else}}
+  <p class="hint">{{localize "CRAWLSPACE.Value.NoFormerOwners"}}</p>
+  {{/if}}
+  <h3 class="pf-section">{{localize "CRAWLSPACE.Value.Usage"}}</h3>
+  <p>{{localize "CRAWLSPACE.Value.UseCount" count=history.uses}}</p>
+  <ol class="item-history">
+    {{#each history.entries}}
+    <li><i class="fa-solid {{icon}}"></i> <span>{{text}}</span> <time>{{when}}</time></li>
+    {{else}}
+    <li class="empty">{{localize "CRAWLSPACE.Value.NoHistory"}}</li>
+    {{/each}}
+  </ol>
+  <p class="hint">{{localize "CRAWLSPACE.Value.HistoryHint"}}</p>
+</section>

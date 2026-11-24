@@ -67,6 +67,17 @@ npm test
 
 See [Development](https://github.com/mythaell/CrawlSpace-Foundry-VTT/wiki/Development) for packs, linking into Foundry, and releasing.
 
+## Credits
+
+Homebrew content in the system comes from the community. Thank you to:
+
+- **TallJustin** (Crawler #7641; Discord: justinthegiant2): the Personal Space system and its tables (the Personal Space Upgrades and Personal Space Tables compendiums).
+- **diffendice & Dungeon Anarchists**: the Homebrew Skill Flow Chart the Skill Creator follows.
+- **Chorus of Sanctuary**: the 1000 Hobbies roll tables ([pointmongo.com](https://pointmongo.com)) in the Hobby Tables compendium.
+- The community **"Earth Hobbies"** sheet: the Earth Hobbies (80) table.
+
+Each homebrew addition can be turned off in the system settings (the Homebrew group).
+
 ## License
 
 The code is under the [MIT License](LICENSE). The Quantico fonts are under the SIL Open Font License ([assets/fonts/OFL.txt](assets/fonts/OFL.txt)).

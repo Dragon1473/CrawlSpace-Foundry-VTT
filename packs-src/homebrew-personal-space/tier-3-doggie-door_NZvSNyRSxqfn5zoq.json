@@ -4,7 +4,7 @@
   "type": "spaceUpgrade",
   "img": "icons/svg/door-exit.svg",
   "system": {
-    "description": "<p>Turns every door the owner has already passed through on the current floor into an exit, with access controls for guests and party. It adds no new destinations.</p>",
+    "description": "<p>Turns every door the owner has already passed through on the current floor into an exit, with access controls for guests and party. It adds no new destinations.</p><p class=\"crawl-credit\"><em>Personal Space system and tables by TallJustin (Crawler #7641; Discord: justinthegiant2).</em></p>",
     "notes": "",
     "kind": "upgrade",
     "category": "Travel",
@@ -36,7 +36,7 @@
   "_stats": {
     "coreVersion": "14.370",
     "systemId": "crawlspace",
-    "systemVersion": "0.9.8.33",
+    "systemVersion": "0.9.8.39",
     "createdTime": null,
     "modifiedTime": null,
     "lastModifiedBy": null,

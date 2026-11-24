@@ -4,7 +4,7 @@
   "type": "spaceUpgrade",
   "img": "icons/tools/smithing/anvil.webp",
   "system": {
-    "description": "<p>Attach it to a table. Once per floor, a Critical Fail on a crafting check at that table becomes a Major Fail instead; materials are lost or salvaged by the Major Fail result. It cannot stop story disasters or deliberate over-enchanting.</p>",
+    "description": "<p>Attach it to a table. Once per floor, a Critical Fail on a crafting check at that table becomes a Major Fail instead; materials are lost or salvaged by the Major Fail result. It cannot stop story disasters or deliberate over-enchanting.</p><p class=\"crawl-credit\"><em>Personal Space system and tables by TallJustin (Crawler #7641; Discord: justinthegiant2).</em></p>",
     "notes": "",
     "kind": "attachment",
     "category": "Crafting",
@@ -36,7 +36,7 @@
   "_stats": {
     "coreVersion": "14.370",
     "systemId": "crawlspace",
-    "systemVersion": "0.9.8.33",
+    "systemVersion": "0.9.8.39",
     "createdTime": null,
     "modifiedTime": null,
     "lastModifiedBy": null,

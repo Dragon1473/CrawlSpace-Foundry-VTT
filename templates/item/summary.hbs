@@ -3,9 +3,24 @@
   <label><span>{{localize "CRAWLSPACE.Item.Quantity"}}</span><input type="number" name="system.quantity" value="{{systemSource.quantity}}" min="0"></label>
   {{#unless (eq type "loot")}}<label class="check"><input type="checkbox" name="system.equipped" {{checked systemSource.equipped}}> {{localize "CRAWLSPACE.Item.Equipped"}}</label>{{/unless}}
   {{/if}}
+  {{#if valueShown}}
+  {{#if isGM}}
+  <label class="pf-gold" data-tooltip="{{localize 'CRAWLSPACE.Value.GmHint'}}"><span><i class="fa-solid fa-coins"></i> {{localize "CRAWLSPACE.Value.Label"}}</span><input type="number" name="system.goldValue" value="{{systemSource.goldValue}}" min="0"></label>
+  {{else}}
+  <p class="pf-gold"><i class="fa-solid fa-coins"></i> {{localize "CRAWLSPACE.Value.Worth" value=goldValue}}</p>
+  {{/if}}
+  {{/if}}
   <dl>
     {{#each summaryRows}}<dt>{{label}}</dt><dd>{{value}}</dd>{{/each}}
   </dl>
+  {{#if origin}}<p class="pf-origin" data-tooltip="{{localize 'CRAWLSPACE.Value.OriginHint'}}"><i class="fa-solid fa-box-open"></i> {{origin}}</p>{{/if}}
+  {{#each gearSets as |set|}}
+  <div class="pf-gear-set">
+    <a class="content-link" data-link data-uuid="{{set.uuid}}" data-type="Item"><i class="fa-solid fa-layer-group"></i> {{set.name}}</a>
+    {{#if @root.item.actor}}<span class="pf-tag">{{localize "CRAWLSPACE.GearSet.Equipped" equipped=set.equipped total=set.total}}</span>{{/if}}
+    <ul>{{#each set.bonuses}}<li class="{{#if earned}}earned{{/if}}">{{localize "CRAWLSPACE.GearSet.AtPieces" pieces=pieces}}: {{name}}</li>{{/each}}</ul>
+  </div>
+  {{/each}}
   {{#if (or systemSource.source.book systemSource.source.pages)}}
   <p class="pf-source">{{systemSource.source.book}} {{systemSource.source.pages}}</p>
   {{/if}}

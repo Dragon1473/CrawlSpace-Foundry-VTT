@@ -1,3 +1,4 @@
+import { recordUse } from './item-value'
 import { applyCastEffects, itemCardDetails } from '../effects/use-conditions'
 import { orderRows } from '../rules/row-order'
 import { markAttackAdvancement } from '../documents/item'
@@ -243,6 +244,8 @@ export async function attackWithRow(actor: any, row: AttackRow, options: { fast?
     const result = await rollAttack(actor, { ...resolveAttack(actor, row), details }, options)
     // The skill or spell behind the attack counts as rolled, for advancement.
     if (result) await markAttackAdvancement(actor, [source, skill], result.effectSkills)
+    // A weapon (or thrown explosive) used: its History counts it.
+    if (result && source) await recordUse(source)
     if (result && source?.type === 'spell') await applyCastEffects(source)
     return result
   })

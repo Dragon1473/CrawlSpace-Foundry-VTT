@@ -1,4 +1,6 @@
 import { partyChoices, setCrawlerParty } from '../actors/party'
+import { valuePerk } from '../actors/item-value'
+import { sortByValue } from '../rules/item-value'
 import { mobCrawlerCount } from '../actors/elite'
 import { isBossLike, isDeity, mobActionsPerRound, statBudget } from '../rules/mob-kinds'
 import { actorTurnedOff, itemEffectKey } from '../data/effect'
@@ -526,6 +528,7 @@ export class CrawlerSheet extends CrawlActorSheet {
       openBuildPack: CrawlerSheet.#onOpenBuildPack,
       openPaperDoll: CrawlerSheet.#onOpenPaperDoll,
       openCrafting: CrawlerSheet.#onOpenCrafting,
+      toggleValueSort: CrawlerSheet.#onToggleValueSort,
       removeFromHotlist: CrawlerSheet.#onRemoveFromHotlist,
       castInherent: CrawlerSheet.#onCastInherent,
       openCompanion: CrawlerSheet.#onOpenCompanion,
@@ -651,15 +654,17 @@ export class CrawlerSheet extends CrawlActorSheet {
           label: game.i18n.localize(`CRAWLSPACE.Filter.${category.id}`),
           subtypes: category.subtypes.map((subtype) => ({ id: subtype, label: subtypeLabel(category.id, subtype) })),
         }))
+        // Determine Value 1: the inventory can be sorted by gold value, most valuable first (the value stays hidden).
+        context.valueSort = valuePerk(actor, 'sort')
+        context.valueSorted = context.valueSort && !!actor.getFlag('crawlspace', 'sortByValue')
+        const order = (list: any[]) => (context.valueSorted ? sortByValue(list) : list)
         context.inventorySections = await Promise.all(
           INVENTORY_CATEGORIES.map(async (category) => ({
             ...category,
             label: game.i18n.localize(`CRAWLSPACE.Filter.${category.id}`),
             createType: category.types[0],
             items: await Promise.all(
-              items
-                .filter((i: any) => category.types.includes(i.type))
-                .map(async (i: any) => ({ ...(await this.itemRow(i)), category: category.id, subtype: inventorySubtype(i) })),
+              order(items.filter((i: any) => category.types.includes(i.type))).map(async (i: any) => ({ ...(await this.itemRow(i)), category: category.id, subtype: inventorySubtype(i) })),
             ),
           })),
         )
@@ -913,6 +918,11 @@ export class CrawlerSheet extends CrawlActorSheet {
 
   static #onOpenPaperDoll(this: CrawlerSheet) {
     return PaperDollApp.open(this.actor)
+  }
+
+  /** Sort the inventory by gold value, or back to the hand-made order. */
+  static async #onToggleValueSort(this: CrawlerSheet) {
+    await this.actor.setFlag('crawlspace', 'sortByValue', !this.actor.getFlag('crawlspace', 'sortByValue'))
   }
 
   static #onOpenCrafting(this: CrawlerSheet) {

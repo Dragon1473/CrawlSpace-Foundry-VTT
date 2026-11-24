@@ -181,6 +181,8 @@ const physical = () => {
     tags: stringList(),
     /** Crafting reads it for the GM-approval rule (rules/crafting.ts RARITIES); blank is unrated. */
     rarity: text(),
+    /** Gold value of one unit (homebrew). Only the GM sees it unless shown to players (rules/item-value.ts). */
+    goldValue: integer(0, { min: 0 }),
   }
 }
 
@@ -442,6 +444,21 @@ export class CraftingTableData extends foundry.abstract.TypeDataModel {
       upgrades: stringList(),
       /** It levels up by one each time its owner reaches a new floor (crafting.ts). */
       autoLevel: new fields.BooleanField({ initial: true }),
+    }
+  }
+}
+
+/**
+ * A gear set (homebrew, rules/gear-sets.ts): its pieces, by name. Its ActiveEffects are the set bonuses, each needing
+ * the number of pieces in its `crawlspace.setPieces` flag; a crawler with that many pieces equipped gets it.
+ */
+export class GearSetData extends foundry.abstract.TypeDataModel {
+  [key: string]: any
+  static defineSchema() {
+    const fields = f()
+    return {
+      ...common(),
+      members: new fields.ArrayField(new fields.SchemaField({ name: text(), uuid: text(), img: text() })),
     }
   }
 }

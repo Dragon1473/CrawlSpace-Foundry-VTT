@@ -4,7 +4,7 @@
   "type": "spaceUpgrade",
   "img": "icons/skills/melee/weapons-crossed-swords-yellow.webp",
   "system": {
-    "description": "<p>One 1-hour session a day counts as two grinding hours for one combat skill. A skill still can't be ground twice in one day.</p>",
+    "description": "<p>One 1-hour session a day counts as two grinding hours for one combat skill. A skill still can't be ground twice in one day.</p><p class=\"crawl-credit\"><em>Personal Space system and tables by TallJustin (Crawler #7641; Discord: justinthegiant2).</em></p>",
     "notes": "",
     "kind": "upgrade",
     "category": "Training",
@@ -36,7 +36,7 @@
   "_stats": {
     "coreVersion": "14.370",
     "systemId": "crawlspace",
-    "systemVersion": "0.9.8.33",
+    "systemVersion": "0.9.8.39",
     "createdTime": null,
     "modifiedTime": null,
     "lastModifiedBy": null,

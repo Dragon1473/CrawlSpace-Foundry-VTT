@@ -2,7 +2,7 @@
   "_id": "vDKQXi2NnMHoDLqJ",
   "name": "Personal Space Upgrade (Tier 2)",
   "img": "icons/svg/d20-grey.svg",
-  "description": "<p>Homebrew Personal Space reward table.</p>",
+  "description": "<p>Homebrew Personal Space reward table.</p><p class=\"crawl-credit\"><em>Personal Space system and tables by TallJustin (Crawler #7641; Discord: justinthegiant2).</em></p>",
   "formula": "1d100",
   "replacement": true,
   "displayRoll": true,
@@ -362,7 +362,7 @@
   "_stats": {
     "coreVersion": "14.370",
     "systemId": "crawlspace",
-    "systemVersion": "0.9.8.33",
+    "systemVersion": "0.9.8.39",
     "createdTime": null,
     "modifiedTime": null,
     "lastModifiedBy": null,

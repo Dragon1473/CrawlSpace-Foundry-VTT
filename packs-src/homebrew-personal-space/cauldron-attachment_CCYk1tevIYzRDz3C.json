@@ -4,7 +4,7 @@
   "type": "spaceUpgrade",
   "img": "icons/tools/smithing/anvil.webp",
   "system": {
-    "description": "<p>Attach it to an Alchemy table. When brewing a batch, each potion after the first adds only half its usual time (round down to the minute). Every potion still needs its ingredients and the check.</p>",
+    "description": "<p>Attach it to an Alchemy table. When brewing a batch, each potion after the first adds only half its usual time (round down to the minute). Every potion still needs its ingredients and the check.</p><p class=\"crawl-credit\"><em>Personal Space system and tables by TallJustin (Crawler #7641; Discord: justinthegiant2).</em></p>",
     "notes": "",
     "kind": "attachment",
     "category": "Crafting Attachment",
@@ -36,7 +36,7 @@
   "_stats": {
     "coreVersion": "14.370",
     "systemId": "crawlspace",
-    "systemVersion": "0.9.8.33",
+    "systemVersion": "0.9.8.39",
     "createdTime": null,
     "modifiedTime": null,
     "lastModifiedBy": null,

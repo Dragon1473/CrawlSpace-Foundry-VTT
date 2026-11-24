@@ -4,7 +4,7 @@
   "type": "spaceUpgrade",
   "img": "icons/skills/melee/weapons-crossed-swords-yellow.webp",
   "system": {
-    "description": "<p>Store up to three Mob or Boss profiles from real fights. Once a day, a 30-minute review gives Advantage on one Tactics or Perception check about one of them before the next Long Rest. It never reveals what the party didn't see. (While in the space, the crawler has Advantage on Tactics and Perception; keep the once-a-day limit yourself.)</p>",
+    "description": "<p>Store up to three Mob or Boss profiles from real fights. Once a day, a 30-minute review gives Advantage on one Tactics or Perception check about one of them before the next Long Rest. It never reveals what the party didn't see. (While in the space, the crawler has Advantage on Tactics and Perception; keep the once-a-day limit yourself.)</p><p class=\"crawl-credit\"><em>Personal Space system and tables by TallJustin (Crawler #7641; Discord: justinthegiant2).</em></p>",
     "notes": "",
     "kind": "upgrade",
     "category": "Training / Tactical",
@@ -59,7 +59,7 @@
   "_stats": {
     "coreVersion": "14.370",
     "systemId": "crawlspace",
-    "systemVersion": "0.9.8.33",
+    "systemVersion": "0.9.8.39",
     "createdTime": null,
     "modifiedTime": null,
     "lastModifiedBy": null,

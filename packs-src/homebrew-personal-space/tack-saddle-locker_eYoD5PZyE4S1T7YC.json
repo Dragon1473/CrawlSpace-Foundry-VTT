@@ -4,7 +4,7 @@
   "type": "spaceUpgrade",
   "img": "icons/environment/settlement/stable.webp",
   "system": {
-    "description": "<p>Fifteen minutes of preparation gives Advantage on the next Riding check with that mount before the next Long Rest, once per mount per day. A proper saddle and a rideable mount are still needed. (While in the space, the crawler has Advantage on Riding.)</p>",
+    "description": "<p>Fifteen minutes of preparation gives Advantage on the next Riding check with that mount before the next Long Rest, once per mount per day. A proper saddle and a rideable mount are still needed. (While in the space, the crawler has Advantage on Riding.)</p><p class=\"crawl-credit\"><em>Personal Space system and tables by TallJustin (Crawler #7641; Discord: justinthegiant2).</em></p>",
     "notes": "",
     "kind": "upgrade",
     "category": "Mount",
@@ -59,7 +59,7 @@
   "_stats": {
     "coreVersion": "14.370",
     "systemId": "crawlspace",
-    "systemVersion": "0.9.8.33",
+    "systemVersion": "0.9.8.39",
     "createdTime": null,
     "modifiedTime": null,
     "lastModifiedBy": null,

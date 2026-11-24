@@ -4,7 +4,7 @@
   "type": "spaceUpgrade",
   "img": "icons/environment/settlement/castle.webp",
   "system": {
-    "description": "<p>One chosen crawler gets Advantage on a Negotiation, Good First Impression or Performance check with a reachable sponsor, patron or outworlder. It never forces agreement.</p>",
+    "description": "<p>One chosen crawler gets Advantage on a Negotiation, Good First Impression or Performance check with a reachable sponsor, patron or outworlder. It never forces agreement.</p><p class=\"crawl-credit\"><em>Personal Space system and tables by TallJustin (Crawler #7641; Discord: justinthegiant2).</em></p>",
     "notes": "",
     "kind": "guild",
     "category": "Guild / Social",
@@ -36,7 +36,7 @@
   "_stats": {
     "coreVersion": "14.370",
     "systemId": "crawlspace",
-    "systemVersion": "0.9.8.33",
+    "systemVersion": "0.9.8.39",
     "createdTime": null,
     "modifiedTime": null,
     "lastModifiedBy": null,

@@ -1,5 +1,6 @@
 import { applyCastEffects } from '../effects/use-conditions'
 import { openLootBoxes } from '../loot/boxes'
+import { recordUse } from '../actors/item-value'
 import { buildEffect, effectDuration, stableId } from '../import/convert'
 import { BUILD_EFFECT_FIELDS } from '../data/items'
 import { isHandItem } from '../rules/hands'
@@ -162,6 +163,8 @@ export class CrawlItem extends Item {
 
   async #useConsumable() {
     const system = this.system
+    // Counted before it's spent: the last one is gone afterwards.
+    if ((Number(system.quantity) || 0) > 0) await recordUse(this)
     if (!(await this.spendOne())) return null
     const actor = this.actor
     if (system.manaRestore) {

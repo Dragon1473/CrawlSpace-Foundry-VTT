@@ -4,7 +4,7 @@
   "type": "spaceUpgrade",
   "img": "icons/commodities/currency/coins-plain-stack-gold.webp",
   "system": {
-    "description": "<p>Once per day, one Determine Value check on an item examined in the space has Advantage. It reveals nothing Determine Value wouldn't. (While in the space, the crawler has Advantage on Determine Value.)</p>",
+    "description": "<p>Once per day, one Determine Value check on an item examined in the space has Advantage. It reveals nothing Determine Value wouldn't. (While in the space, the crawler has Advantage on Determine Value.)</p><p class=\"crawl-credit\"><em>Personal Space system and tables by TallJustin (Crawler #7641; Discord: justinthegiant2).</em></p>",
     "notes": "",
     "kind": "upgrade",
     "category": "Commerce",
@@ -59,7 +59,7 @@
   "_stats": {
     "coreVersion": "14.370",
     "systemId": "crawlspace",
-    "systemVersion": "0.9.8.33",
+    "systemVersion": "0.9.8.39",
     "createdTime": null,
     "modifiedTime": null,
     "lastModifiedBy": null,

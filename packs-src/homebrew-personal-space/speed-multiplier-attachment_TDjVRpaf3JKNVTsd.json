@@ -4,7 +4,7 @@
   "type": "spaceUpgrade",
   "img": "icons/tools/smithing/anvil.webp",
   "system": {
-    "description": "<p>Attach it to a table. Work done there takes 25% less time, rounded down to the half hour, but never below 30 minutes unless the project was already shorter.</p>",
+    "description": "<p>Attach it to a table. Work done there takes 25% less time, rounded down to the half hour, but never below 30 minutes unless the project was already shorter.</p><p class=\"crawl-credit\"><em>Personal Space system and tables by TallJustin (Crawler #7641; Discord: justinthegiant2).</em></p>",
     "notes": "",
     "kind": "attachment",
     "category": "Crafting Attachment",
@@ -36,7 +36,7 @@
   "_stats": {
     "coreVersion": "14.370",
     "systemId": "crawlspace",
-    "systemVersion": "0.9.8.33",
+    "systemVersion": "0.9.8.39",
     "createdTime": null,
     "modifiedTime": null,
     "lastModifiedBy": null,

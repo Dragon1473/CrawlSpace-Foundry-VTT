@@ -4,7 +4,7 @@
   "type": "spaceUpgrade",
   "img": "icons/svg/door-exit.svg",
   "system": {
-    "description": "<p>Adds ten favorite exits, a default exit and group permissions to an installed Doggie Door. Every exit must still be a door used on this floor.</p>",
+    "description": "<p>Adds ten favorite exits, a default exit and group permissions to an installed Doggie Door. Every exit must still be a door used on this floor.</p><p class=\"crawl-credit\"><em>Personal Space system and tables by TallJustin (Crawler #7641; Discord: justinthegiant2).</em></p>",
     "notes": "",
     "kind": "upgrade",
     "category": "Travel",
@@ -36,7 +36,7 @@
   "_stats": {
     "coreVersion": "14.370",
     "systemId": "crawlspace",
-    "systemVersion": "0.9.8.33",
+    "systemVersion": "0.9.8.39",
     "createdTime": null,
     "modifiedTime": null,
     "lastModifiedBy": null,

@@ -135,6 +135,13 @@ function starPath(context: Ctx, x: number, y: number, outer: number, inner: numb
 }
 
 /**
+ * A star's outer radius for a token of radius `r` on the minimap: a little larger than the token, and never smaller
+ * than 7 px, so important NPCs and gods stay easy to spot when the map is zoomed out and tokens shrink to dots.
+ */
+export const STAR_MIN_RADIUS = 7
+export const starRadius = (r: number) => Math.max(STAR_MIN_RADIUS, r * 1.4)
+
+/**
  * Draws one marker at (x, y) with radius `r` on a minimap canvas. `time` (ms) turns and pulses a god's star; the
  * caller keeps redrawing while any god is shown (see `MARKER_ANIMATED`).
  */
@@ -179,8 +186,13 @@ export function drawMarker(context: Ctx, marker: { shape: MarkerShape; color: st
     case 'god': {
       const god = marker.shape === 'god'
       const pulse = god ? 1 + 0.25 * Math.sin(time / 180) : 1
-      const outer = Math.max(4, r * 1.35) * pulse
-      starPath(context, x, y, outer, outer * 0.45, god ? (time / 900) % (Math.PI * 2) : 0)
+      const outer = starRadius(r) * pulse
+      starPath(context, x, y, outer, outer * 0.5, god ? (time / 900) % (Math.PI * 2) : 0)
+      // A light halo first, so the star reads against dark floors and crowds of dots.
+      context.lineJoin = 'round'
+      context.lineWidth = 3.5
+      context.strokeStyle = 'rgba(240, 248, 255, 0.9)'
+      context.stroke()
       if (god) {
         context.shadowColor = marker.color
         context.shadowBlur = 4 + 3 * pulse
@@ -188,7 +200,7 @@ export function drawMarker(context: Ctx, marker: { shape: MarkerShape; color: st
       context.fillStyle = marker.color
       context.fill()
       context.shadowBlur = 0
-      context.lineWidth = 1
+      context.lineWidth = 1.2
       context.strokeStyle = outline
       context.stroke()
       break

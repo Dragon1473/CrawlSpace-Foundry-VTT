@@ -56,6 +56,8 @@ import { registerCarlControls } from './apps/carl-controls'
 import { registerUpkeep, openUpkeep, rest, performUpkeep } from './apps/upkeep'
 import { migrateShieldLoss } from './rules/repair'
 import { PersonalSpaceData, SpaceUpgradeData } from './data/personal-space'
+import { registerItemValues, registerItemValueSettings } from './actors/item-value'
+import { registerGearSets, registerGearSetSetting } from './actors/gear-sets'
 import { PersonalSpaceSheet } from './sheets/personal-space-sheet'
 import { hideSpaceTypes, migrateLegacySpaces, registerPersonalSpaces, registerPersonalSpaceSetting } from './actors/personal-space'
 import { actionRowsOf, runAction } from './apps/actions-config'
@@ -123,6 +125,8 @@ Hooks.once('init', () => {
   console.log('CrawlSpace | Initializing')
   registerHomebrewSetting()
   registerPersonalSpaceSetting()
+  registerItemValueSettings()
+  registerGearSetSetting()
   registerSettingsLayout()
   registerVehicleExplosions()
   registerRace()
@@ -158,6 +162,7 @@ Hooks.once('init', () => {
     material: items.MaterialData,
     craftingTable: items.CraftingTableData,
     spaceUpgrade: SpaceUpgradeData,
+    gearSet: items.GearSetData,
   })
   // Auras and dreads: a Region behavior handing conditions to the tokens inside.
   CONFIG.RegionBehavior.dataModels.aura = createAuraBehavior()
@@ -266,6 +271,8 @@ Hooks.once('init', () => {
   registerElites()
   registerPersonalSpaces()
   registerCraftingControls()
+  registerItemValues()
+  registerGearSets()
 
   game.crawlspace = { config, startBossBattle, openParties, openHeadshotMaker: (actor: any) => HeadshotMakerApp.open(actor), openGrinding, openAwards, openBuilder, performUpkeep, openTime, advanceTime, settleTime, rest, importCharacter, importFile, openUpkeep, fillActorDamage, calibrateGrid, useAttack: useAttackRow, useAction: useActionRow, declareAttack: () => game.combat && promptDeclaration(game.combat), openTokenMaker: (actor: any, options?: { source?: string; foreground?: string; pixelArt?: boolean }) => TokenMakerApp.open(actor, options), openNeighborhoodBuilder: () => new NeighborhoodBuilder().render({ force: true }), createBlankJournal: createBlank, compileFieldGuide, bestiary: bestiaryApi, openBestiary: bestiaryApi.open, openCrafting: (actor?: any) => openCraftingFor(actor), encounter: encounterApi, skillCreator: skillCreatorApi, leaderboard: leaderboardApi, minimapMarker: minimapMarkerApi }
 })

@@ -4,7 +4,7 @@
   "type": "spaceUpgrade",
   "img": "icons/environment/settlement/house-two-stories-small.webp",
   "system": {
-    "description": "<p>At Level 5 a manager or other helper gets a private room joined to the party's common area. The canon route is conjoining several Level 3 spaces; buying it directly is a GM convenience.</p>",
+    "description": "<p>At Level 5 a manager or other helper gets a private room joined to the party's common area. The canon route is conjoining several Level 3 spaces; buying it directly is a GM convenience.</p><p class=\"crawl-credit\"><em>Personal Space system and tables by TallJustin (Crawler #7641; Discord: justinthegiant2).</em></p>",
     "notes": "",
     "kind": "level",
     "category": "Space Level",
@@ -36,7 +36,7 @@
   "_stats": {
     "coreVersion": "14.370",
     "systemId": "crawlspace",
-    "systemVersion": "0.9.8.33",
+    "systemVersion": "0.9.8.39",
     "createdTime": null,
     "modifiedTime": null,
     "lastModifiedBy": null,

@@ -4,7 +4,7 @@
   "type": "spaceUpgrade",
   "img": "icons/environment/settlement/castle.webp",
   "system": {
-    "description": "<p>Suggested fee: 10% of the upgrade's price, at least 25,000 and at most 250,000 gold. The upgrade keeps its owner; unique or personal effects may be excluded.</p>",
+    "description": "<p>Suggested fee: 10% of the upgrade's price, at least 25,000 and at most 250,000 gold. The upgrade keeps its owner; unique or personal effects may be excluded.</p><p class=\"crawl-credit\"><em>Personal Space system and tables by TallJustin (Crawler #7641; Discord: justinthegiant2).</em></p>",
     "notes": "",
     "kind": "guild",
     "category": "Guild Service",
@@ -36,7 +36,7 @@
   "_stats": {
     "coreVersion": "14.370",
     "systemId": "crawlspace",
-    "systemVersion": "0.9.8.33",
+    "systemVersion": "0.9.8.39",
     "createdTime": null,
     "modifiedTime": null,
     "lastModifiedBy": null,

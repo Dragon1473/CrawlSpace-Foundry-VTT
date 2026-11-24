@@ -4,7 +4,7 @@
   "type": "spaceUpgrade",
   "img": "icons/svg/house.svg",
   "system": {
-    "description": "<p>Watch the latest recap, then ask the GM one question; the answer uses only what viewers would have seen. Nothing redacted, private or hidden.</p>",
+    "description": "<p>Watch the latest recap, then ask the GM one question; the answer uses only what viewers would have seen. Nothing redacted, private or hidden.</p><p class=\"crawl-credit\"><em>Personal Space system and tables by TallJustin (Crawler #7641; Discord: justinthegiant2).</em></p>",
     "notes": "",
     "kind": "upgrade",
     "category": "Entertainment / Information",
@@ -36,7 +36,7 @@
   "_stats": {
     "coreVersion": "14.370",
     "systemId": "crawlspace",
-    "systemVersion": "0.9.8.33",
+    "systemVersion": "0.9.8.39",
     "createdTime": null,
     "modifiedTime": null,
     "lastModifiedBy": null,

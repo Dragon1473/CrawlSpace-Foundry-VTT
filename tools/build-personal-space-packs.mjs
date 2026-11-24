@@ -11,7 +11,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { ROOT, compile, foldersFor, keyify, stamp, writeSource } from './lib.mjs'
 import { stableId } from '../src/import/convert.ts'
-import { CATALOG, TABLES } from './personal-space-catalog.mjs'
+import { CATALOG, CREDIT_HTML, TABLES } from './personal-space-catalog.mjs'
 
 const SRC = path.join(ROOT, 'packs-src')
 const OUT = path.join(ROOT, 'packs')
@@ -96,7 +96,7 @@ const tables = TABLES.map(([name, formula, rows]) =>
         _id: tableIds.get(name),
         name,
         img: 'icons/svg/d20-grey.svg',
-        description: '<p>Homebrew Personal Space reward table.</p>',
+        description: `<p>Homebrew Personal Space reward table.</p>${CREDIT_HTML}`,
         formula,
         replacement: true,
         displayRoll: true,

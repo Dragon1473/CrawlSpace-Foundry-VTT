@@ -4682,4 +4682,24 @@
   .crawl-crafting .craft-bench-table select { flex: 1; }
   .crawl-crafting .craft-table-chip.found { border-style: dashed; }
   .crawl-craft-review .craft-warn { color: rgb(255 150 120); }
+
+  /* Gold value, loot box origin and gear sets (actors/item-value.ts, actors/gear-sets.ts) */
+  .crawlspace .inventory-top .value-sort { flex: none; }
+  .crawlspace .inventory-top .value-sort.active { border-color: var(--color-warm-2, #ffd24a); color: var(--color-warm-2, #ffd24a); }
+  .crawlspace .pf-summary .pf-gold { display: flex; align-items: center; gap: 6px; margin: 4px 0; color: #e5c158; }
+  .crawlspace .pf-summary label.pf-gold > span { flex: none; }
+  .crawlspace .pf-summary .pf-origin { margin: 6px 0; font-style: italic; }
+  .crawlspace .pf-summary .pf-gear-set { margin: 6px 0; padding-top: 4px; border-top: 1px solid var(--crawl-border); }
+  .crawlspace .pf-summary .pf-gear-set ul { margin: 4px 0 0; padding-left: 16px; font-size: 12px; opacity: 0.75; }
+  .crawlspace .pf-summary .pf-gear-set li.earned { opacity: 1; font-weight: 700; color: #7fd47f; }
+  .crawlspace .effect-block-header .set-pieces { display: inline-flex; align-items: center; gap: 4px; }
+  .crawlspace .effect-block-header .set-pieces input { width: 3.2em; height: 1.6em; }
+  .crawlspace .gear-set-members ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+  .crawlspace .gear-set-members li { display: flex; align-items: center; gap: 6px; }
+  .crawlspace .gear-set-members li img { width: 24px; height: 24px; border: none; }
+  .crawlspace .gear-set-members li > a:last-child { margin-left: auto; }
+  .crawlspace .tab.history .item-owners, .crawlspace .tab.history .item-history { list-style: none; margin: 0 0 8px; padding: 0; }
+  .crawlspace .tab.history li { display: flex; align-items: baseline; gap: 6px; padding: 2px 0; }
+  .crawlspace .tab.history li time { margin-left: auto; font-size: 11px; opacity: 0.6; }
+  .crawlspace .crawl-credit { margin-top: 10px; font-size: 11px; opacity: 0.8; }
 }

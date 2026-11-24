@@ -4,7 +4,7 @@
   "type": "spaceUpgrade",
   "img": "icons/environment/settlement/house-two-stories-small.webp",
   "system": {
-    "description": "<p>A private apartment that opens off any saferoom door once the Personal Space system unlocks on the Fourth Floor. It has the basics and a small crafting corner that holds up to five tables. 50,000 gold is the list price; a hard bargainer can talk the system down, to about 37,500 at best.</p>",
+    "description": "<p>A private apartment that opens off any saferoom door once the Personal Space system unlocks on the Fourth Floor. It has the basics and a small crafting corner that holds up to five tables. 50,000 gold is the list price; a hard bargainer can talk the system down, to about 37,500 at best.</p><p class=\"crawl-credit\"><em>Personal Space system and tables by TallJustin (Crawler #7641; Discord: justinthegiant2).</em></p>",
     "notes": "",
     "kind": "level",
     "category": "Space Level",
@@ -36,7 +36,7 @@
   "_stats": {
     "coreVersion": "14.370",
     "systemId": "crawlspace",
-    "systemVersion": "0.9.8.33",
+    "systemVersion": "0.9.8.39",
     "createdTime": null,
     "modifiedTime": null,
     "lastModifiedBy": null,

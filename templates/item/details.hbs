@@ -135,6 +135,23 @@
     <label class="wide" data-tooltip="{{localize 'CRAWLSPACE.Craft.UpgradesHint'}}">{{localize "CRAWLSPACE.Craft.Upgrades"}}<input type="text" name="upgradesText" value="{{upgradesText}}" placeholder="{{localize 'CRAWLSPACE.Craft.UpgradesPlaceholder'}}"></label>
     <label class="check" data-tooltip="{{localize 'CRAWLSPACE.Craft.AutoLevelHint'}}"><input type="checkbox" name="system.autoLevel" {{checked systemSource.autoLevel}}> {{localize "CRAWLSPACE.Craft.AutoLevel"}}</label>
   {{/if}}
+  {{#if (eq type "gearSet")}}
+    <fieldset class="wide gear-set-members" data-set-members>
+      <legend>{{localize "CRAWLSPACE.GearSet.Pieces"}}</legend>
+      <ul>
+        {{#each setMembers as |member|}}
+        <li data-member-index="{{member.index}}">
+          {{#if member.img}}<img src="{{member.img}}" alt="">{{/if}}
+          {{#if member.uuid}}<a class="content-link" data-link data-uuid="{{member.uuid}}" data-type="Item">{{member.name}}</a>{{else}}<span>{{member.name}}</span>{{/if}}
+          {{#if @root.editable}}<a data-action="removeSetMember" data-tooltip="{{localize 'CRAWLSPACE.GearSet.Remove'}}"><i class="fa-solid fa-xmark"></i></a>{{/if}}
+        </li>
+        {{else}}
+        <li class="empty">—</li>
+        {{/each}}
+      </ul>
+      <p class="hint">{{localize "CRAWLSPACE.GearSet.DropHint"}}</p>
+    </fieldset>
+  {{/if}}
   {{#if (eq type "spaceUpgrade")}}
     <label>{{localize "CRAWLSPACE.Space.Kind"}}<select name="system.kind">{{selectOptions spaceKindChoices selected=systemSource.kind}}</select></label>
     <label>{{localize "CRAWLSPACE.Space.Category"}}<input type="text" name="system.category" value="{{systemSource.category}}"></label>

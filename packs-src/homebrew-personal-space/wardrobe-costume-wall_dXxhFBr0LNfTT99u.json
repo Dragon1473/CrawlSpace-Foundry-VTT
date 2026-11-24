@@ -4,7 +4,7 @@
   "type": "spaceUpgrade",
   "img": "icons/svg/house.svg",
   "system": {
-    "description": "<p>Once a session, Advantage on one Good First Impression or Performance check where clothing or presentation really matters; the player says how. No armor or magic.</p>",
+    "description": "<p>Once a session, Advantage on one Good First Impression or Performance check where clothing or presentation really matters; the player says how. No armor or magic.</p><p class=\"crawl-credit\"><em>Personal Space system and tables by TallJustin (Crawler #7641; Discord: justinthegiant2).</em></p>",
     "notes": "",
     "kind": "upgrade",
     "category": "Social",
@@ -36,7 +36,7 @@
   "_stats": {
     "coreVersion": "14.370",
     "systemId": "crawlspace",
-    "systemVersion": "0.9.8.33",
+    "systemVersion": "0.9.8.39",
     "createdTime": null,
     "modifiedTime": null,
     "lastModifiedBy": null,

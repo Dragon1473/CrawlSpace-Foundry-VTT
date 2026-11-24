@@ -4,7 +4,7 @@
   "type": "spaceUpgrade",
   "img": "icons/svg/house.svg",
   "system": {
-    "description": "<p>Eight small rooms off one hall house hired NPCs or mercenaries, who rest normally here. They do not count as housed in guild barracks for guild training.</p>",
+    "description": "<p>Eight small rooms off one hall house hired NPCs or mercenaries, who rest normally here. They do not count as housed in guild barracks for guild training.</p><p class=\"crawl-credit\"><em>Personal Space system and tables by TallJustin (Crawler #7641; Discord: justinthegiant2).</em></p>",
     "notes": "",
     "kind": "upgrade",
     "category": "Guest / Retinue",
@@ -36,7 +36,7 @@
   "_stats": {
     "coreVersion": "14.370",
     "systemId": "crawlspace",
-    "systemVersion": "0.9.8.33",
+    "systemVersion": "0.9.8.39",
     "createdTime": null,
     "modifiedTime": null,
     "lastModifiedBy": null,

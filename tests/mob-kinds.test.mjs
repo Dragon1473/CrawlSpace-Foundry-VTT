@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { actsPerCrawler, markerCategory, minimapMarker, mobActionsPerRound, mobBaseStat, mobLevel, rebasedStats, statBudget } from '../src/rules/mob-kinds.ts'
+import { actsPerCrawler, markerCategory, minimapMarker, mobActionsPerRound, mobBaseStat, mobLevel, rebasedStats, starRadius, STAR_MIN_RADIUS, statBudget } from '../src/rules/mob-kinds.ts'
 import { mobDerived } from '../src/rules/core.ts'
 import { actorCategory } from '../src/rules/bestiary.ts'
 
@@ -74,4 +74,10 @@ test('Elites hide until revealed; gods spin; the dead are black Xs', () => {
   assert.equal(minimapMarker({ actorType: 'mob', system: { kind: 'feralGod', elite: true }, eliteRevealed: true }).shape, 'god')
   assert.equal(minimapMarker({ actorType: 'npc', system: { important: true } }).shape, 'star')
   assert.equal(minimapMarker({ actorType: 'mob', system: { kind: 'god' }, dead: true }).shape, 'corpse')
+})
+
+test('minimap stars stay at least 7 px across when zoomed out, and grow with big tokens', () => {
+  assert.equal(starRadius(0.5), STAR_MIN_RADIUS)
+  assert.equal(starRadius(2.5), 7)
+  assert.equal(starRadius(10), 14)
 })

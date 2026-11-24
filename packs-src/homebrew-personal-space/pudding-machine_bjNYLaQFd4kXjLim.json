@@ -4,7 +4,7 @@
   "type": "spaceUpgrade",
   "img": "icons/svg/house.svg",
   "system": {
-    "description": "<p>An official reward with no stated rules. Flavor by default, or a minor short food buff.</p>",
+    "description": "<p>An official reward with no stated rules. Flavor by default, or a minor short food buff.</p><p class=\"crawl-credit\"><em>Personal Space system and tables by TallJustin (Crawler #7641; Discord: justinthegiant2).</em></p>",
     "notes": "",
     "kind": "upgrade",
     "category": "Food Amenity",
@@ -36,7 +36,7 @@
   "_stats": {
     "coreVersion": "14.370",
     "systemId": "crawlspace",
-    "systemVersion": "0.9.8.33",
+    "systemVersion": "0.9.8.39",
     "createdTime": null,
     "modifiedTime": null,
     "lastModifiedBy": null,

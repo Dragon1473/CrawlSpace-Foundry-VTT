@@ -56,7 +56,8 @@
       "trap": { "htmlFields": ["description"] },
       "material": { "htmlFields": ["description"] },
       "craftingTable": { "htmlFields": ["description"] },
-      "spaceUpgrade": { "htmlFields": ["description"] }
+      "spaceUpgrade": { "htmlFields": ["description"] },
+      "gearSet": { "htmlFields": ["description"] }
     },
     "RegionBehavior": {
       "aura": {}

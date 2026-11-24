@@ -4,7 +4,7 @@
   "type": "spaceUpgrade",
   "img": "icons/svg/regen.svg",
   "system": {
-    "description": "<p>Once per day one crawler spends 2 hours in the spa for the benefits of a Long Rest, and loses one non-Divine, non-injury debuff. It does not heal injuries, lift curses or reset cooldowns a Long Rest wouldn't. (The shortened rest is automated; keep the once-a-day limit yourself.)</p>",
+    "description": "<p>Once per day one crawler spends 2 hours in the spa for the benefits of a Long Rest, and loses one non-Divine, non-injury debuff. It does not heal injuries, lift curses or reset cooldowns a Long Rest wouldn't. (The shortened rest is automated; keep the once-a-day limit yourself.)</p><p class=\"crawl-credit\"><em>Personal Space system and tables by TallJustin (Crawler #7641; Discord: justinthegiant2).</em></p>",
     "notes": "",
     "kind": "upgrade",
     "category": "Bathroom / Medical",
@@ -36,7 +36,7 @@
   "_stats": {
     "coreVersion": "14.370",
     "systemId": "crawlspace",
-    "systemVersion": "0.9.8.33",
+    "systemVersion": "0.9.8.39",
     "createdTime": null,
     "modifiedTime": null,
     "lastModifiedBy": null,

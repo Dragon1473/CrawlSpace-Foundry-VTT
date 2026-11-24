@@ -4,7 +4,7 @@
   "type": "spaceUpgrade",
   "img": "icons/svg/house.svg",
   "system": {
-    "description": "<p>Appears for a Bard whose patron needs physical messages. A trip takes 5 minutes each way on the same floor, plus 5 minutes per floor between. Never bought.</p>",
+    "description": "<p>Appears for a Bard whose patron needs physical messages. A trip takes 5 minutes each way on the same floor, plus 5 minutes per floor between. Never bought.</p><p class=\"crawl-credit\"><em>Personal Space system and tables by TallJustin (Crawler #7641; Discord: justinthegiant2).</em></p>",
     "notes": "",
     "kind": "feature",
     "category": "Patron Communication",
@@ -36,7 +36,7 @@
   "_stats": {
     "coreVersion": "14.370",
     "systemId": "crawlspace",
-    "systemVersion": "0.9.8.33",
+    "systemVersion": "0.9.8.39",
     "createdTime": null,
     "modifiedTime": null,
     "lastModifiedBy": null,

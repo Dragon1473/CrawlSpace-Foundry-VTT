@@ -1,5 +1,5 @@
 /**
- * The Personal Space catalog: space levels, upgrades, table attachments, guild services and coupons, written for this
+ * The Personal Space catalog (homebrew by TallJustin, Crawler #7641; Discord: justinthegiant2): space levels, upgrades, table attachments, guild services and coupons, written for this
  * system from the GM's Personal Space toolkit (tier, floor and suggested prices are the toolkit's GM estimates; the
  * wording is ours). `status` says whether the idea comes from the published game/novels (canon) or is the toolkit's
  * homebrew. Built into packs-src/homebrew-personal-space by tools/build-personal-space-packs.mjs.
@@ -179,13 +179,17 @@ function iconFor(kind, category) {
 
 const p = (text) => `<p>${text.replace(/&/g, '&amp;')}</p>`
 
+/** The Personal Space system and its tables are TallJustin's homebrew; every entry and table carries the credit. */
+export const CREDIT = 'Personal Space system and tables by TallJustin (Crawler #7641; Discord: justinthegiant2).'
+export const CREDIT_HTML = `<p class="crawl-credit"><em>${CREDIT}</em></p>`
+
 export const CATALOG = RAW.map(([ref, name, kind, category, tier, floor, price, status, footprint, summary, text, auto = {}]) => ({
   ref,
   name,
   folder: folderOf(kind, tier),
   img: iconFor(kind, category),
   system: {
-    description: p(text),
+    description: p(text) + CREDIT_HTML,
     notes: '',
     kind,
     category,

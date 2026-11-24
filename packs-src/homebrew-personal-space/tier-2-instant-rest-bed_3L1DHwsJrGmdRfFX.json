@@ -4,7 +4,7 @@
   "type": "spaceUpgrade",
   "img": "icons/svg/sleep.svg",
   "system": {
-    "description": "<p>Activating the bed gives a Long Rest on the spot, with no time passing. It does not grant Good Sleep unless the GM says this model does.</p>",
+    "description": "<p>Activating the bed gives a Long Rest on the spot, with no time passing. It does not grant Good Sleep unless the GM says this model does.</p><p class=\"crawl-credit\"><em>Personal Space system and tables by TallJustin (Crawler #7641; Discord: justinthegiant2).</em></p>",
     "notes": "",
     "kind": "upgrade",
     "category": "Bed",
@@ -36,7 +36,7 @@
   "_stats": {
     "coreVersion": "14.370",
     "systemId": "crawlspace",
-    "systemVersion": "0.9.8.33",
+    "systemVersion": "0.9.8.39",
     "createdTime": null,
     "modifiedTime": null,
     "lastModifiedBy": null,

@@ -8,8 +8,12 @@ import { generateLoot, rollLootGold } from '../crawlspace-shared/shared/lootGene
 import { finalizeLootItem, type InventoryItem } from '../crawlspace-shared/shared/inventoryItems'
 import { boxSummary, contextFor, foundryItemData } from './database'
 import { rewardContents } from './reward-tables'
+import { markFromBox } from '../actors/item-value'
 
 export type BoxContents = { gold: number; items: InventoryItem[]; note?: string }
+
+/** Which box each received item came out of, for its History (actors/item-value.ts). */
+const sourceBox = new WeakMap<object, any>()
 
 const isSealedBox = (item: any) => item.type === 'lootBox' && item.system.sealed && (Number(item.system.quantity) || 0) > 0
 
@@ -42,6 +46,7 @@ export async function openLootBoxes(actor: any, boxes?: any[]) {
       const contents = await unitContents(actor, box)
       const items = contents.items.map((item) => finalizeLootItem({ ...foundry.utils.deepClone(item), id: foundry.utils.randomID(), equipped: false, expanded: false }))
       gold += contents.gold
+      for (const item of items) sourceBox.set(item, box)
       received.push(...items)
       lines.push(`<li><strong>${foundry.utils.escapeHTML(box.name)}</strong>: ${foundry.utils.escapeHTML(boxSummary({ gold: contents.gold, items }).join(', ') || game.i18n.localize('CRAWLSPACE.Loot.Empty'))}${contents.note ? ` <span class="hint">(${foundry.utils.escapeHTML(contents.note)})</span>` : ''}</li>`)
     }
@@ -50,6 +55,8 @@ export async function openLootBoxes(actor: any, boxes?: any[]) {
   const updates = new Map<string, number>()
   for (const entry of received) {
     const data = foundryItemData(entry)
+    const box = sourceBox.get(entry)
+    if (box) markFromBox(data, box)
     const match = actor.items.find((item: any) => item.name === data.name && item.type === data.type && !item.system.equipped && 'quantity' in item.system)
     if (match) updates.set(match.id, (updates.get(match.id) ?? (Number(match.system.quantity) || 0)) + (Number(data.system.quantity) || 1))
     else {

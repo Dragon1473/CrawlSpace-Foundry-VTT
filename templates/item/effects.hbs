@@ -7,6 +7,7 @@
     <header class="effect-block-header">
       <img src="{{effect.img}}" alt="">
       <a class="effect-name" data-action="editEffect" data-tooltip="{{localize 'CRAWLSPACE.Effect.Edit'}}">{{effect.name}}</a>
+      {{#if effect.setPieces}}<label class="pf-tag set-pieces" data-tooltip="{{localize 'CRAWLSPACE.GearSet.PiecesHint'}}">{{localize "CRAWLSPACE.GearSet.Pieces"}} <input type="number" min="1" value="{{effect.setPieces}}" data-set-pieces {{#unless @root.editable}}disabled{{/unless}}></label>{{/if}}
       {{#if effect.requiredRank}}<span class="pf-tag">{{localize "CRAWLSPACE.Effect.AtRank" rank=effect.requiredRank}}</span>{{/if}}
       <a class="pf-tag {{#unless effect.transfer}}on-target{{/unless}}" {{#if @root.editable}}data-action="toggleTransfer"{{/if}} data-tooltip="{{localize 'CRAWLSPACE.Effect.ApplyHint'}}">
         {{#if effect.transfer}}{{localize (ifThen (eq @root.item.type "spell") "CRAWLSPACE.Effect.OnCast" "CRAWLSPACE.Effect.OnSelf")}}{{else}}{{localize "CRAWLSPACE.Effect.OnTarget"}}{{/if}}
@@ -24,5 +25,5 @@
   {{/each}}
   {{#each datalists}}<datalist id="{{id}}">{{#each names}}<option value="{{this}}"></option>{{/each}}</datalist>{{/each}}
   {{#if editable}}<button type="button" class="pf-add" data-action="createEffect"><i class="fa-solid fa-plus"></i> {{localize "CRAWLSPACE.Effect.Create"}}</button>{{/if}}
-  <p class="hint">{{localize "CRAWLSPACE.Effect.ItemHint"}}</p>
+  <p class="hint">{{localize (ifThen (eq item.type "gearSet") "CRAWLSPACE.GearSet.EffectsHint" "CRAWLSPACE.Effect.ItemHint")}}</p>
 </section>

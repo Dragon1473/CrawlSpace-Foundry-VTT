@@ -4,7 +4,7 @@
   "type": "spaceUpgrade",
   "img": "icons/svg/house.svg",
   "system": {
-    "description": "<p>Once per day, Advantage on one Investigation, Survival or Tactics check that works from a map the party owns. It shows nothing undiscovered. (While in the space, the crawler has Advantage on those checks.)</p>",
+    "description": "<p>Once per day, Advantage on one Investigation, Survival or Tactics check that works from a map the party owns. It shows nothing undiscovered. (While in the space, the crawler has Advantage on those checks.)</p><p class=\"crawl-credit\"><em>Personal Space system and tables by TallJustin (Crawler #7641; Discord: justinthegiant2).</em></p>",
     "notes": "",
     "kind": "upgrade",
     "category": "Quest / Tactical",
@@ -59,7 +59,7 @@
   "_stats": {
     "coreVersion": "14.370",
     "systemId": "crawlspace",
-    "systemVersion": "0.9.8.33",
+    "systemVersion": "0.9.8.39",
     "createdTime": null,
     "modifiedTime": null,
     "lastModifiedBy": null,

@@ -4,7 +4,7 @@
   "type": "spaceUpgrade",
   "img": "icons/svg/regen.svg",
   "system": {
-    "description": "<p>If a Dying crawler reaches the space before their timer runs out, the ward stabilizes them at 10% of their Health Bar, once per floor. It cannot bring back the dead.</p>",
+    "description": "<p>If a Dying crawler reaches the space before their timer runs out, the ward stabilizes them at 10% of their Health Bar, once per floor. It cannot bring back the dead.</p><p class=\"crawl-credit\"><em>Personal Space system and tables by TallJustin (Crawler #7641; Discord: justinthegiant2).</em></p>",
     "notes": "",
     "kind": "upgrade",
     "category": "Medical",
@@ -36,7 +36,7 @@
   "_stats": {
     "coreVersion": "14.370",
     "systemId": "crawlspace",
-    "systemVersion": "0.9.8.33",
+    "systemVersion": "0.9.8.39",
     "createdTime": null,
     "modifiedTime": null,
     "lastModifiedBy": null,
