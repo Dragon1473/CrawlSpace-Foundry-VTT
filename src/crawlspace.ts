@@ -22,6 +22,7 @@ import { registerCooldownIcons } from './effects/cooldowns'
 import { registerConditionDrops } from './effects/use-conditions'
 import { registerTriggers } from './effects/triggers'
 import { createTokenHUD } from './effects/stacks'
+import { createCrawlToken } from './canvas/token-badges'
 import { advanceTime, settleTime, registerTime } from './time'
 import * as config from './config'
 import { CompanionData, CrawlerData, MinionData, MobData, NpcData } from './data/actors'
@@ -206,6 +207,8 @@ Hooks.once('init', () => {
   // UI.
   CONFIG.ui.combat = createCombatTracker()
   CONFIG.Token.hudClass = createTokenHUD()
+  // Effect icons as round badges around the token.
+  CONFIG.Token.objectClass = createCrawlToken(CONFIG.Token.objectClass)
   // The status palette shows stacks, so it redraws when they change.
   Hooks.on('updateActiveEffect', (effect: any) => {
     const hud = canvas?.hud?.token

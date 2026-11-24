@@ -60,7 +60,7 @@ const shieldText = (shield: any) => (shield ? game.i18n.format('CRAWLSPACE.Effec
 export const conditionsOf = (actor: any) => {
   const shields = actor.conditionShields?.() ?? []
   // Cooldowns aren't conditions: they stay on the sheet's Cooldowns list.
-  return actor.effects.contents.filter((effect: any) => effect.active && !effect.flags?.crawlspace?.build && !effect.flags?.crawlspace?.cooldownKey).map((effect: any) => badge(effect, shields))
+  return actor.effects.contents.filter((effect: any) => effect.active && !effect.flags?.crawlspace?.build && !effect.flags?.crawlspace?.cooldownKey && !effect.flags?.crawlspace?.setBonus).map((effect: any) => badge(effect, shields))
 }
 
 /** A crawler's pets, mounts and minions as frames show them (the party screen shows them the same way). */

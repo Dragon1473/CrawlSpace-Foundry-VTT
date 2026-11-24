@@ -1,7 +1,8 @@
 /**
  * Gear sets in the world (homebrew; rules/gear-sets.ts). A set is a world item listing its pieces; its ActiveEffects
  * are the bonuses, each needing a number of pieces. An actor with enough pieces equipped gets a copy of each bonus it
- * has earned (as Personal Space upgrades hand out theirs), and loses it when a piece comes off.
+ * has earned (as Personal Space upgrades hand out theirs), and loses it when a piece comes off. The copies show no
+ * icon on the token or the crawler frames: they're the gear's doing, not conditions.
  */
 import { activeBonuses, equippedPieces, isPiece, piecesFor, type SetMember } from '../rules/gear-sets'
 
@@ -64,12 +65,14 @@ export async function syncSetBonuses(actor: any) {
         const data = effect.toObject()
         delete data._id
         const stamp = stampOf(effect)
-        wanted.set(stamp, { ...data, transfer: false, disabled: false, origin: set.uuid, flags: { ...data.flags, crawlspace: { ...(data.flags?.crawlspace ?? {}), [SET_BONUS_FLAG]: stamp } } })
+        wanted.set(stamp, { ...data, transfer: false, disabled: false, origin: set.uuid, showIcon: CONST.ACTIVE_EFFECT_SHOW_ICON.NEVER, flags: { ...data.flags, crawlspace: { ...(data.flags?.crawlspace ?? {}), [SET_BONUS_FLAG]: stamp } } })
       }
     }
   const existing = actor.effects.filter((effect: any) => effect.getFlag('crawlspace', SET_BONUS_FLAG))
-  const stale = existing.filter((effect: any) => !wanted.has(effect.getFlag('crawlspace', SET_BONUS_FLAG)))
-  const have = new Set(existing.map((effect: any) => effect.getFlag('crawlspace', SET_BONUS_FLAG)))
+  // Copies made before set bonuses hid their icon are replaced too.
+  const current = (effect: any) => wanted.has(effect.getFlag('crawlspace', SET_BONUS_FLAG)) && effect.showIcon === CONST.ACTIVE_EFFECT_SHOW_ICON.NEVER
+  const stale = existing.filter((effect: any) => !current(effect))
+  const have = new Set(existing.filter(current).map((effect: any) => effect.getFlag('crawlspace', SET_BONUS_FLAG)))
   const add = [...wanted.entries()].filter(([stamp]) => !have.has(stamp)).map(([, data]) => data)
   if (stale.length) await actor.deleteEmbeddedDocuments('ActiveEffect', stale.map((effect: any) => effect.id))
   if (add.length) await actor.createEmbeddedDocuments('ActiveEffect', add)
