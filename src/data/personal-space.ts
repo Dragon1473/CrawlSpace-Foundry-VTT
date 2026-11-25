@@ -2,7 +2,7 @@
  * Data models for Personal Spaces (rules/personal-space.ts): the `personalSpace` actor and its `spaceUpgrade` items.
  * Its crafting tables are ordinary `craftingTable` items (data/items.ts), their owner in `flags.crawlspace.spaceOwner`.
  */
-import { MEMBER_ROLES, UPGRADE_KINDS, conjoinedLevel, normalizeMembers, ownerLevels } from '../rules/personal-space'
+import { MEMBER_ROLES, TRAINING_SKILLS, UPGRADE_KINDS, USE_KINDS, conjoinedLevel, normalizeMembers, ownerLevels } from '../rules/personal-space'
 
 const f = () => foundry.data.fields
 const text = (initial = '') => new (f().StringField)({ required: true, blank: true, initial })
@@ -74,7 +74,32 @@ export class SpaceUpgradeData extends foundry.abstract.TypeDataModel {
         goodSleepHours: integer(0, { min: 0 }),
         shortRestSlots: integer(0, { min: 0 }),
       }),
-      training: new fields.SchemaField({ hours: integer(0, { min: 0 }) }),
+      /** A training room: once a day per crawler (the Train action), `hours` grinding hours in each of up to `slots` skills it allows. */
+      training: new fields.SchemaField({
+        hours: integer(0, { min: 0 }),
+        skills: new fields.StringField({ required: true, initial: 'any', choices: [...TRAINING_SKILLS] }),
+        /** The highest skill Rank it trains (0: any). */
+        maxRank: integer(0, { min: 0 }),
+        slots: integer(1, { min: 1, max: 12 }),
+        /** For `skills: 'named'`: the skills it trains, comma separated. */
+        names: text(),
+      }),
+      /** A once-a-day amenity (the Use button): a meal (a stat bonus, extra Short Rest slots) or a wash (Advantage). */
+      use: new fields.SchemaField({
+        kind: new fields.StringField({ required: true, blank: true, initial: '', choices: [...USE_KINDS] }),
+        statBonus: integer(0, { min: 0 }),
+        restSlots: integer(0, { min: 0 }),
+        hours: integer(0, { min: 0 }),
+        /** Checks a wash gives Advantage on, comma separated. */
+        advantage: text(),
+      }),
+      /** What it does to crafting in the space (rules/personal-space.ts craftOf). */
+      craft: new fields.SchemaField({
+        speed: integer(0, { min: 0, max: 90 }),
+        batchHalf: new fields.BooleanField({ initial: false }),
+        tierBoost: integer(0, { min: 0, max: 9 }),
+        reroll: text(),
+      }),
     }
   }
 }

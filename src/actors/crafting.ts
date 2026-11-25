@@ -25,6 +25,7 @@ import {
 } from '../rules/crafting'
 import { rollCheck } from '../dice/rolls'
 import { spaceTables } from './personal-space'
+import { boostedTables, markBoostUsed, markRerollUsed, spaceCraft } from './space-crafting'
 
 export const RECIPES_FLAG = 'recipes'
 export const TEACHES_FLAG = 'teaches'
@@ -200,8 +201,14 @@ export function evaluateRecipe(actor: any, entry: RecipeEntry, count = 1, ctx = 
   const recipe = entry.recipe
   const state = recipeState(recipe, entry.key, ctx, game.user.isGM)
   const skills = checkSkills(recipe.skills, ctx.skills)
-  const tables = tableBonus(recipe.tables, availableTables(actor))
   const batch = recipe.batch ? Math.max(1, Math.floor(count)) : 1
+  // Personal Space upgrades (actors/space-crafting.ts): faster tables, and once a day space tables a tier higher.
+  const space = spaceCraft(actor, recipe, batch)
+  const plain = tableBonus(recipe.tables, availableTables(actor))
+  const raised = space?.boost ? tableBonus(recipe.tables, boostedTables(availableTables(actor), space.boost)) : null
+  const boosted = !!raised && raised.ok && (!plain.ok || raised.bonus > plain.bonus)
+  const tables = boosted ? raised! : plain
+  const minutes = space ? space.minutes : craftMinutes(recipe, batch)
   const ingredients = matchIngredients(recipe.ingredients, ctx.items, batch)
   const tools = recipe.tools.map((tool) => {
     const name = tool.name.trim().toLowerCase()
@@ -221,8 +228,10 @@ export function evaluateRecipe(actor: any, entry: RecipeEntry, count = 1, ctx = 
     tools,
     batch,
     difficulty: craftDifficulty(recipe),
-    minutes: craftMinutes(recipe, batch),
-    time: formatMinutes(craftMinutes(recipe, batch)),
+    minutes,
+    time: formatMinutes(minutes),
+    space,
+    boosted,
     materialsOk,
     ready,
     auto: autoApproved(approvalMode(), game.settings.get('crawlspace', 'craftAutoRules') ?? {}, entry.output, recipe.approval),
@@ -340,19 +349,34 @@ export async function performCraft(actor: any, itemUuid: string, recipeId: strin
     ...(skill ? skill.checkModifiers() : []),
     ...(check.tables.bonus ? [{ label: t('TableBonus', { tables: tableNames }), value: check.tables.bonus }] : []),
   ]
-  const result = await rollCheck(actor, {
+  const rollOptions = {
     label: t('CheckLabel', { name: entry.output.name }),
-    kind: 'check',
+    kind: 'check' as const,
     modifiers,
     sources: skill ? [skill.name] : [],
     difficulty: check.difficulty,
     advantage: recipe.advantage,
     fast: options.fast,
     flags: { craft: { itemUuid, recipeId } },
-  })
+  }
+  let result = await rollCheck(actor, rollOptions)
   if (!result) return null
+  const spaceLines: string[] = []
+  if (check.boosted && check.space) {
+    await markBoostUsed(actor)
+    spaceLines.push(game.i18n.format('CRAWLSPACE.Space.CraftBoosted', { list: esc(check.space.boostSources.join(', ')) }))
+  }
+  if (check.space?.timeSources.length) spaceLines.push(game.i18n.format('CRAWLSPACE.Space.CraftFaster', { list: esc(check.space.timeSources.join(', ')), time: esc(check.time) }))
+  const won = (outcome: string | null) => outcome === 'Hit' || outcome === 'Amazing hit' || outcome === 'Critical hit'
+  // A space attachment rerolls a failed check once per floor; the new roll stands.
+  if (!won(result.outcome) && check.space?.reroll) {
+    await markRerollUsed(actor, check.space.reroll)
+    spaceLines.push(game.i18n.format('CRAWLSPACE.Space.CraftRerolled', { name: esc(check.space.reroll.name) }))
+    const again = await rollCheck(actor, rollOptions)
+    if (again) result = again
+  }
   const { roll, outcome } = result
-  const success = outcome === 'Hit' || outcome === 'Amazing hit' || outcome === 'Critical hit'
+  const success = won(outcome)
   const takes = check.ingredients.flatMap((row) => row.takes)
   const missedBy = Math.floor(check.difficulty - roll.total)
   const returns = success ? [] : salvageReturns(missedBy, takes, recipe.method)
@@ -371,6 +395,7 @@ export async function performCraft(actor: any, itemUuid: string, recipeId: strin
   if (!success && recipe.method !== 'quick') lines.push(returns.length ? t('Salvaged', { list: returns.map((r) => `${esc(actor.items.get(r.id)?.name ?? '')} ×${r.quantity}`).join(', ') }) : t('NothingSalvaged'))
   if (!success && recipe.method === 'quick') lines.push(t('NoSalvageMix'))
   lines.push(t('TimeTaken', { time: esc(check.time) }))
+  lines.push(...spaceLines)
   await ChatMessage.create({
     speaker: ChatMessage.getSpeaker({ actor }),
     content: `<div class="crawl-card craft-card ${success ? 'craft-success' : 'craft-fail'}">

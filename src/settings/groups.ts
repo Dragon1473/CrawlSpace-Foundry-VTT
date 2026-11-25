@@ -8,7 +8,7 @@ export const SETTING_GROUPS: readonly { id: string; keys: readonly string[] }[] 
   { id: 'bosses', keys: ['autoBossBattle', 'bossHealthBar', 'bossBattleSound', 'soundBites'] },
   { id: 'upkeep', keys: ['upkeepAutomation', 'playerUpkeep', 'dayLength'] },
   { id: 'crafting', keys: ['craftApproval', 'craftRules', 'craftCategories'] },
-  { id: 'compendiums', keys: ['homebrewCompendium', 'personalSpaces', 'skillCreator', 'rewardTables', 'gearSets', 'determineValuePerks', 'showItemValues'] },
+  { id: 'compendiums', keys: ['homebrewCompendium', 'personalSpaces', 'spaceTrainingLevels', 'skillCreator', 'rewardTables', 'gearSets', 'determineValuePerks', 'showItemValues'] },
   { id: 'leaderboard', keys: ['leaderboardTools'] },
 ]
 

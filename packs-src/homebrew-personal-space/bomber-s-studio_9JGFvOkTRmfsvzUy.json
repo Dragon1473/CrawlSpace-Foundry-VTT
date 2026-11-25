@@ -4,7 +4,7 @@
   "type": "spaceUpgrade",
   "img": "icons/skills/melee/weapons-crossed-swords-yellow.webp",
   "system": {
-    "description": "<p>Time here counts as grinding hours for explosives skills under the normal rules.</p><p class=\"crawl-credit\"><em>Personal Space system and tables by TallJustin (Crawler #7641; Discord: justinthegiant2).</em></p>",
+    "description": "<p>Time here counts as grinding hours for explosives skills under the normal rules. List those skills on the upgrade's automation (Trains: named skills).</p><p class=\"crawl-credit\"><em>Personal Space system and tables by TallJustin (Crawler #7641; Discord: justinthegiant2).</em></p>",
     "notes": "",
     "kind": "upgrade",
     "category": "Training",
@@ -24,7 +24,24 @@
       "shortRestSlots": 0
     },
     "training": {
-      "hours": 0
+      "hours": 1,
+      "skills": "named",
+      "maxRank": 0,
+      "slots": 1,
+      "names": "explosive, bomb, demolition, grenade"
+    },
+    "use": {
+      "kind": "",
+      "statBonus": 0,
+      "restSlots": 0,
+      "hours": 0,
+      "advantage": ""
+    },
+    "craft": {
+      "speed": 0,
+      "batchHalf": false,
+      "tierBoost": 0,
+      "reroll": ""
     }
   },
   "effects": [],
@@ -36,7 +53,7 @@
   "_stats": {
     "coreVersion": "14.370",
     "systemId": "crawlspace",
-    "systemVersion": "0.9.8.39",
+    "systemVersion": "0.9.8.46",
     "createdTime": null,
     "modifiedTime": null,
     "lastModifiedBy": null,

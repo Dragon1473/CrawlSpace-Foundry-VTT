@@ -172,6 +172,26 @@
       <label data-tooltip="{{localize 'CRAWLSPACE.Space.GoodSleepHoursHint'}}">{{localize "CRAWLSPACE.Space.GoodSleepHours"}}<input type="number" name="system.rest.goodSleepHours" value="{{systemSource.rest.goodSleepHours}}" min="0"></label>
       <label data-tooltip="{{localize 'CRAWLSPACE.Space.ShortRestSlotsHint'}}">{{localize "CRAWLSPACE.Space.ShortRestSlots"}}<input type="number" name="system.rest.shortRestSlots" value="{{systemSource.rest.shortRestSlots}}" min="0"></label>
       <label data-tooltip="{{localize 'CRAWLSPACE.Space.TrainingHoursHint'}}">{{localize "CRAWLSPACE.Space.TrainingHours"}}<input type="number" name="system.training.hours" value="{{systemSource.training.hours}}" min="0"></label>
+      {{#if systemSource.training.hours}}
+      <label>{{localize "CRAWLSPACE.Space.TrainingSkills"}}<select name="system.training.skills">{{selectOptions trainingSkillChoices selected=systemSource.training.skills}}</select></label>
+      <label data-tooltip="{{localize 'CRAWLSPACE.Space.TrainingMaxRankHint'}}">{{localize "CRAWLSPACE.Space.TrainingMaxRank"}}<input type="number" name="system.training.maxRank" value="{{systemSource.training.maxRank}}" min="0"></label>
+      <label data-tooltip="{{localize 'CRAWLSPACE.Space.TrainingSlotsHint'}}">{{localize "CRAWLSPACE.Space.TrainingSlots"}}<input type="number" name="system.training.slots" value="{{systemSource.training.slots}}" min="1" max="12"></label>
+      {{#if (eq systemSource.training.skills "named")}}<label class="wide">{{localize "CRAWLSPACE.Space.TrainingNames"}}<input type="text" name="system.training.names" value="{{systemSource.training.names}}"></label>{{/if}}
+      {{/if}}
+      <label data-tooltip="{{localize 'CRAWLSPACE.Space.UseHint'}}">{{localize "CRAWLSPACE.Space.UseKindLabel"}}<select name="system.use.kind">{{selectOptions spaceUseChoices selected=systemSource.use.kind}}</select></label>
+      {{#if systemSource.use.kind}}
+      <label>{{localize "CRAWLSPACE.Space.UseHours"}}<input type="number" name="system.use.hours" value="{{systemSource.use.hours}}" min="0"></label>
+      {{#if (eq systemSource.use.kind "meal")}}
+      <label data-tooltip="{{localize 'CRAWLSPACE.Space.UseStatHint'}}">{{localize "CRAWLSPACE.Space.UseStat"}}<input type="number" name="system.use.statBonus" value="{{systemSource.use.statBonus}}" min="0"></label>
+      <label data-tooltip="{{localize 'CRAWLSPACE.Space.UseSlotsHint'}}">{{localize "CRAWLSPACE.Space.UseSlots"}}<input type="number" name="system.use.restSlots" value="{{systemSource.use.restSlots}}" min="0"></label>
+      {{else}}
+      <label class="wide">{{localize "CRAWLSPACE.Space.UseAdvantage"}}<input type="text" name="system.use.advantage" value="{{systemSource.use.advantage}}"></label>
+      {{/if}}
+      {{/if}}
+      <label data-tooltip="{{localize 'CRAWLSPACE.Space.CraftSpeedHint'}}">{{localize "CRAWLSPACE.Space.CraftSpeed"}}<input type="number" name="system.craft.speed" value="{{systemSource.craft.speed}}" min="0" max="90"></label>
+      <label class="check" data-tooltip="{{localize 'CRAWLSPACE.Space.CraftBatchHint'}}"><input type="checkbox" name="system.craft.batchHalf" {{checked systemSource.craft.batchHalf}}> {{localize "CRAWLSPACE.Space.CraftBatch"}}</label>
+      <label data-tooltip="{{localize 'CRAWLSPACE.Space.CraftBoostHint'}}">{{localize "CRAWLSPACE.Space.CraftBoost"}}<input type="number" name="system.craft.tierBoost" value="{{systemSource.craft.tierBoost}}" min="0" max="9"></label>
+      <label class="wide" data-tooltip="{{localize 'CRAWLSPACE.Space.CraftRerollHint'}}">{{localize "CRAWLSPACE.Space.CraftReroll"}}<input type="text" name="system.craft.reroll" value="{{systemSource.craft.reroll}}"></label>
       <p class="hint wide">{{localize "CRAWLSPACE.Space.EffectsHint"}}</p>
     </fieldset>
   {{/if}}

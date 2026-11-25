@@ -6,14 +6,14 @@
  * A crawler is "in" a space only while their own toggle says so (`flags.crawlspace.inPersonalSpace` = the space's
  * actor id). The toggle sits on the space's sheet (each member) and on the GM's rest and grinding panel.
  */
-import { extraSlotsHealth, tableLevelUp, leavingWith, legacySpace, levelFromText, normalizeMembers, ownerLevels, partyLongRestHours, spaceBenefits, type LegacySpace, type Member } from '../rules/personal-space'
+import { extraSlotsHealth, tableLevelUp, leavingWith, legacySpace, levelFromText, normalizeMembers, ownerLevels, partyLongRestHours, spaceBenefits, trainingOf, type LegacySpace, type Member } from '../rules/personal-space'
 import { HEALTH_MAX } from '../config'
+import { mealSlotsAtRest } from './space-uses'
 
 export const SPACE_PACKS = ['homebrew-personal-space', 'homebrew-space-tables']
 const IN_SPACE = 'inPersonalSpace'
 const LIBRARY = 'spaceLibrary'
 const SPACE_EFFECT = 'spaceEffect'
-const TRAINING_DAY = 'spaceTrainingDay'
 
 const t = (key: string, data?: Record<string, unknown>) =>
   data ? game.i18n.format(`CRAWLSPACE.Space.${key}`, data) : game.i18n.localize(`CRAWLSPACE.Space.${key}`)
@@ -39,6 +39,15 @@ export function registerPersonalSpaceSetting() {
     type: Boolean,
     default: true,
     requiresReload: true,
+  })
+  game.settings.register('crawlspace', 'spaceTrainingLevels', {
+    name: 'CRAWLSPACE.Settings.SpaceTrainingLevels.Name',
+    hint: 'CRAWLSPACE.Settings.SpaceTrainingLevels.Hint',
+    scope: 'world',
+    config: true,
+    restricted: true,
+    type: Boolean,
+    default: true,
   })
   game.settings.register('crawlspace', 'personalSpaceMigration', { scope: 'world', config: false, type: Number, default: 0 })
   legacySnapshot = (game.data.actors ?? [])
@@ -109,7 +118,15 @@ export function benefitLinesOf(space: any) {
   if (benefits.longRestHours !== null) lines.push(line('BenefitLongRest', { hours: benefits.longRestHours, list: sources.longRestHours.join(', ') }))
   if (benefits.goodSleepHours) lines.push(line('BenefitGoodSleep', { hours: benefits.goodSleepHours, list: sources.goodSleepHours.join(', ') }))
   if (benefits.shortRestSlots) lines.push(line('BenefitShortRest', { slots: benefits.shortRestSlots, list: sources.shortRestSlots.join(', ') }))
-  if (benefits.trainingHours > 1) lines.push(line('BenefitTraining', { hours: benefits.trainingHours, list: sources.trainingHours.join(', ') }))
+  // Every training room is its own once-a-day Train, so each is listed.
+  const rooms = (space?.items ?? [])
+    .filter((item: any) => item.type === 'spaceUpgrade' && item.system.installed && trainingOf(item.system.training).hours > 0)
+    .map((item: any) => {
+      const training = trainingOf(item.system.training)
+      const kind = game.i18n.localize(`CRAWLSPACE.Space.TrainSkills.${training.skills}`)
+      return line('TrainingRoom', { name: item.name, hours: training.hours, kind, slots: training.slots, rank: training.maxRank ? line('TrainingUpTo', { rank: training.maxRank }) : '' })
+    })
+  if (rooms.length) lines.push(line('BenefitTraining', { list: rooms.join('; ') }))
   return lines
 }
 
@@ -124,10 +141,12 @@ export function restSecondsFor(actors: any[], kind: string, hours: number, base:
  * rest's chat card.
  */
 export async function afterSpaceRest(actor: any, kind: string) {
+  // A space meal's extra slots come with the next Short Rest, in the space or not.
+  const meal = kind === 'short' && spacesEnabled() ? await mealSlotsAtRest(actor) : []
   const space = currentSpace(actor)
-  if (!space) return [] as string[]
+  if (!space) return meal
   const benefits = benefitsFor(actor)
-  const lines: string[] = []
+  const lines: string[] = [...meal]
   if (kind === 'short' && benefits.shortRestSlots) {
     await actor.update({ 'system.health.value': extraSlotsHealth(actor.system.health.value, benefits.shortRestSlots, HEALTH_MAX) })
     lines.push(t('ExtraSlots', { slots: benefits.shortRestSlots, list: benefits.sources.shortRestSlots.join(', ') }))
@@ -151,15 +170,6 @@ export async function afterSpaceRest(actor: any, kind: string) {
     lines.push(t('QuickRest', { hours: benefits.longRestHours, list: benefits.sources.longRestHours.join(', ') }))
   return lines
 }
-
-/** Once a day (the grinding day), a training upgrade's hour counts as more than one. */
-export function trainingFor(crawler: any, day: number) {
-  const benefits = benefitsFor(crawler)
-  const used = Math.floor(Number(crawler.getFlag('crawlspace', TRAINING_DAY)) || 0) === day
-  return { hours: benefits.trainingHours, sources: benefits.sources.trainingHours, used }
-}
-
-export const markTrainingUsed = (crawler: any, day: number) => crawler.setFlag('crawlspace', TRAINING_DAY, day)
 
 /** The crafting tables in the crawler's current space, in the shape crafting reads (actors/crafting.ts). */
 export function spaceTables(crawler: any) {

@@ -5,6 +5,8 @@
 import { CONJOIN_COST, LEVEL_INFO, MEMBER_ROLES, SPACE_LEVELS, conjoinUnions, ownerLevels } from '../rules/personal-space'
 import { attachTo, benefitLinesOf, conjoinSpaces, currentSpace, installLibrary, libraryOf, membersOf, ownerOf, removeMember, setInSpace } from '../actors/personal-space'
 import { craftCategories } from '../actors/crafting'
+import { trainIn, trainingRooms } from '../actors/space-training'
+import { usable, useUpgrade, usersHere } from '../actors/space-uses'
 
 const { HandlebarsApplicationMixin } = foundry.applications.api
 const { ActorSheetV2 } = foundry.applications.sheets
@@ -25,6 +27,8 @@ export class PersonalSpaceSheet extends HandlebarsApplicationMixin(ActorSheetV2)
       openMember: PersonalSpaceSheet.#onOpenMember,
       removeMember: PersonalSpaceSheet.#onRemoveMember,
       toggleHere: PersonalSpaceSheet.#onToggleHere,
+      train: PersonalSpaceSheet.#onTrain,
+      useUpgrade: PersonalSpaceSheet.#onUseUpgrade,
       installLibrary: PersonalSpaceSheet.#onInstallLibrary,
       tableTier: PersonalSpaceSheet.#onTableTier,
       openPack: PersonalSpaceSheet.#onOpenPack,
@@ -49,6 +53,8 @@ export class PersonalSpaceSheet extends HandlebarsApplicationMixin(ActorSheetV2)
     const upgrades = items.filter((item: any) => item.type === 'spaceUpgrade')
     const info = LEVEL_INFO[system.level] ?? LEVEL_INFO[1]
     const benefitLines = benefitLinesOf(actor)
+    const hasTraining = trainingRooms(actor).length > 0
+    const canUse = usersHere(actor).length > 0
     return Object.assign(context, {
       actor,
       system,
@@ -74,6 +80,7 @@ export class PersonalSpaceSheet extends HandlebarsApplicationMixin(ActorSheetV2)
           missing: !crawler,
           here: crawler ? currentSpace(crawler) === actor : false,
           canToggle: !!crawler?.isOwner,
+          canTrain: !!crawler?.isOwner && currentSpace(crawler) === actor && hasTraining,
           library: libraryOf(crawler).length,
           roles: MEMBER_ROLES.map((role) => ({ value: role, label: t(`Role.${role}`), selected: role === member.role })),
           owner: member.role === 'owner',
@@ -96,6 +103,7 @@ export class PersonalSpaceSheet extends HandlebarsApplicationMixin(ActorSheetV2)
             owners: ownerChoices.map((choice) => ({ ...choice, selected: choice.value === item.system.owner })),
             tables: [{ value: '', label: t('NotAttached') }, ...tables.map((table: any) => ({ value: table.id, label: table.name, selected: table.id === item.system.attachedTo }))],
             effects: item.effects.size,
+            usable: canUse && usable(item),
           })),
       ),
       tables: tables.map((item: any) => ({
@@ -264,6 +272,16 @@ export class PersonalSpaceSheet extends HandlebarsApplicationMixin(ActorSheetV2)
     if (!crawler?.isOwner) return
     await setInSpace(crawler, currentSpace(crawler) === this.actor ? null : this.actor)
     this.render()
+  }
+
+  static async #onTrain(this: PersonalSpaceSheet, _event: Event, target: HTMLElement) {
+    const crawler = fromUuidSync(target.closest<HTMLElement>('[data-uuid]')?.dataset.uuid ?? '')
+    if (crawler) await trainIn(this.actor, crawler)
+  }
+
+  static async #onUseUpgrade(this: PersonalSpaceSheet, _event: Event, target: HTMLElement) {
+    const item = PersonalSpaceSheet.#itemOf(this, target)
+    if (item) await useUpgrade(this.actor, item)
   }
 
   static async #onInstallLibrary(this: PersonalSpaceSheet, _event: Event, target: HTMLElement) {

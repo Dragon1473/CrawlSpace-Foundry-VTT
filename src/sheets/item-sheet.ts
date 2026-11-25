@@ -9,7 +9,7 @@ import { documentIds } from './ids'
 import { bindRecipeEditor, recipeEditorContext } from './recipe-editor'
 import { craftCategories } from '../actors/crafting'
 import { RARITIES } from '../rules/crafting'
-import { UPGRADE_KINDS } from '../rules/personal-space'
+import { TRAINING_SKILLS, UPGRADE_KINDS, USE_KINDS } from '../rules/personal-space'
 import { historyContext, originLine, seesValue, valuePerk } from '../actors/item-value'
 import { PIECES_FLAG, setsFor } from '../actors/gear-sets'
 import { addMember, piecesFor } from '../rules/gear-sets'
@@ -181,6 +181,8 @@ export class CrawlItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
       rarityChoices: Object.fromEntries([['', 'CRAWLSPACE.Craft.Rarity.none'], ...RARITIES.map((rarity) => [rarity, `CRAWLSPACE.Craft.Rarity.${rarity}`])]),
       craftCategoryChoices: Object.fromEntries(craftCategories().map((category) => [category.id, category.label])),
       spaceKindChoices: Object.fromEntries(UPGRADE_KINDS.map((kind) => [kind, game.i18n.localize(`CRAWLSPACE.Space.KindChoice.${kind}`)])),
+      trainingSkillChoices: Object.fromEntries(TRAINING_SKILLS.map((kind) => [kind, game.i18n.localize(`CRAWLSPACE.Space.TrainSkills.${kind}`)])),
+      spaceUseChoices: Object.fromEntries(USE_KINDS.map((kind) => [kind, game.i18n.localize(`CRAWLSPACE.Space.UseKind.${kind || 'none'}`)])),
       spaceStatusChoices: { canon: game.i18n.localize('CRAWLSPACE.Space.StatusChoice.canon'), homebrew: game.i18n.localize('CRAWLSPACE.Space.StatusChoice.homebrew') },
       // Lists on physical items only: a class's tags are text and a skill's upgrades are rank fields.
       physicalTags: listText(item._source.system.tags),

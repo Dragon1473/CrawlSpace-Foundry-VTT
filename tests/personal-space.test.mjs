@@ -14,7 +14,14 @@ import {
   partyLongRestHours,
   spaceBenefits,
   tableLevelUp,
-  trainingBonus,
+  boostTables,
+  canTrain,
+  craftOf,
+  spaceCraftMinutes,
+  useOf,
+  worldDay,
+  trainSkill,
+  trainingOf,
   UPGRADE_KINDS,
 } from '../src/rules/personal-space.ts'
 import { CATALOG, TABLES } from '../tools/personal-space-catalog.mjs'
@@ -67,11 +74,29 @@ test('extra Short Rest slots heal 10 each, capped', () => {
   assert.equal(extraSlotsHealth(105, 1), 110)
 })
 
-test('training adds its extra hours once a day after a productive hour', () => {
-  assert.equal(trainingBonus(3, 1, false), 2)
-  assert.equal(trainingBonus(3, 1, true), 0)
-  assert.equal(trainingBonus(3, 0, false), 0)
-  assert.equal(trainingBonus(1, 4, false), 0)
+test('training rooms train only the skills they allow', () => {
+  const sword = { name: 'Sword Fighting', type: 'skill', rank: 4, combat: true }
+  const cook = { name: 'Cooking', type: 'skill', rank: 3 }
+  const mana = { name: 'Mana Manipulation', type: 'skill', rank: 2 }
+  const fireball = { name: 'Fireball', type: 'spell', rank: 6 }
+  const bombs = { name: 'Explosives Handling', type: 'skill', rank: 1 }
+  const room = (raw) => trainingOf({ hours: 1, ...raw })
+  assert.deepEqual([sword, cook, mana, fireball].map((skill) => canTrain(room({ skills: 'skill' }), skill)), [true, true, true, false])
+  assert.deepEqual([sword, cook, mana, fireball].map((skill) => canTrain(room({ skills: 'combat' }), skill)), [true, false, false, false])
+  assert.deepEqual([sword, cook, mana, fireball].map((skill) => canTrain(room({ skills: 'noncombat' }), skill)), [false, true, false, false])
+  assert.deepEqual([sword, cook, mana, fireball].map((skill) => canTrain(room({ skills: 'spell' }), skill)), [false, false, true, true])
+  assert.equal(canTrain(room({ skills: 'noncombat', maxRank: 2 }), cook), false)
+  assert.equal(canTrain(room({ skills: 'named', names: 'explosives handling, Demolition' }), bombs), true)
+  assert.equal(canTrain(room({ skills: 'named', names: 'Demolition' }), bombs), false)
+  assert.deepEqual(trainingOf({ hours: 2.7, skills: 'nonsense', slots: 0 }), { hours: 2, skills: 'any', maxRank: 0, slots: 1, names: '' })
+})
+
+test("training fills a skill log up to its Rank, and not after today's check", () => {
+  const log = { day: 3, skillHours: { a: 1 }, attempted: { b: 3 } }
+  assert.deepEqual(trainSkill(log, 'a', 4, 2), { added: 2, progress: 3, required: 4, ready: false, blocked: false })
+  assert.deepEqual(trainSkill(log, 'a', 2, 3), { added: 1, progress: 2, required: 2, ready: true, blocked: false })
+  assert.deepEqual(trainSkill(log, 'c', 0, 3), { added: 1, progress: 1, required: 1, ready: true, blocked: false })
+  assert.equal(trainSkill(log, 'b', 4, 1).blocked, true)
 })
 
 test('members: owners count the unions paid, duplicates go', () => {
@@ -164,4 +189,24 @@ test('owners keep the Level of the space they brought', () => {
   const members = normalizeMembers([{ uuid: 'a', role: 'owner', spaceLevel: 3 }, { uuid: 'b', role: 'owner', spaceLevel: 9 }, { uuid: 'c', role: 'member', spaceLevel: 3 }, { uuid: 'd', role: 'owner' }])
   assert.deepEqual(members, [{ uuid: 'a', role: 'owner', spaceLevel: 3 }, { uuid: 'b', role: 'owner', spaceLevel: 5 }, { uuid: 'c', role: 'member' }, { uuid: 'd', role: 'owner' }])
   assert.deepEqual(ownerLevels(members), [3, 5])
+})
+
+test('space amenities and crafting upgrades read cleanly', () => {
+  assert.deepEqual(useOf({ kind: 'meal', statBonus: 1.8, hours: 8 }), { kind: 'meal', statBonus: 1, restSlots: 0, hours: 8, advantage: '' })
+  assert.equal(useOf({ kind: 'party' }).kind, '')
+  assert.deepEqual(craftOf({ speed: 25, reroll: ' alchemy, arcanist ' }), { speed: 25, batchHalf: false, tierBoost: 0, reroll: 'alchemy, arcanist' })
+  assert.equal(worldDay(107999), 0)
+  assert.equal(worldDay(108000), 1)
+})
+
+test('space attachments shorten crafting time', () => {
+  // 3 hours: a quarter off is 135 minutes, down to the half hour: 120.
+  assert.equal(spaceCraftMinutes(180, 0, { speed: 25 }), 120)
+  // Never below 30 minutes, and a project already shorter keeps its time.
+  assert.equal(spaceCraftMinutes(40, 0, { speed: 25 }), 30)
+  assert.equal(spaceCraftMinutes(20, 0, { speed: 25 }), 20)
+  // A batch: extra copies at half time, rounded down.
+  assert.equal(spaceCraftMinutes(60, 15, { batchHalf: true }), 67)
+  assert.equal(spaceCraftMinutes(60, 15, {}), 75)
+  assert.deepEqual(boostTables([{ tier: 3 }, { tier: 10 }], 1), [{ tier: 4 }, { tier: 10 }])
 })

@@ -35,6 +35,7 @@
         {{#if owner}}<select data-member-level data-tooltip="{{localize 'CRAWLSPACE.Space.BroughtHint'}}" {{#unless @root.editable}}disabled{{/unless}}>{{#each spaceLevels}}<option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}</select>{{/if}}
         {{#if canToggle}}<a class="space-here {{#if here}}active{{/if}}" data-action="toggleHere" data-tooltip="{{localize 'CRAWLSPACE.Space.HereHint'}}"><i class="fa-solid fa-house-user"></i> {{#if here}}{{localize "CRAWLSPACE.Space.Here"}}{{else}}{{localize "CRAWLSPACE.Space.Away"}}{{/if}}</a>
         {{else}}{{#if here}}<span class="space-here active"><i class="fa-solid fa-house-user"></i> {{localize "CRAWLSPACE.Space.Here"}}</span>{{/if}}{{/if}}
+        {{#if canTrain}}<a class="space-train" data-action="train" data-tooltip="{{localize 'CRAWLSPACE.Space.TrainHint'}}"><i class="fa-solid fa-dumbbell"></i> {{localize "CRAWLSPACE.Space.Train"}}</a>{{/if}}
         {{#if (and library @root.editable)}}<a data-action="installLibrary" data-tooltip="{{localize 'CRAWLSPACE.Space.InstallLibrary'}}"><i class="fa-solid fa-box-open"></i> {{library}}</a>{{/if}}
         {{#if @root.editable}}<a data-action="removeMember" data-tooltip="{{localize 'CRAWLSPACE.Space.RemoveTitle'}}"><i class="fa-solid fa-user-minus"></i></a>{{/if}}
       </li>
@@ -56,6 +57,7 @@
           <small>{{tier}}{{#if category}} · {{category}}{{/if}}{{#if homebrew}} · {{localize "CRAWLSPACE.Space.Homebrew"}}{{/if}}{{#if effects}} · <i class="fa-solid fa-bolt" data-tooltip="{{localize 'CRAWLSPACE.Space.HasEffects'}}"></i>{{/if}}</small>
           {{#if summary}}<small class="hint">{{summary}}</small>{{/if}}
         </div>
+        {{#if usable}}<a class="space-use" data-action="useUpgrade" data-tooltip="{{localize 'CRAWLSPACE.Space.UseHint'}}"><i class="fa-solid fa-hand-pointer"></i> {{localize "CRAWLSPACE.Space.Use"}}</a>{{/if}}
         {{#if attachment}}<select data-item-field="attachedTo" data-tooltip="{{localize 'CRAWLSPACE.Space.AttachedTo'}}" {{#unless @root.editable}}disabled{{/unless}}>{{#each tables}}<option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}</select>{{/if}}
         <select data-item-field="owner" data-tooltip="{{localize 'CRAWLSPACE.Space.Owner'}}" {{#unless @root.editable}}disabled{{/unless}}>{{#each owners}}<option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}</select>
         <label data-tooltip="{{localize 'CRAWLSPACE.Space.Installed'}}"><input type="checkbox" data-item-field="installed" {{#if installed}}checked{{/if}} {{#unless @root.editable}}disabled{{/unless}}></label>

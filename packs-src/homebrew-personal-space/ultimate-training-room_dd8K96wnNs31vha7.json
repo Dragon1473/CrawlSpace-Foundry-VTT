@@ -24,7 +24,24 @@
       "shortRestSlots": 0
     },
     "training": {
-      "hours": 0
+      "hours": 1,
+      "skills": "any",
+      "maxRank": 0,
+      "slots": 6,
+      "names": ""
+    },
+    "use": {
+      "kind": "",
+      "statBonus": 0,
+      "restSlots": 0,
+      "hours": 0,
+      "advantage": ""
+    },
+    "craft": {
+      "speed": 0,
+      "batchHalf": false,
+      "tierBoost": 0,
+      "reroll": ""
     }
   },
   "effects": [],
@@ -36,7 +53,7 @@
   "_stats": {
     "coreVersion": "14.370",
     "systemId": "crawlspace",
-    "systemVersion": "0.9.8.39",
+    "systemVersion": "0.9.8.46",
     "createdTime": null,
     "modifiedTime": null,
     "lastModifiedBy": null,
