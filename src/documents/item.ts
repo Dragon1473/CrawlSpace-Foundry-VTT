@@ -5,7 +5,8 @@ import { buildEffect, effectDuration, stableId } from '../import/convert'
 import { BUILD_EFFECT_FIELDS } from '../data/items'
 import { isHandItem } from '../rules/hands'
 import { itemCooldown, withCooldowns } from '../effects/cooldowns'
-import { itemMessageFlags, penaltyModifiers, rollAttack, rollCheck, rollDamage, speakerFor, type Modifier } from '../dice/rolls'
+import { penaltyModifiers, rollAttack, rollCheck, rollDamage, speakerFor, type Modifier } from '../dice/rolls'
+import { playItemAnimation } from '../tokens/animations'
 import { STATS, statKeyFromCode } from '../config'
 import { attackWithRow, resolveAttack, rowForItem, withEffectBonuses } from '../actors/attacks'
 import { conditionRows, itemCardDetails } from '../effects/use-conditions'
@@ -94,13 +95,18 @@ export class CrawlItem extends Item {
           // A Passive skill only posts its card; anything rolled (or any spell cast) counts toward advancement.
           if (result && (this.type === 'spell' || this.system.checkType !== 'Passive')) await markAttackAdvancement(actor, [this], (result as any)?.effectSkills ?? [])
           if (result) await applyCastEffects(this)
+          // Attacks play their animation from rollAttack; other skills and spells (Heal) play it here.
+          if (result && !this.system.isAttack) playItemAnimation(actor, this)
           return result
         })
       case 'weapon':
         return this.#useWeapon(options)
       case 'consumable':
         if (this.system.consumableType === 'explosives') return attackWithRow(actor, rowForItem(this), options)
-        return this.#useConsumable()
+        return this.#useConsumable().then((result) => {
+          if (result) playItemAnimation(actor, this)
+          return result
+        })
       case 'lootBox':
         return this.#openBox()
       default:
@@ -222,7 +228,8 @@ export class CrawlItem extends Item {
       conditions: ranked ? await itemCardDetails(this) : options.ranked ? conditionRows(this) : '',
     })
     const speaker = this.actor ? speakerFor(this.actor) : ChatMessage.getSpeaker()
-    return ChatMessage.create({ content, speaker, flags: { crawlspace: { ...itemMessageFlags(this, speaker), kind: 'item' } } })
+    // No item reference in the flags: Automated Animations is called directly on use (tokens/animations.ts).
+    return ChatMessage.create({ content, speaker, flags: { crawlspace: { kind: 'item' } } })
   }
 
   /** Enforce one item per body slot and ten accessories when equipping (hands: rules/hands-upkeep.ts). */

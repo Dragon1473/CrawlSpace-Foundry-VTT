@@ -8,6 +8,7 @@ import { mobDifficulty, netMode } from '../rules/mob-advantage'
 import { modLostFor } from '../rules/mod-loss'
 import { wearShields } from '../rules/repair'
 import type { AttackDamage } from '../actors/attacks'
+import { playItemAnimation } from '../tokens/animations'
 
 export type RollModeName = 'normal' | 'advantage' | 'disadvantage'
 export type Modifier = {
@@ -244,7 +245,7 @@ export type AttackSource = {
   details?: string
   /** The skill or spell the attack is made with, and its Rank, for the card's tags. */
   skills?: { name: string; rank: number }[]
-  /** The item the attack is made with, recorded on the card (see itemMessageFlags). */
+  /** The item the attack is made with: animation modules key on it (tokens/animations.ts). */
   item?: any
 }
 
@@ -262,15 +263,6 @@ export function speakerFor(actor: any) {
   return ChatMessage.getSpeaker(token ? { actor, token } : { actor })
 }
 
-/**
- * The item a card was made with, in the flags modules read without system support (Automated Animations looks for
- * flags[systemId].itemUuid / itemId / actorId / tokenUuid on new chat messages).
- */
-export function itemMessageFlags(item: any, speaker: { token?: string | null; scene?: string | null } = {}) {
-  if (!item) return {}
-  const token = speaker.token && speaker.scene ? `Scene.${speaker.scene}.Token.${speaker.token}` : ''
-  return { itemUuid: item.uuid, itemId: item.id, actorId: item.actor?.id ?? '', ...(token ? { tokenUuid: token } : {}) }
-}
 
 /** Target defense used against an attack: Evade for everyone in CrawlSpace, 5 up or down for a Mob with Advantage or Disadvantage. */
 export function targetDefense(actor: any): number {
@@ -347,7 +339,6 @@ export async function rollAttack(actor: any, attack: AttackSource, options: { fa
       flavor,
       flags: {
         crawlspace: {
-          ...itemMessageFlags(attack.item, speaker),
           kind: 'attack',
           damage: { ...attack.damage, formula, floor },
           label: attack.label,
@@ -360,6 +351,8 @@ export async function rollAttack(actor: any, attack: AttackSource, options: { fa
     },
     { messageMode: messageMode() },
   )
+  const hit = new Set(rows.filter((row) => row.success).map((row) => row.uuid))
+  playItemAnimation(actor, attack.item, { hitTargets: [...game.user.targets].filter((token: any) => hit.has(token.actor?.uuid)) })
   await afterAction(actor)
   // Damage effect skills ticked for this attack: only one skill used may be marked for advancement.
   const effects = result.modifiers.filter((modifier) => modifier.skillRank !== undefined)
