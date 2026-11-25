@@ -854,6 +854,8 @@
       "Failed": "Import failed: {error}"
     },
     "Settings": {
+      "TooltipDelay": "Tooltip delay (milliseconds)",
+      "TooltipDelayHint": "How long the cursor rests on something before its tooltip appears. Tooltips hide as soon as you move away. Foundry's own default is 500.",
       "Group": {
         "frames": "Crawler Frames",
         "combat": "Combat",

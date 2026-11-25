@@ -59,6 +59,7 @@ import { migrateShieldLoss } from './rules/repair'
 import { PersonalSpaceData, SpaceUpgradeData } from './data/personal-space'
 import { registerItemValues, registerItemValueSettings } from './actors/item-value'
 import { registerGearSets, registerGearSetSetting } from './actors/gear-sets'
+import { registerTooltipDelay } from './settings/tooltips'
 import { PersonalSpaceSheet } from './sheets/personal-space-sheet'
 import { hideSpaceTypes, migrateLegacySpaces, registerPersonalSpaces, registerPersonalSpaceSetting } from './actors/personal-space'
 import { actionRowsOf, runAction } from './apps/actions-config'
@@ -128,6 +129,7 @@ Hooks.once('init', () => {
   registerPersonalSpaceSetting()
   registerItemValueSettings()
   registerGearSetSetting()
+  registerTooltipDelay()
   registerSettingsLayout()
   registerVehicleExplosions()
   registerRace()
