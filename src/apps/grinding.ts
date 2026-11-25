@@ -1,5 +1,7 @@
 /** Grinding: actual hours, overtime fatigue, daily checks and level progress (partyUpkeepActions.ts). */
-import { normalizeGrinding, creditGrindingHour, creditGrindingAid, nextGrindingDay, isUniqueLowestCrawler } from '../rules/grinding'
+import { normalizeGrinding, creditGrindingHour, creditGrindingAid, grindingOnDay, isUniqueLowestCrawler } from '../rules/grinding'
+import { displayDayHours } from '../rules/time'
+import { gameDay } from '../game-day'
 import { floorCheckDc } from '../rules/floor-checks'
 import { rankCap } from '../effects/rank-cap'
 import { rollD20, naturalD20, penaltyModifiers } from '../dice/rolls'
@@ -13,18 +15,18 @@ export async function openGrinding(actors: any[], hours = 1, policy: { advance?:
   if (!Number.isSafeInteger(hours) || hours < 1 || hours > 30) throw new Error(t('HoursError'))
   const options = await foundry.applications.api.DialogV2.prompt({
     window: { title: t('Title') }, position: { width: 560 }, classes: ['crawlspace', 'grinding-dialog'], rejectClose: false,
-    content: `<p>${t('Hint')}</p><div class="form-group"><label>${t('Aid')}</label><select name="aid"><option value="none">${t('None')}</option><option value="neighborhood">${t('Neighborhood')}</option><option value="borough">${t('Borough')}</option></select></div><label class="upkeep-participant"><input type="checkbox" name="newDay"> ${t('NewDay')}</label>`,
-    ok: { callback: (_event: Event, button: any) => ({ aid: button.form.elements.aid.value, newDay: button.form.elements.newDay.checked }) },
+    content: `<p>${t('Hint')}</p><div class="form-group"><label>${t('Aid')}</label><select name="aid"><option value="none">${t('None')}</option><option value="neighborhood">${t('Neighborhood')}</option><option value="borough">${t('Borough')}</option></select></div>`,
+    ok: { callback: (_event: Event, button: any) => ({ aid: button.form.elements.aid.value }) },
   })
   if (!options) return
   const levels = game.actors.filter((actor: any) => actor.type === 'crawler').map((actor: any) => ({ uuid: actor.uuid, level: actor.system.details.level }))
   const prepared: any[] = []
   // Validate the entire party before rolling or changing time.
   for (const actor of actors) {
-    let state = normalizeGrinding(actor.getFlag('crawlspace', 'grinding'))
-    if (options.newDay) state = nextGrindingDay(state)
+    // The grinding day is the game clock's day (the dayLength setting): a new day starts a fresh one.
+    const state = grindingOnDay(normalizeGrinding(actor.getFlag('crawlspace', 'grinding')), gameDay())
     const endurance = actor.items.find((item: any) => item.type === 'skill' && /^endurance$/i.test(item.name.trim()))
-    if (state.hoursToday + hours > 30) throw new Error(t('DayError', { name: actor.name }))
+    if (state.hoursToday + hours > displayDayHours()) throw new Error(t('DayError', { name: actor.name, hours: displayDayHours() }))
     if (state.hoursToday + hours > 5 && !endurance) throw new Error(t('EnduranceError', { name: actor.name }))
     prepared.push({ actor, base: JSON.stringify({ grinding: actor.getFlag('crawlspace', 'grinding'), level: actor.system.details.level, items: actor.items.map((item: any) => [item.id, item.system.rank?.value]) }), state, endurance, fatigue: 0, lines: [], updates: [] })
   }

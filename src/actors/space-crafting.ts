@@ -7,7 +7,8 @@
  *   higher (to Tier 10).
  * Daily and per-floor uses are kept on the crawler (flags.crawlspace.spaceCrafting).
  */
-import { craftOf, namesIn, spaceCraftMinutes, worldDay } from '../rules/personal-space'
+import { craftOf, namesIn, spaceCraftMinutes } from '../rules/personal-space'
+import { gameDay } from '../game-day'
 import { craftMinutes, type Recipe } from '../rules/crafting'
 import { currentSpace } from './personal-space'
 
@@ -37,7 +38,7 @@ export function spaceCraft(crawler: any, recipe: Recipe, count: number) {
     return namesIn(craftOf(item.system.craft).reroll).includes(low(table?.system.category))
   })
   const used = usedOf(crawler)
-  const boosters = recipe.tables.length && used.boostDay !== worldDay(game.time.worldTime) ? upgrades.filter((item: any) => craftOf(item.system.craft).tierBoost > 0) : []
+  const boosters = recipe.tables.length && used.boostDay !== gameDay() ? upgrades.filter((item: any) => craftOf(item.system.craft).tierBoost > 0) : []
   const floor = floorOf(crawler)
   const reroll = rerollers.find((item: any) => used.rerolls?.[item.id] !== floor) ?? null
   const base = craftMinutes(recipe, 1)
@@ -57,7 +58,7 @@ export function spaceCraft(crawler: any, recipe: Recipe, count: number) {
 export const boostedTables = (tables: any[], boost: number) => tables.map((table) => (table.space && boost ? { ...table, tier: Math.min(10, table.tier + boost) } : table))
 
 export async function markBoostUsed(crawler: any) {
-  await crawler.setFlag('crawlspace', USED, { ...usedOf(crawler), boostDay: worldDay(game.time.worldTime) })
+  await crawler.setFlag('crawlspace', USED, { ...usedOf(crawler), boostDay: gameDay() })
 }
 
 export async function markRerollUsed(crawler: any, upgrade: any) {

@@ -1,11 +1,12 @@
 /**
  * Once-a-day amenities in a Personal Space (rules/personal-space.ts useOf): the Use button on an upgrade's row. A crawler
- * in the space uses each one once per dungeon day (worldDay).
+ * in the space uses each one once a day of the game clock (game-day.ts: the dayLength setting, in step with the floor timer).
  * - A meal: +statBonus to a stat the eater picks and/or extra Health Bar slots at their next Short Rest, for its hours.
  *   Meals don't stack: a new one replaces the last (flags.crawlspace.spaceMeal).
  * - A wash: Advantage on the named checks for its hours (flags.crawlspace.spaceWash).
  */
-import { useOf, worldDay } from '../rules/personal-space'
+import { useOf } from '../rules/personal-space'
+import { gameDay } from '../game-day'
 import { extraSlotsHealth } from '../rules/personal-space'
 import { HEALTH_MAX, STATS, STAT_KEYS } from '../config'
 import { currentSpace, membersOf } from './personal-space'
@@ -16,7 +17,7 @@ const t = (key: string, data?: Record<string, unknown>) =>
   data ? game.i18n.format(`CRAWLSPACE.Space.${key}`, data) : game.i18n.localize(`CRAWLSPACE.Space.${key}`)
 const esc = (value: unknown) => foundry.utils.escapeHTML(String(value))
 
-const today = () => worldDay(game.time.worldTime)
+const today = () => gameDay()
 
 /** Whether this upgrade has a Use. */
 export const usable = (item: any) => item?.type === 'spaceUpgrade' && item.system.installed && !!useOf(item.system.use).kind
@@ -97,7 +98,8 @@ export async function useUpgrade(space: any, upgrade: any) {
     ])
     lines.push(t('UseWash', { name: crawler.name, upgrade: upgrade.name, checks: use.advantage, hours: use.hours }))
   }
-  await crawler.setFlag('crawlspace', USED, { day: today(), uses: { ...used, [upgrade.id]: true } })
+  // '==' replaces the flag: a merge would carry yesterday's uses into today.
+  await crawler.update({ [`flags.crawlspace.==${USED}`]: { day: today(), uses: { ...used, [upgrade.id]: true } } })
   await ChatMessage.create({
     speaker: ChatMessage.getSpeaker({ actor: crawler }),
     content: `<div class="crawlspace chat-card"><h3>${esc(upgrade.name)}</h3>${lines.map((line) => `<p>${esc(line)}</p>`).join('')}</div>`,

@@ -230,10 +230,6 @@ export function legacySpace(system: any): LegacySpace | null {
   return tier || size || amenities.length ? { tier, size, amenities } : null
 }
 
-/** A day of dungeon time (thirty hours), for "once a day" uses. */
-const DAY = 108000
-export const worldDay = (seconds: number) => Math.floor((Number(seconds) || 0) / DAY)
-
 export const USE_KINDS = ['', 'meal', 'wash'] as const
 export type UseKind = (typeof USE_KINDS)[number]
 

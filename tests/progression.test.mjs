@@ -4,7 +4,8 @@ import assert from 'node:assert/strict'
 import { bladeClapAllowed } from '../src/rules/blade-clap.ts'
 import { advancementCap } from '../src/rules/advancementCaps.ts'
 import { advancementCheck } from '../src/rules/upkeep.ts'
-import { normalizeGrinding, creditGrindingHour, creditGrindingAid, allocateGrindingHours, nextGrindingDay, isUniqueLowestCrawler } from '../src/rules/grinding.ts'
+import { normalizeGrinding, creditGrindingHour, creditGrindingAid, allocateGrindingHours, nextGrindingDay, grindingOnDay, isUniqueLowestCrawler } from '../src/rules/grinding.ts'
+import { clockDay } from '../src/rules/time.ts'
 import { floorCheckDc } from '../src/rules/floor-checks.ts'
 import { awardNumber } from '../src/rules/crawler-awards.ts'
 import { killingBlowBonus, addKillingBlowStack, expireKillingBlowStacks } from '../src/rules/killingBlowStacks.ts'
@@ -93,4 +94,30 @@ test('Heal stays at Rank 1; Heal Others and Heal Self do not', () => {
   assert.equal(advancementCap('Heal Others', 1), 15)
   assert.equal(advancementCap('Heal Self', 1), 15)
   assert.equal(advancementCap('Heal Critters', 1), 15)
+})
+
+test('the grinding day is the game clock day, by the day length setting', () => {
+  assert.equal(clockDay(0), 1)
+  assert.equal(clockDay(107999), 1)
+  assert.equal(clockDay(108000), 2)
+  assert.equal(clockDay(86400, 24), 2)
+  assert.equal(clockDay(108000, 24), 2)
+  assert.equal(clockDay(-5), 1)
+  // A floor timer set to 8 days 6 hours at time 0: the day turns over when 8 days are left (6 hours in), then 7.
+  const end = (8 * 24 + 6) * 3600
+  assert.equal(clockDay(0, 24, end), 0)
+  assert.equal(clockDay(6 * 3600 - 1, 24, end), 0)
+  assert.equal(clockDay(6 * 3600, 24, end), 1)
+  assert.equal(clockDay(30 * 3600 - 1, 24, end), 1)
+  assert.equal(clockDay(30 * 3600, 24, end), 2)
+  assert.equal(clockDay(5 * 3600, 30, (8 * 30 + 6) * 3600), 0)
+  assert.equal(clockDay(6 * 3600, 30, (8 * 30 + 6) * 3600), 1)
+  const state = { ...normalizeGrinding(), day: 1, hoursToday: 4, productiveToday: 4, levelHours: 7, unassignedHours: 2, attempted: { a: 1 } }
+  assert.equal(grindingOnDay(state, 0), state)
+  const next = grindingOnDay(state, 3)
+  assert.equal(next.day, 4)
+  assert.equal(next.hoursToday, 0)
+  assert.equal(next.levelHours, 7)
+  assert.equal(next.unassignedHours, 2)
+  assert.notEqual(next.attempted.a, next.day)
 })

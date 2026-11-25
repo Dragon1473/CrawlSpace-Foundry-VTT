@@ -1524,7 +1524,7 @@
         "24": "24-hour Earth day",
         "30": "30-hour dungeon day",
         "Name": "Day length",
-        "Hint": "How many hours a day shows as on timers, cooldowns and time entry. Display only: nothing lasts longer or shorter, and \"1 day\" in rules text is still a 30-hour dungeon day. With 24-hour days, 30 hours reads as 1 day 6 hours."
+        "Hint": "How many hours a day shows as on timers, cooldowns and time entry, and when \"once a day\" uses reset (grinding, Personal Space training rooms, meals, showers and the crafting boost start fresh at each new day of the game clock). Nothing lasts longer or shorter, and \"1 day\" in rules text is still a 30-hour dungeon day. With 24-hour days, 30 hours reads as 1 day 6 hours."
       },
       "PickDuration": "Pick a time",
       "Timed": "Timed (set below)",
@@ -1536,9 +1536,8 @@
       "Aid": "Map / guide aid",
       "Neighborhood": "Neighborhood · +1 hour after 5 hours",
       "Borough": "Borough · +2 hours after 5 hours",
-      "NewDay": "Start a new grinding day (keep banked progress)",
       "HoursError": "Enter 1–30 whole grinding hours.",
-      "DayError": "{name} would exceed 30 grinding hours today. Start a new grinding day first.",
+      "DayError": "{name} would exceed {hours} grinding hours today. Wait for the next day on the game clock.",
       "EnduranceError": "Add Endurance to {name} before overtime grinding.",
       "Overtime": "Grinding · Endurance",
       "Fatigue": "New Fatigue",

@@ -81,6 +81,14 @@ export function allocateGrindingHours(
 export function nextGrindingDay(state: GrindingState): GrindingState {
   return { ...state, day: state.day + 1, hoursToday: 0, productiveToday: 0, bonusToday: 0 }
 }
+/**
+ * The grinding state on a day of the game clock (grinding day = clock day + 1). A new day clears the day's hours and
+ * daily checks; banked hours and level progress stay.
+ */
+export function grindingOnDay(state: GrindingState, clockDay: number): GrindingState {
+  const day = Math.max(0, Math.floor(clockDay)) + 1
+  return state.day === day ? state : { ...nextGrindingDay(state), day }
+}
 export function grindingSkillAllowed(skill: {
   name: string
   isAttackSkill?: boolean

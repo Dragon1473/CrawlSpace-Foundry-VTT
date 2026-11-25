@@ -19,7 +19,6 @@ import {
   craftOf,
   spaceCraftMinutes,
   useOf,
-  worldDay,
   trainSkill,
   trainingOf,
   UPGRADE_KINDS,
@@ -195,8 +194,6 @@ test('space amenities and crafting upgrades read cleanly', () => {
   assert.deepEqual(useOf({ kind: 'meal', statBonus: 1.8, hours: 8 }), { kind: 'meal', statBonus: 1, restSlots: 0, hours: 8, advantage: '' })
   assert.equal(useOf({ kind: 'party' }).kind, '')
   assert.deepEqual(craftOf({ speed: 25, reroll: ' alchemy, arcanist ' }), { speed: 25, batchHalf: false, tierBoost: 0, reroll: 'alchemy, arcanist' })
-  assert.equal(worldDay(107999), 0)
-  assert.equal(worldDay(108000), 1)
 })
 
 test('space attachments shorten crafting time', () => {

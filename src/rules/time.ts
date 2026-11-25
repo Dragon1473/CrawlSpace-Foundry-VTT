@@ -8,13 +8,24 @@ export type TimeParts = { days: number; hours: number; minutes: number; seconds:
  * How many hours a day has on screen: the dungeon's thirty (default) or an Earth day of twenty-four (the `dayLength`
  * world setting, apps/time.ts). It only changes how time reads and how the day field of a time entry counts. Every
  * duration, cooldown, rest and timer keeps its length in seconds, and "1 day" in rules text stays a thirty-hour
- * dungeon day (DAY_SECONDS).
+ * dungeon day (DAY_SECONDS). "Once a day" uses do follow it: they reset at each new day of the clock (clockDay).
  */
 export const DAY_LENGTHS = [30, 24] as const
 let dayHours = 30
 export const displayDayHours = () => dayHours
 export function setDisplayDayHours(hours: unknown) {
   dayHours = Number(hours) === 24 ? 24 : 30
+}
+
+/**
+ * Which day of the game clock this is, counting days of the dayLength setting. Days turn over whenever the time left
+ * until `anchor` (the floor timer's end, game-day.ts) is a whole number of days; with anchor 0, at whole days of world
+ * time. Never below 0, and it only grows as time passes.
+ */
+export function clockDay(seconds: number, hoursPerDay = dayHours, anchor = 0) {
+  const length = hoursPerDay * 3600
+  const phase = ((Math.floor(Number(anchor) || 0) % length) + length) % length
+  return Math.floor((Math.max(0, Number(seconds) || 0) - phase) / length) + 1
 }
 
 /** Accept overflow in any field, then normalize, a day field counting the display day's hours. */

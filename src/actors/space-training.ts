@@ -7,7 +7,8 @@
  * level (1d2 for the party's single lowest-level crawler). Off: they fill skill logs only.
  */
 import { canTrain, trainingOf, trainSkill, type TrainableSkill } from '../rules/personal-space'
-import { isUniqueLowestCrawler, normalizeGrinding } from '../rules/grinding'
+import { grindingOnDay, isUniqueLowestCrawler, normalizeGrinding } from '../rules/grinding'
+import { gameDay } from '../game-day'
 import { rankCap } from '../effects/rank-cap'
 import { penaltyModifiers, rollD20 } from '../dice/rolls'
 import { currentSpace } from './personal-space'
@@ -31,7 +32,7 @@ export function trainable(item: any): TrainableSkill {
 export const trainingRooms = (space: any) =>
   (space?.items ?? []).filter((item: any) => item.type === 'spaceUpgrade' && item.system.installed && trainingOf(item.system.training).hours > 0)
 
-/** The rooms this crawler already used on their current grinding day. */
+/** The rooms this crawler already used today (their grinding day, which is the game clock's day). */
 function usedToday(crawler: any, day: number): Record<string, boolean> {
   const saved = crawler.getFlag('crawlspace', TRAINED)
   return saved && Number(saved.day) === day ? { ...(saved.uses ?? {}) } : {}
@@ -53,7 +54,7 @@ async function pickRoom(rooms: any[], crawler: any) {
 export async function trainIn(space: any, crawler: any) {
   if (!crawler?.isOwner) return
   if (currentSpace(crawler) !== space) return ui.notifications.warn(t('TrainNotHere', { name: crawler.name }))
-  const state = normalizeGrinding(crawler.getFlag('crawlspace', 'grinding'))
+  const state = grindingOnDay(normalizeGrinding(crawler.getFlag('crawlspace', 'grinding')), gameDay())
   const used = usedToday(crawler, state.day)
   const skills = crawler.items.filter((item: any) => ['skill', 'spell'].includes(item.type) && item.name.trim())
   const rooms = trainingRooms(space).filter((room: any) => !used[room.id] && skills.some((item: any) => canTrain(trainingOf(room.system.training), trainable(item))))
@@ -124,7 +125,8 @@ export async function trainIn(space: any, crawler: any) {
   }
   await crawler.update({
     'flags.crawlspace.grinding': state,
-    [`flags.crawlspace.${TRAINED}`]: { day: state.day, uses: { ...used, [room.id]: true } },
+    // '==' replaces the flag: a merge would carry yesterday's rooms into today.
+    [`flags.crawlspace.==${TRAINED}`]: { day: state.day, uses: { ...used, [room.id]: true } },
     'system.details.level': level,
   })
   if (updates.length) await crawler.updateEmbeddedDocuments('Item', updates)
