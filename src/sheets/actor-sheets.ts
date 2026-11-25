@@ -224,7 +224,7 @@ class CrawlActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     }
     if (item.type === 'skill' || item.type === 'spell') {
       add('CRAWLSPACE.Item.CheckType', system.checkType)
-      add('CRAWLSPACE.Item.Cooldown', system.cooldown)
+      add('CRAWLSPACE.Item.Cooldown', system.cooldownAtRank ?? system.cooldown)
       if (item.type === 'spell') {
         add('CRAWLSPACE.Stat.Mana', system.mana)
         add('CRAWLSPACE.Item.Range', system.range)

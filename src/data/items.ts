@@ -1,6 +1,7 @@
 import { rankCap } from '../effects/rank-cap'
 import { GEAR_SLOTS } from '../config'
 import { rankDie, splitRankDice } from '../rules/core'
+import { rankStep } from '../rules/rank-values.ts'
 
 const f = () => foundry.data.fields
 const text = (initial = '') => new (f().StringField)({ required: true, blank: true, initial })
@@ -73,6 +74,10 @@ const rankedSchema = () => {
       rank5Damage: text(),
       rank10Damage: text(),
       rank15Damage: text(),
+      /** Cooldowns that replace the item's from Rank 5, 10 and 15 (a cooldown that shortens as the Rank rises). */
+      rank5Cooldown: text(),
+      rank10Cooldown: text(),
+      rank15Cooldown: text(),
     }),
     /** Area templates by Rank tier (abilityTemplates.ts); empty uses the published ones for the name. */
     areas: new fields.ObjectField(),
@@ -107,6 +112,10 @@ function prepareRanked(model: any, kind: 'skill' | 'spell') {
   const healing = (rank >= 15 && heal.rank15) || (rank >= 10 && heal.rank10) || (rank >= 5 && heal.rank5) || heal.formula || ''
   model.healing.atRank = withRank(String(healing).trim(), rank)
   model.checkBonus = rank + model.rank.mod
+  // The cooldown at this Rank: a Rank upgrade's, else the item's (which may be a step table, "1: 24 hours, 5: 12 hours").
+  const up = model.upgrades ?? {}
+  const cooldown = (rank >= 15 && up.rank15Cooldown) || (rank >= 10 && up.rank10Cooldown) || (rank >= 5 && up.rank5Cooldown) || model.cooldown || ''
+  model.cooldownAtRank = rankStep(String(cooldown).trim(), rank)
   // An Attack check is an attack, flagged or not (compendium attack spells and skills often aren't), so its rolls
   // carry damage and hotlisted attack spells join the Attacks table.
   if (String(model.checkType ?? '').trim().toLowerCase() === 'attack') model.isAttack = true
@@ -121,13 +130,22 @@ export class SkillData extends foundry.abstract.TypeDataModel {
       /**
        * A damage effect skill (damageEffectSkills.ts): an optional toggle on attacks made with the skills it names,
        * adding its damage at its Rank, and its Rank to the attack roll or a roll mode. Null/blank use the defaults
-       * (Aiming: its Rank, keep lower).
+       * (Aiming: its Rank, keep lower). `damageMode` says how it changes the damage (rules/damage-effects.ts): add its
+       * damage (blank), multiply the base dice (Powerful Strike) or the total (Choke Out) by `multiplier`. A
+       * `condition` (the target's health at or below `value`%) ticks it on its own when met and makes it unavailable
+       * when not. Multiplier and condition values can scale with Rank (rules/rank-values.ts: "@rank", "1: 2, 10: 4").
        */
       damageEffect: new fields.SchemaField({
         enabled: new fields.BooleanField(),
         skills: stringList(),
         addRank: new fields.BooleanField({ required: false, nullable: true, initial: null }),
         mode: new fields.StringField({ required: true, blank: true, initial: '', choices: ['', 'normal', 'advantage', 'disadvantage'] }),
+        damageMode: new fields.StringField({ required: true, blank: true, initial: '', choices: ['', 'add', 'multiplyDice', 'multiplyTotal'] }),
+        multiplier: text(),
+        condition: new fields.SchemaField({
+          type: new fields.StringField({ required: true, blank: true, initial: '', choices: ['', 'targetHealthAtMost'] }),
+          value: text(),
+        }),
       }),
     }
   }

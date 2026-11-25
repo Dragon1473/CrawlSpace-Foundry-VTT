@@ -271,6 +271,7 @@
       "Ranged": "Ranged",
       "Upgrades": "Rank upgrades",
       "UpgradeText": "What changes at this rank",
+      "RankCooldownHint": "The cooldown from this Rank on (blank keeps the one before)",
       "Name": "Name",
       "Notes": "Notes",
       "Description": "Description",
@@ -571,10 +572,14 @@
       "Step": {
         "Want": "What do you want to do?",
         "Kind": "Attack or utility?",
+        "Effect": "Damage effect (optional)",
         "Limits": "Limitations and cooldown (optional)",
         "Upgrades": "Rank upgrades (5, 10, 15)",
         "Balance": "Consider balance"
       },
+      "Effect": "This skill changes attacks made with other skills",
+      "EffectHint": "A damage effect skill is an option on attacks made with the skills it names: it adds its damage, or multiplies the base dice or the total.",
+      "EffectSkillsHint": "Skill names, separated by commas",
       "IntentLabel": "Purpose",
       "Intent": {
         "fight": "Fight stuff",
@@ -646,7 +651,9 @@
         "UnarmedRanged": "An unarmed ranged attack is unusual: say how it reaches.",
         "NoTarget": "Pick who the skill works on.",
         "Upgrades": "Core skills get something at Rank 5, 10 and 15.",
-        "Unlimited": "Used against enemies with no cooldown or limitation, it may be worth giving it one."
+        "Unlimited": "Used against enemies with no cooldown or limitation, it may be worth giving it one.",
+        "EffectNoSkills": "Name the attack skills this damage effect changes.",
+        "EffectUnlimited": "A multiplier with no condition or cooldown can be used on every attack; consider a cooldown or a condition."
       },
       "Credit": "Based on the Homebrew Skill Flow Chart by diffendice & Dungeon Anarchists: {link}.",
       "CreditLink": "diffendice's video about it",
@@ -2046,7 +2053,32 @@
       "Damage": "+{formula} damage",
       "RankToHit": "+{rank} to hit",
       "Optional": "option",
-      "ByHand": "applied by hand (see the skill)"
+      "ByHand": "applied by hand (see the skill)",
+      "DamageMode": "Damage",
+      "DamageModes": {
+        "add": "Adds its damage",
+        "multiplyDice": "Multiplies the base dice",
+        "multiplyTotal": "Multiplies the total damage"
+      },
+      "Multiplier": "Multiplier",
+      "ConditionLabel": "Condition",
+      "Conditions": {
+        "none": "None (tick it by hand)",
+        "targetHealthAtMost": "Target's health at or below"
+      },
+      "Threshold": "Health %",
+      "ScalingHint": "Multiplier and health % can scale with Rank: a formula such as @rank or @rank*2, or steps such as 1: 15, 5: 25, 10: 50, 15: 75 (the value from the highest Rank reached). With a condition, the option is ticked on its own when it is met, and can't be ticked when it isn't.",
+      "AtRank": "At Rank {rank}: {values}",
+      "DiceTimes": "base dice ×{n}",
+      "TotalTimes": "total damage ×{n}",
+      "Unavailable": "unavailable: {reason}",
+      "OnCooldown": "cooling down ({remaining})",
+      "Cooling": "until it ends",
+      "Condition": {
+        "NoTarget": "needs a target at {threshold}% health or less",
+        "HealthAbove": "{name} is at {health}% health (needs {threshold}% or less)",
+        "HealthMet": "target at {threshold}% health or less"
+      }
     },
     "Repair": {
       "Button": "Repair Item",

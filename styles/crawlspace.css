@@ -462,7 +462,7 @@
   }
   .crawlspace .upgrade-row {
     display: grid;
-    grid-template-columns: 4.5rem 1fr 8rem;
+    grid-template-columns: 4rem minmax(5rem, 1fr) 6.5rem 5.5rem;
     gap: 0.35rem;
     align-items: center;
     margin-bottom: 0.25rem;
@@ -507,6 +507,9 @@
     display: flex;
     gap: 0.4rem;
     align-items: center;
+  }
+  .crawl-dialog .modifiers li.unavailable {
+    opacity: 0.6;
   }
   .crawl-dialog .modifiers b {
     margin-left: auto;
@@ -3459,6 +3462,8 @@
   .crawlspace .details-grid > .damage-effect { grid-column: 1 / -1; display: grid; gap: 6px; }
   .crawlspace .damage-effect .damage-effect-links { display: flex; flex-wrap: wrap; gap: 4px 12px; }
   .crawlspace .damage-effect label.check { flex-direction: row; align-items: center; gap: 4px; }
+  .crawlspace .damage-effect .damage-effect-scaling { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .crawlspace .damage-effect .damage-effect-scaling .hint { grid-column: 1 / -1; margin: 0; }
 }
 
 @layer system {
@@ -4632,6 +4637,9 @@
   .crawl-skill-creator legend { font-weight: 700; padding: 0 4px; }
   .crawl-skill-creator[data-kind='attack'] .crawl-utility-only,
   .crawl-skill-creator[data-kind='utility'] .crawl-attack-only { display: none; }
+  .crawl-skill-creator:not([data-effect='on']) .crawl-effect-only,
+  .crawl-skill-creator[data-effect-mode='add'] .crawl-effect-multiplies,
+  .crawl-skill-creator[data-effect-condition=''] .crawl-effect-conditional { display: none; }
   .crawl-skill-creator .form-group label.checkbox { display: inline-flex; flex-direction: row; align-items: center; gap: 4px; margin-right: 12px; flex: none; font-weight: 400; }
   .crawl-skill-creator .form-group label.checkbox input { margin: 0; }
   .crawl-skill-creator .crawl-skill-targets { flex-wrap: wrap; }

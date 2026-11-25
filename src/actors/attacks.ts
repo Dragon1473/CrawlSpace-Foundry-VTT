@@ -7,11 +7,11 @@ import { spellKillBonus } from '../effects/killing-blows'
  * Crawler attacks: rows in `system.attacks`, plus automatic rows for equipped weapons, attack skills and
  * spells, and the unarmed strike. Every row resolves to the same AttackSource that rollAttack/rollDamage use.
  */
-import { itemCooldown, withCooldowns } from '../effects/cooldowns'
+import { cooldownFor, cooldownLabel, itemCooldown, startCooldowns, withCooldowns } from '../effects/cooldowns'
 import { penaltyModifiers, rollAttack, rollDamage, type AttackSource, type Modifier } from '../dice/rolls'
 import { resolveFormulaTokens } from '../rules/core'
 import { damageBonuses, piercesArmor, type DamageKind } from '../effects/specials'
-import { automaticAttackItems, joinFormula, linkedDamageEffects, usableAlone } from '../rules/damage-effects'
+import { automaticAttackItems, healthPercent, joinFormula, linkedDamageEffects, usableAlone } from '../rules/damage-effects'
 
 export type AttackRow = {
   id: string
@@ -36,8 +36,13 @@ export const UNARMED_ID = 'unarmed'
 
 export type AttackDamage = {
   formula: string
-  /** Added once, not doubled on a Critical Hit: Rank dice and effect damage bonuses (undoubledDamage.ts). */
+  /** Added once, not doubled on a Critical Hit: effect damage bonuses (undoubledDamage.ts). */
   undoubled?: string
+  /** Rank dice: added once like `undoubled`, but they are base dice a damage effect can multiply. */
+  rankDice?: string
+  /** Ticked damage effects: the base dice (and Rank dice) multiplied, then the total (rolls.ts rollDamage). */
+  diceMultiplier?: number
+  totalMultiplier?: number
   types: string[]; armorPiercing?: boolean; magic?: boolean; area?: boolean; baseFormula?: string; kind?: DamageKind; killingBlowSpell?: string }
 
 /**
@@ -123,20 +128,33 @@ export function findAttackRow(actor: any, id: string): AttackRow | null {
 function damageEffectModifiers(actor: any, attackSkill: string): Modifier[] {
   const skills = [...actor.items]
     .filter((item: any) => item.type === 'skill' && item.system.damageEffect?.enabled)
-    .map((item: any) => ({
-      name: item.name,
-      rank: Number(item.system.rank?.total) || 0,
-      effect: item.system.damageEffect,
-      damage: { base: skillBase(item) ?? '', dice: item.system.damage?.atRank ? (item.system.damage.rankDice ?? '') : '' },
-    }))
-  const t = (key: string, data: Record<string, unknown>) => game.i18n.format(`CRAWLSPACE.DamageEffect.${key}`, data)
-  return linkedDamageEffects(skills, attackSkill).map((option) => {
+    .map((item: any) => {
+      const running = cooldownFor(actor, itemCooldown(item).key)
+      return {
+        name: item.name,
+        id: item.id,
+        rank: Number(item.system.rank?.total) || 0,
+        effect: item.system.damageEffect,
+        damage: { base: skillBase(item) ?? '', dice: item.system.damage?.atRank ? (item.system.damage.rankDice ?? '') : '' },
+        cooldown: running ? cooldownLabel(running) || game.i18n.localize('CRAWLSPACE.DamageEffect.Cooling') : null,
+      }
+    })
+  // Conditions read the user's current targets.
+  const targets = [...(game.user?.targets ?? [])].filter((token: any) => token.actor).map((token: any) => ({ name: token.name ?? token.actor.name, health: healthPercent(token.actor.system) }))
+  const t = (key: string, data: Record<string, unknown> = {}) => game.i18n.format(`CRAWLSPACE.DamageEffect.${key}`, data)
+  return linkedDamageEffects(skills, attackSkill, targets).map((option) => {
     const parts = [
       ...(option.value ? [t('RankToHit', { rank: option.value })] : []),
       ...(option.rollMode ? [game.i18n.localize(`CRAWLSPACE.Roll.Mode.${option.rollMode}`)] : []),
       ...(option.damage || option.undoubled ? [t('Damage', { formula: joinFormula(option.damage, option.undoubled) })] : []),
+      ...(option.diceMultiplier !== undefined ? [t('DiceTimes', { n: option.diceMultiplier })] : []),
+      ...(option.totalMultiplier !== undefined ? [t('TotalTimes', { n: option.totalMultiplier })] : []),
+      ...(option.conditionNote ? [t(option.conditionNote.key, option.conditionNote.data)] : []),
     ]
-    return { ...option, detail: parts.join(', ') || game.i18n.localize('CRAWLSPACE.DamageEffect.ByHand') }
+    const detail = option.unavailable
+      ? t('Unavailable', { reason: t(option.unavailable.key, option.unavailable.data) })
+      : parts.join(', ') || game.i18n.localize('CRAWLSPACE.DamageEffect.ByHand')
+    return { ...option, detail }
   })
 }
 
@@ -200,7 +218,7 @@ export function resolveAttack(actor: any, row: AttackRow): AttackSource & { toHi
       actor,
       {
         formula,
-        undoubled: rankDice,
+        rankDice,
         types: [...types],
         armorPiercing: !!(row.armorPiercing || sourceDamage.armorPiercing),
         magic: !!(row.magic || sourceDamage.magic || spell),
@@ -243,6 +261,8 @@ export async function attackWithRow(actor: any, row: AttackRow, options: { fast?
   return withCooldowns(actor, uses, async () => {
     const result = await rollAttack(actor, { ...resolveAttack(actor, row), details }, options)
     // The skill or spell behind the attack counts as rolled, for advancement.
+    // A ticked damage effect skill with a cooldown (Powerful Strike) starts cooling down (before any advancement prompt).
+    if (result?.effectItemIds?.length) await startCooldowns(actor, result.effectItemIds.map((id: string) => actor.items.get(id)).filter(Boolean).map(itemCooldown))
     if (result) await markAttackAdvancement(actor, [source, skill], result.effectSkills)
     // A weapon (or thrown explosive) used: its History counts it.
     if (result && source) await recordUse(source)

@@ -7,6 +7,7 @@
  */
 import { stableId } from '../import/convert'
 import { EARTH_HOBBIES, THOUSAND_HOBBIES } from '../rules/hobby-lists'
+import { CONDITION_TYPES, DAMAGE_MODES } from '../rules/damage-effects'
 import {
   balanceHints,
   compareChoices,
@@ -62,7 +63,10 @@ function form(answers: SkillAnswers) {
   const cooldowns = COOLDOWNS.map((cooldown) => option(cooldown, t(`Cooldown.${cooldown}`), cooldown === answers.cooldown)).join('')
   const targets = TARGETS.map((target) => `<label class="checkbox"><input type="checkbox" name="targets" value="${target}" ${answers.targets.includes(target) ? 'checked' : ''}> ${esc(t(`Target.${target}`))}</label>`).join('')
   const check = (name: string, on: boolean, label: string) => `<label class="checkbox"><input type="checkbox" name="${name}" ${on ? 'checked' : ''}> ${esc(label)}</label>`
-  return `<div class="crawl-skill-creator" data-kind="${answers.kind}">
+  const de = (key: string) => game.i18n.localize(`CRAWLSPACE.DamageEffect.${key}`)
+  const effectModes = DAMAGE_MODES.map((mode) => option(mode, de(`DamageModes.${mode}`), mode === answers.effectMode)).join('')
+  const conditions = ['', ...CONDITION_TYPES].map((type) => option(type, de(`Conditions.${type || 'none'}`), type === answers.effectCondition)).join('')
+  return `<div class="crawl-skill-creator" data-kind="${answers.kind}" data-effect="${answers.effect ? 'on' : ''}" data-effect-mode="${answers.effectMode}" data-effect-condition="${answers.effectCondition}">
     <p class="hint">${esc(t('Hint'))}</p>
     <div class="form-group"><label>${esc(t('Name'))}</label><div class="form-fields"><input type="text" name="name" value="${esc(answers.name)}"><button type="button" data-action-hobby title="${esc(t('RollHobbyHint'))}"><i class="fa-solid fa-dice"></i> ${esc(t('RollHobby'))}</button></div></div>
     <input type="hidden" name="hobby" value="${esc(answers.hobby ?? '')}">
@@ -88,6 +92,18 @@ function form(answers: SkillAnswers) {
         <div class="form-group"><label>${esc(t('Targets'))}</label><div class="form-fields crawl-skill-targets">${targets}</div></div>
       </div>
       <div class="form-group">${check('passive', answers.passive, t('Passive'))}</div>
+    </fieldset>
+    <fieldset class="crawl-skill-effect"><legend>${esc(t('Step.Effect'))}</legend>
+      <div class="form-group">${check('effect', answers.effect, t('Effect'))}</div>
+      <p class="hint">${esc(t('EffectHint'))}</p>
+      <div class="crawl-effect-only">
+        <div class="form-group"><label>${esc(de('Modifies'))}</label><input type="text" name="effectSkills" value="${esc(answers.effectSkills)}" placeholder="${esc(t('EffectSkillsHint'))}"></div>
+        <div class="form-group"><label>${esc(de('DamageMode'))}</label><select name="effectMode">${effectModes}</select></div>
+        <div class="form-group crawl-effect-multiplies"><label>${esc(de('Multiplier'))}</label><input type="text" name="effectMultiplier" value="${esc(answers.effectMultiplier)}" placeholder="@rank"></div>
+        <div class="form-group"><label>${esc(de('ConditionLabel'))}</label><select name="effectCondition">${conditions}</select></div>
+        <div class="form-group crawl-effect-conditional"><label>${esc(de('Threshold'))}</label><input type="text" name="effectThreshold" value="${esc(answers.effectThreshold)}" placeholder="1: 15, 5: 25, 10: 50, 15: 75"></div>
+        <p class="hint">${esc(de('ScalingHint'))}</p>
+      </div>
     </fieldset>
     <fieldset><legend>${esc(t('Step.Limits'))}</legend>
       <div class="form-group stacked"><label>${esc(t('Limitations'))}</label><textarea name="limitations" rows="2" placeholder="${esc(t('LimitationsHint'))}">${esc(answers.limitations)}</textarea></div>
@@ -127,6 +143,12 @@ function read(root: HTMLElement): SkillAnswers {
     rank5: value('rank5'),
     rank10: value('rank10'),
     rank15: value('rank15'),
+    effect: checked('effect'),
+    effectSkills: value('effectSkills'),
+    effectMode: (value('effectMode') || 'add') as SkillAnswers['effectMode'],
+    effectMultiplier: value('effectMultiplier'),
+    effectCondition: value('effectCondition') as SkillAnswers['effectCondition'],
+    effectThreshold: value('effectThreshold'),
   }
 }
 
@@ -179,6 +201,9 @@ export async function openSkillCreator(options: { actor?: any; answers?: Partial
       const update = async () => {
         const current = read(root)
         panel.dataset.kind = current.kind
+        panel.dataset.effect = current.effect ? 'on' : ''
+        panel.dataset.effectMode = current.effectMode
+        panel.dataset.effectCondition = current.effectCondition
         const hints = balanceHints(current)
         balance.innerHTML = hints.length ? hints.map((hint) => `<li>${esc(t(`Balance.${hint}`))}</li>`).join('') : `<li class="ok">${esc(t('Balance.Ok'))}</li>`
         if (current.intent === shownIntent) return

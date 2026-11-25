@@ -51,7 +51,7 @@ export async function inherentSpellRows(actor: any): Promise<InherentRow[]> {
       stat: item.system.stat,
       range: item.system.range,
       checkType: item.system.checkType,
-      cooldown: item.system.cooldown,
+      cooldown: item.system.cooldownAtRank ?? item.system.cooldown,
       source: '',
     })
   }

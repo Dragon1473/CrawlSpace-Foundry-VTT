@@ -4,6 +4,9 @@
  * damage at its Rank, and can add its Rank to the attack roll or set the roll's mode (Aiming: both, keep lower).
  * Pure, so tests can import it.
  */
+import { doubleDice, resolveFormulaTokens } from './core.ts'
+import { rankNumber } from './rank-values.ts'
+
 export type RollModeName = 'normal' | 'advantage' | 'disadvantage'
 
 const normalize = (name: unknown) => String(name ?? '').trim().replace(/[‘’]/g, "'").replace(/\s+/g, ' ').toLowerCase()
@@ -75,33 +78,153 @@ export function damageEffectSettings(skill: { name: string; addRank?: boolean | 
   return { addRank: skill.addRank ?? aiming, mode }
 }
 
+export type DamageMode = 'add' | 'multiplyDice' | 'multiplyTotal'
+export const DAMAGE_MODES: DamageMode[] = ['add', 'multiplyDice', 'multiplyTotal']
+/** Conditions a damage effect can have; more can join (each needs a check in conditionCheck and a label). */
+export const CONDITION_TYPES = ['targetHealthAtMost'] as const
+export type ConditionType = (typeof CONDITION_TYPES)[number]
+
+export const damageModeOf = (mode: unknown): DamageMode => (DAMAGE_MODES.includes(mode as DamageMode) ? (mode as DamageMode) : 'add')
+
 export type DamageEffectSkill = {
   name: string
+  /** The item's id, so a ticked effect's cooldown can start. */
+  id?: string
   rank: number
-  effect: { enabled: boolean; skills: string[]; addRank?: boolean | null; mode?: string | null }
+  effect: {
+    enabled: boolean
+    skills: string[]
+    addRank?: boolean | null
+    mode?: string | null
+    damageMode?: string | null
+    multiplier?: string | null
+    condition?: { type?: string | null; value?: string | null } | null
+  }
   /** Damage at the skill's Rank: the part a Critical Hit doubles, and its Rank dice (added once). */
   damage: { base: string; dice: string }
+  /** Time left on the skill's running cooldown: it can't be ticked until then. */
+  cooldown?: string | null
 }
 
-/** The attack roll toggles for an attack made with `attackSkill`. */
-export function linkedDamageEffects(skills: DamageEffectSkill[], attackSkill: string) {
+/** An attack's target, for conditions: its health as a percentage of its Health Bar (null when it has none). */
+export type EffectTarget = { name: string; health: number | null }
+
+/** A reason or note for the roll dialog: a lang key under CRAWLSPACE.DamageEffect and its data. */
+export type EffectNote = { key: string; data?: Record<string, unknown> }
+
+/** A target's health as a whole percentage of its Health Bar: a crawler's health, a mob's slots left of its slots. */
+export function healthPercent(system: any): number | null {
+  const pct = Number(system?.health?.pct)
+  if (Number.isFinite(pct) && system?.health?.pct !== undefined && system?.health?.pct !== null) return Math.floor(pct)
+  const value = Number(system?.healthBar?.value ?? system?.health?.value)
+  const max = Number(system?.healthBar?.max ?? system?.health?.max)
+  return Number.isFinite(value) && max > 0 ? Math.floor((value / max) * 100) : null
+}
+
+/**
+ * Is a damage effect's condition met for these targets? Every target has to meet it (with none targeted it isn't).
+ * No condition: always met, with no note.
+ */
+export function conditionCheck(condition: DamageEffectSkill['effect']['condition'], rank: number, targets: EffectTarget[]): { met: boolean; note?: EffectNote } {
+  const type = String(condition?.type ?? '')
+  if (type === 'targetHealthAtMost') {
+    const threshold = rankNumber(condition?.value, rank, 0)
+    if (!targets.length) return { met: false, note: { key: 'Condition.NoTarget', data: { threshold } } }
+    const above = targets.find((target) => target.health === null || target.health > threshold)
+    if (above) return { met: false, note: { key: 'Condition.HealthAbove', data: { name: above.name, health: above.health ?? '?', threshold } } }
+    return { met: true, note: { key: 'Condition.HealthMet', data: { threshold } } }
+  }
+  return { met: true }
+}
+
+/**
+ * The base dice multiplied, the rest added after: "1d6+STR+2" ×3 is "(1d6)*3+STR+2" (Powerful Strike). Terms are split
+ * at the top level only, so a parenthesized group with dice counts as dice.
+ */
+export function multiplyDice(formula: string, multiplier: number) {
+  const source = String(formula ?? '').trim()
+  if (!source || multiplier === 1) return source
+  const terms: { sign: string; text: string }[] = []
+  let depth = 0
+  let current = ''
+  let sign = '+'
+  for (const char of source) {
+    if (char === '(') depth++
+    if (char === ')') depth--
+    if (depth === 0 && (char === '+' || char === '-')) {
+      if (current.trim()) {
+        terms.push({ sign, text: current.trim() })
+        sign = char
+      } else if (char === '-') sign = sign === '-' ? '+' : '-'
+      current = ''
+      continue
+    }
+    current += char
+  }
+  if (current.trim()) terms.push({ sign, text: current.trim() })
+  const isDice = (text: string) => /\d*d\d+/i.test(text)
+  const dice = terms.filter((term) => isDice(term.text))
+  if (!dice.length) return source
+  const rest = terms.filter((term) => !isDice(term.text))
+  const join = (list: typeof terms) => list.map((term, index) => (index === 0 && term.sign === '+' ? term.text : `${term.sign}${term.text}`)).join('')
+  const grouped = `(${join(dice)})*${multiplier}`
+  return rest.length ? `${grouped}${rest.map((term) => `${term.sign}${term.text}`).join('')}` : grouped
+}
+
+/**
+ * The formula a damage roll rolls (rolls.ts rollDamage): a Critical Hit doubles the base dice, but not the Rank dice or
+ * effect bonuses (added once); an Amazing Hit adds the Floor. A ticked damage effect can multiply the base and Rank
+ * dice before modifiers and buffs are added (Powerful Strike), or the whole of it (Choke Out). Blank: nothing to roll.
+ */
+export function damageRollFormula(
+  damage: { formula?: string; rankDice?: string; undoubled?: string; diceMultiplier?: number; totalMultiplier?: number },
+  options: { floor: number; tier?: 'normal' | 'amazing' | 'critical' },
+) {
+  const floor = options.floor
+  let formula = resolveFormulaTokens(damage.formula ?? '', { floor })
+  const rankDice = resolveFormulaTokens(damage.rankDice ?? '', { floor })
+  const once = resolveFormulaTokens(damage.undoubled ?? '', { floor })
+  if (!formula && !once && !rankDice) return ''
+  if (options.tier === 'critical' && formula) formula = doubleDice(formula)
+  formula = joinFormula(formula, rankDice)
+  const diceTimes = Math.floor(Number(damage.diceMultiplier ?? 1))
+  if (diceTimes !== 1 && Number.isFinite(diceTimes)) formula = multiplyDice(formula, diceTimes)
+  formula = joinFormula(formula, once)
+  if (options.tier === 'amazing' && floor) formula = `${formula}+${floor}`
+  const totalTimes = Math.floor(Number(damage.totalMultiplier ?? 1))
+  if (totalTimes !== 1 && Number.isFinite(totalTimes)) formula = `(${formula})*${totalTimes}`
+  return formula
+}
+
+/** The attack roll toggles for an attack made with `attackSkill` at these targets. */
+export function linkedDamageEffects(skills: DamageEffectSkill[], attackSkill: string, targets: EffectTarget[] = []) {
   const target = normalize(attackSkill)
   if (!target) return []
   return skills.flatMap((skill) => {
     if (!skill.effect.enabled || !skill.effect.skills.some((name) => normalize(name) === target)) return []
     if (!(skill.rank > 0)) return []
     const settings = damageEffectSettings({ name: skill.name, addRank: skill.effect.addRank, mode: skill.effect.mode })
-    const damage = String(skill.damage.base ?? '').trim()
-    const undoubled = String(skill.damage.dice ?? '').trim()
-    // An effect the dice can't do (Choke Out's ×2, Powerful Strike) is still offered: it is applied by hand.
+    const damageMode = damageModeOf(skill.effect.damageMode)
+    const multiplier = damageMode === 'add' ? 1 : Math.max(0, rankNumber(skill.effect.multiplier, skill.rank, 1))
+    // A multiplying effect changes the damage; it adds none of its own.
+    const damage = damageMode === 'add' ? String(skill.damage.base ?? '').trim() : ''
+    const undoubled = damageMode === 'add' ? String(skill.damage.dice ?? '').trim() : ''
+    const condition = conditionCheck(skill.effect.condition, skill.rank, targets)
+    const unavailable: EffectNote | undefined = skill.cooldown ? { key: 'OnCooldown', data: { remaining: skill.cooldown } } : condition.met ? undefined : condition.note
+    // An effect the dice can't do is still offered: it is applied by hand. One whose condition is met starts ticked.
     return [
       {
         label: skill.name,
+        ...(skill.id ? { itemId: skill.id } : {}),
         value: settings.addRank ? skill.rank : 0,
-        enabled: false,
+        enabled: !unavailable && !!skill.effect.condition?.type && condition.met,
+        ...(unavailable ? { unavailable } : {}),
+        ...(condition.met && condition.note ? { conditionNote: condition.note } : {}),
         rollMode: settings.mode === 'normal' ? undefined : settings.mode,
         damage,
         undoubled,
+        ...(damageMode === 'multiplyDice' ? { diceMultiplier: multiplier } : {}),
+        ...(damageMode === 'multiplyTotal' ? { totalMultiplier: multiplier } : {}),
         skillRank: skill.rank,
       },
     ]

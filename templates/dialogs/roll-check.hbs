@@ -3,7 +3,7 @@
   {{#if floorDifficulty}}<label><input type="checkbox" name="floorCheck"> {{localize "CRAWLSPACE.Roll.FloorCheck" dc=floorDifficulty}}</label>{{/if}}
   <ul class="modifiers">
     {{#each modifiers}}
-    <li><label><input type="checkbox" name="mod-{{index}}" {{checked enabled}}> {{label}} {{#if detail}}<small class="hint">{{detail}}</small>{{else}}<b>{{crawlSigned value}}</b>{{/if}}</label></li>
+    <li{{#if unavailable}} class="unavailable"{{/if}}><label><input type="checkbox" name="mod-{{index}}" {{checked enabled}}{{#if unavailable}} disabled{{/if}}> {{label}} {{#if detail}}<small class="hint">{{detail}}</small>{{else}}<b>{{crawlSigned value}}</b>{{/if}}</label></li>
     {{/each}}
   </ul>
   <div class="form-group">

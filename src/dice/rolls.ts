@@ -3,7 +3,7 @@ import { floorCheckDc } from '../rules/floor-checks'
 import { attackOutcome, doubleDice, outcomeLabel, resolveFormulaTokens, SUCCESS_OUTCOMES, type AttackOutcome } from '../rules/core'
 import { debuffById } from '../rules/debuffs'
 import { isRepairSkill, shieldBlockSkill } from '../rules/shield-block'
-import { joinFormula, toggledRollMode } from '../rules/damage-effects'
+import { damageRollFormula, joinFormula, toggledRollMode, type EffectNote } from '../rules/damage-effects'
 import { mobDifficulty, netMode } from '../rules/mob-advantage'
 import { modLostFor } from '../rules/mod-loss'
 import { wearShields } from '../rules/repair'
@@ -20,6 +20,13 @@ export type Modifier = {
   undoubled?: string
   /** A damage effect option's skill Rank, for the attack card's tags. */
   skillRank?: number
+  /** A damage effect that multiplies the base dice (Powerful Strike) or the total (Choke Out) when ticked. */
+  diceMultiplier?: number
+  totalMultiplier?: number
+  /** A damage effect that can't be ticked now (its condition isn't met, or it is cooling down), and why. */
+  unavailable?: EffectNote
+  /** The damage effect skill's item id (its cooldown starts when it is used). */
+  itemId?: string
   /** Shown beside the option in the roll dialog. */
   detail?: string
   /** The stat whose modifier this is (str, dex…), so a Modifier Loss (Woozy) can take it away. */
@@ -262,15 +269,20 @@ export async function rollAttack(actor: any, attack: AttackSource, options: { fa
   if (!result) return null
   if (attack.pay && !(await attack.pay())) return null
   const { roll, mode } = result
-  // Damage effects ticked in the dialog add their damage: the base doubles on a Critical Hit, Rank dice don't.
-  const ticked = result.modifiers.filter((modifier) => modifier.damage || modifier.undoubled)
+  // Damage effects ticked in the dialog add their damage (the base doubles on a Critical Hit, Rank dice don't) or
+  // multiply the base dice or the total.
+  const ticked = result.modifiers.filter((modifier) => modifier.damage || modifier.undoubled || modifier.diceMultiplier !== undefined || modifier.totalMultiplier !== undefined)
+  const product = (key: 'diceMultiplier' | 'totalMultiplier') =>
+    ticked.reduce((total, modifier) => total * (modifier[key] ?? 1), attack.damage[key] ?? 1)
   if (ticked.length)
     attack = {
       ...attack,
       damage: {
         ...attack.damage,
         formula: joinParts(attack.damage.formula, ...ticked.map((modifier) => modifier.damage ?? '')),
-        undoubled: joinParts(attack.damage.undoubled ?? '', ...ticked.map((modifier) => modifier.undoubled ?? '')),
+        rankDice: joinParts(attack.damage.rankDice ?? '', ...ticked.map((modifier) => modifier.undoubled ?? '')),
+        diceMultiplier: product('diceMultiplier'),
+        totalMultiplier: product('totalMultiplier'),
       },
     }
   const natural = naturalD20(roll)
@@ -322,8 +334,8 @@ export async function rollAttack(actor: any, attack: AttackSource, options: { fa
   )
   await afterAction(actor)
   // Damage effect skills ticked for this attack: only one skill used may be marked for advancement.
-  const effectSkills = result.modifiers.filter((modifier) => modifier.skillRank !== undefined).map((modifier) => modifier.label)
-  return { roll, targets: rows, effectSkills }
+  const effects = result.modifiers.filter((modifier) => modifier.skillRank !== undefined)
+  return { roll, targets: rows, effectSkills: effects.map((modifier) => modifier.label), effectItemIds: effects.map((modifier) => modifier.itemId).filter(Boolean) as string[] }
 }
 
 /** Tags under a card's title: damage formula (attacks), types, Armor Piercing, Magic, Area. */
@@ -331,6 +343,8 @@ function damageTags(damage: AttackDamage, formula = '') {
   const tag = (key: string) => game.i18n.localize(key)
   return [
     ...(formula ? [formula] : []),
+    ...((damage.diceMultiplier ?? 1) !== 1 ? [game.i18n.format('CRAWLSPACE.DamageEffect.DiceTimes', { n: damage.diceMultiplier })] : []),
+    ...((damage.totalMultiplier ?? 1) !== 1 ? [game.i18n.format('CRAWLSPACE.DamageEffect.TotalTimes', { n: damage.totalMultiplier })] : []),
     ...damage.types,
     ...(damage.armorPiercing ? [tag('CRAWLSPACE.Item.ArmorPiercing')] : []),
     ...(damage.magic ? [tag('CRAWLSPACE.Item.Magic')] : []),
@@ -358,13 +372,8 @@ export async function rollDamage(
   } = {},
 ) {
   const floor = damage.floor ?? (Number(actor?.system?.details?.floor ?? actor?.system?.floor) || 0)
-  let formula = resolveFormulaTokens(damage.formula, { floor })
-  const once = resolveFormulaTokens(damage.undoubled ?? '', { floor })
-  if (!formula && !once) return null
-  // A Critical Hit doubles the dice, except Rank dice and effect bonuses, which are added once.
-  if (options.tier === 'critical' && formula) formula = doubleDice(formula)
-  formula = joinParts(formula, once)
-  if (options.tier === 'amazing' && floor) formula = `${formula}+${floor}`
+  const formula = damageRollFormula(damage, { floor, tier: options.tier })
+  if (!formula) return null
   const rollData = actor?.getRollData?.() ?? {}
   const roll = Roll.create(formula, rollData)
   await roll.evaluate()

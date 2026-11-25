@@ -34,26 +34,32 @@ export async function withCooldowns(actor: any, uses: CooldownUse[], action: () 
   try {
     const result = await action()
     if (!result) return result
-    for (const use of entries) {
-      const seconds = durationSeconds(use.duration)
-      if (seconds === 0) continue
-      const expiry = durationEvent(use.duration)
-      const old = actor.effects.filter((effect: any) => effect.getFlag('crawlspace', 'cooldownKey') === use.key)
-      if (old.length) await actor.deleteEmbeddedDocuments('ActiveEffect', old.map((effect: any) => effect.id))
-      await actor.createEmbeddedDocuments('ActiveEffect', [{
-        name: game.i18n.format('CRAWLSPACE.Time.CooldownName', { name: use.name }),
-        img: use.img || 'icons/svg/clockwork.svg',
-        transfer: false,
-        // Cooldowns are bookkeeping, not conditions: no icon on the token.
-        showIcon: CONST.ACTIVE_EFFECT_SHOW_ICON.NEVER,
-        duration: seconds === null ? { value: null, units: 'seconds', expiry } : { value: seconds, units: 'seconds' },
-        system: { changes: [], durationText: use.duration },
-        flags: { crawlspace: { cooldownKey: use.key, cooldownEnd: seconds === null ? null : game.time.worldTime + seconds } },
-      }])
-    }
+    await startCooldowns(actor, entries)
     return result
   } finally {
     for (const use of entries) pending.delete(`${actor.uuid}:${use.key}`)
+  }
+}
+
+/** Start (or restart) cooldowns now: a timed one counts down on Foundry's clock, the rest end on an event. */
+export async function startCooldowns(actor: any, uses: CooldownUse[]) {
+  const entries = [...new Map(uses.filter((use) => use.duration?.trim()).map((use) => [use.key, use])).values()]
+  for (const use of entries) {
+    const seconds = durationSeconds(use.duration)
+    if (seconds === 0) continue
+    const expiry = durationEvent(use.duration)
+    const old = actor.effects.filter((effect: any) => effect.getFlag('crawlspace', 'cooldownKey') === use.key)
+    if (old.length) await actor.deleteEmbeddedDocuments('ActiveEffect', old.map((effect: any) => effect.id))
+    await actor.createEmbeddedDocuments('ActiveEffect', [{
+      name: game.i18n.format('CRAWLSPACE.Time.CooldownName', { name: use.name }),
+      img: use.img || 'icons/svg/clockwork.svg',
+      transfer: false,
+      // Cooldowns are bookkeeping, not conditions: no icon on the token.
+      showIcon: CONST.ACTIVE_EFFECT_SHOW_ICON.NEVER,
+      duration: seconds === null ? { value: null, units: 'seconds', expiry } : { value: seconds, units: 'seconds' },
+      system: { changes: [], durationText: use.duration },
+      flags: { crawlspace: { cooldownKey: use.key, cooldownEnd: seconds === null ? null : game.time.worldTime + seconds } },
+    }])
   }
 }
 
@@ -75,5 +81,6 @@ export function registerCooldownIcons() {
 
 /** Cooldown identity for an embedded skill or spell. */
 export function itemCooldown(item: any): CooldownUse {
-  return { key: `item:${item.id}`, name: item.name, duration: item.system.cooldown ?? '', img: item.img }
+  // Its cooldown at its current Rank (Rank upgrades and step tables, data/items.ts).
+  return { key: `item:${item.id}`, name: item.name, duration: item.system.cooldownAtRank ?? item.system.cooldown ?? '', img: item.img }
 }

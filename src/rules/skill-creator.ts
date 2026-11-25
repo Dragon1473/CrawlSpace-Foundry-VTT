@@ -1,3 +1,4 @@
+import { CONDITION_TYPES, damageModeOf, type ConditionType, type DamageMode } from './damage-effects.ts'
 /**
  * The Skill Creator (homebrew, the `skillCreator` world setting): a homebrew skill built the way the "Homebrew Skill
  * Flow Chart" by diffendice & Dungeon Anarchists walks it. Attack or utility; for an attack its range, weapon or
@@ -55,10 +56,39 @@ export type SkillAnswers = {
   rank15: string
   /** A hobby skill (from the hobby tables) remembers its hobby. */
   hobby?: string
+  /**
+   * A damage effect skill (rules/damage-effects.ts): it changes attacks made with `effectSkills` (comma list), adding
+   * its damage or multiplying the base dice or the total by `effectMultiplier`, ticked by hand or when its condition
+   * is met. Multiplier and threshold can scale with Rank (rules/rank-values.ts).
+   */
+  effect: boolean
+  effectSkills: string
+  effectMode: DamageMode
+  effectMultiplier: string
+  effectCondition: '' | ConditionType
+  effectThreshold: string
 }
 
 export function defaultAnswers(): SkillAnswers {
-  return { name: '', intent: 'other', kind: 'utility', ranged: false, unarmed: false, stat: 'DEX', damageType: 'Bludgeoning', passive: false, die: 6, addStat: true, targets: ['self'], limitations: '', cooldown: 'none', cooldownAmount: 1, description: '', rank5: '', rank10: '', rank15: '' }
+  return {
+    name: '', intent: 'other', kind: 'utility', ranged: false, unarmed: false, stat: 'DEX', damageType: 'Bludgeoning', passive: false, die: 6, addStat: true, targets: ['self'], limitations: '', cooldown: 'none', cooldownAmount: 1, description: '', rank5: '', rank10: '', rank15: '',
+    effect: false, effectSkills: '', effectMode: 'add', effectMultiplier: '', effectCondition: '', effectThreshold: '',
+  }
+}
+
+/** The damage effect settings of a skill from the Creator (data/items.ts damageEffect). */
+export function damageEffectData(answers: Pick<SkillAnswers, 'effect' | 'effectSkills' | 'effectMode' | 'effectMultiplier' | 'effectCondition' | 'effectThreshold'>) {
+  const mode = damageModeOf(answers.effectMode)
+  const condition = CONDITION_TYPES.includes(answers.effectCondition as ConditionType) ? answers.effectCondition : ''
+  return {
+    enabled: !!answers.effect,
+    skills: String(answers.effectSkills ?? '').split(',').map((name) => name.trim()).filter(Boolean),
+    addRank: null,
+    mode: '',
+    damageMode: mode === 'add' ? '' : mode,
+    multiplier: mode === 'add' ? '' : String(answers.effectMultiplier ?? '').trim(),
+    condition: { type: condition, value: condition ? String(answers.effectThreshold ?? '').trim() : '' },
+  }
 }
 
 const clampDie = (die: unknown) => (DICE.includes(Number(die) as any) ? Number(die) : 6)
@@ -110,6 +140,8 @@ export function balanceHints(answers: SkillAnswers): string[] {
   } else if (!answers.targets.length) hints.push('NoTarget')
   if (!answers.rank5.trim() || !answers.rank10.trim() || !answers.rank15.trim()) hints.push('Upgrades')
   if (answers.cooldown === 'none' && !answers.limitations.trim() && answers.kind === 'utility' && !answers.passive && answers.targets.includes('enemies')) hints.push('Unlimited')
+  if (answers.effect && !answers.effectSkills.trim()) hints.push('EffectNoSkills')
+  if (answers.effect && answers.effectMode !== 'add' && !answers.effectCondition && answers.cooldown === 'none') hints.push('EffectUnlimited')
   return hints
 }
 
@@ -143,6 +175,7 @@ export function skillItemData(input: SkillAnswers, labels: { range: string; targ
       isUnarmed: attack && answers.unarmed,
       damage: { formula: attack ? base : '', types: attack ? [answers.damageType] : [], armorPiercing: false, magic: false, area: false },
       upgrades: { rank5: upgrade(answers.rank5), rank10: upgrade(answers.rank10), rank15: upgrade(answers.rank15), rank5Damage: attack ? r5 : '', rank10Damage: attack ? r10 : '', rank15Damage: attack ? r15 : '' },
+      ...(answers.effect ? { damageEffect: damageEffectData(answers) } : {}),
       source: { database: 'homebrew', id: null, book: '', pages: '' },
     },
     flags: { crawlspace: { skillCreator: true, intent: answers.intent, ...(answers.hobby ? { hobby: answers.hobby } : {}) } },

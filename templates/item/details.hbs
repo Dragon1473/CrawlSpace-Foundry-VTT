@@ -30,6 +30,14 @@
       <datalist id="damage-effect-skills-{{item.id}}">{{#each damageEffect.suggestions}}<option value="{{this}}"></option>{{/each}}</datalist>
       <label class="check"><input type="checkbox" name="system.damageEffect.addRank" {{checked damageEffect.addRank}}> {{localize "CRAWLSPACE.DamageEffect.AddRank"}}</label>
       <label>{{localize "CRAWLSPACE.DamageEffect.Mode"}}<select name="system.damageEffect.mode">{{selectOptions damageEffect.modes selected=damageEffect.mode localize=true}}</select></label>
+      <div class="damage-effect-scaling">
+        <label>{{localize "CRAWLSPACE.DamageEffect.DamageMode"}}<select name="system.damageEffect.damageMode">{{selectOptions damageEffect.damageModes selected=damageEffect.damageMode localize=true}}</select></label>
+        {{#if damageEffect.multiplies}}<label>{{localize "CRAWLSPACE.DamageEffect.Multiplier"}}<input type="text" name="system.damageEffect.multiplier" value="{{damageEffect.multiplier}}" placeholder="@rank"></label>{{/if}}
+        <label>{{localize "CRAWLSPACE.DamageEffect.ConditionLabel"}}<select name="system.damageEffect.condition.type">{{selectOptions damageEffect.conditions selected=damageEffect.condition.type localize=true}}</select></label>
+        {{#if damageEffect.condition.type}}<label>{{localize "CRAWLSPACE.DamageEffect.Threshold"}}<input type="text" name="system.damageEffect.condition.value" value="{{damageEffect.condition.value}}" placeholder="1: 15, 5: 25, 10: 50"></label>{{/if}}
+        {{#if damageEffect.atRank}}<p class="hint">{{damageEffect.atRank}}</p>{{/if}}
+        <p class="hint">{{localize "CRAWLSPACE.DamageEffect.ScalingHint"}}</p>
+      </div>
     </fieldset>
     {{/if}}
     {{/if}}
@@ -214,6 +222,7 @@
       <span class="rank-label">{{row.label}}</span>
       <input type="text" name="system.upgrades.{{row.key}}" value="{{row.text}}" placeholder="{{localize 'CRAWLSPACE.Item.UpgradeText'}}">
       <input type="text" name="system.upgrades.{{row.key}}Damage" value="{{row.damage}}" placeholder="{{localize 'CRAWLSPACE.Item.Damage'}}">
+      <input type="text" name="system.upgrades.{{row.key}}Cooldown" value="{{row.cooldown}}" placeholder="{{localize 'CRAWLSPACE.Item.Cooldown'}}" data-tooltip="{{localize 'CRAWLSPACE.Item.RankCooldownHint'}}">
     </div>
     {{/each}}
   </fieldset>

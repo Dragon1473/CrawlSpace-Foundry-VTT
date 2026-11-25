@@ -97,6 +97,30 @@ for (const skill of byPack.skills) {
   skill.system.damageEffect = { ...skill.system.damageEffect, enabled: true, skills: rangedSkills }
 }
 
+// Settings the database has no fields for (a damage effect's multiplier and condition, Rank cooldowns) come from a JSON
+// file named by CONTENT_OVERRIDES: { "<pack>": { "<document name>": { fields merged into it } } }. It holds book
+// numbers, so it lives in the private game modules repository, which sets it when it builds this module.
+if (process.env.CONTENT_OVERRIDES) {
+  const overrides = JSON.parse(fs.readFileSync(process.env.CONTENT_OVERRIDES, 'utf8'))
+  const merge = (target, patch) => {
+    for (const [key, value] of Object.entries(patch)) {
+      if (value && typeof value === 'object' && !Array.isArray(value) && target[key] && typeof target[key] === 'object') merge(target[key], value)
+      else target[key] = value
+    }
+  }
+  const plainName = (name) => String(name).replace(/[‘’]/g, "'").trim().toLowerCase()
+  let applied = 0
+  for (const [pack, entries] of Object.entries(overrides)) {
+    for (const [name, patch] of Object.entries(entries)) {
+      const docs = (byPack[pack] ?? []).filter((doc) => plainName(doc.name) === plainName(name))
+      if (!docs.length) console.warn(`CONTENT_OVERRIDES: no ${name} in ${pack}`)
+      for (const doc of docs) merge(doc, patch)
+      applied += docs.length
+    }
+  }
+  console.log(`overrides: ${applied} documents from ${path.basename(process.env.CONTENT_OVERRIDES)}`)
+}
+
 // NPC stat blocks point at mobs by database seed; turn them into compendium UUIDs.
 const mobIds = new Set(byPack.mobs.map((mob) => mob._id))
 for (const npc of byPack.npcs) {

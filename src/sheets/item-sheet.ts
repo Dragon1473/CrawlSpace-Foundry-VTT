@@ -18,7 +18,8 @@ import { unitValue } from '../rules/item-value'
 const { HandlebarsApplicationMixin } = foundry.applications.api
 const { ItemSheetV2 } = foundry.applications.sheets
 
-import { damageEffectSettings } from '../rules/damage-effects'
+import { CONDITION_TYPES, DAMAGE_MODES, damageEffectSettings, damageModeOf } from '../rules/damage-effects'
+import { rankNumber } from '../rules/rank-values'
 
 const PHYSICAL = ['weapon', 'equipment', 'consumable', 'tattoo', 'loot', 'material', 'craftingTable']
 
@@ -169,6 +170,7 @@ export class CrawlItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
         label: game.i18n.format('CRAWLSPACE.Effect.AtRank', { rank: key.slice(4) }),
         text: item._source.system.upgrades?.[key] ?? '',
         damage: item._source.system.upgrades?.[`${key}Damage`] ?? '',
+        cooldown: item._source.system.upgrades?.[`${key}Cooldown`] ?? '',
       })),
       damageTypeChoices: Object.fromEntries(DAMAGE_TYPES.map((type) => [type, type])),
       statChoicesLower: Object.fromEntries(Object.values(STATS).map((stat) => [stat.code.toLowerCase(), stat.label])),
@@ -247,7 +249,7 @@ export class CrawlItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
           row('CRAWLSPACE.Item.Rank', system.rank.total)
           row('CRAWLSPACE.Item.Stat', system.stat)
           if (item.actor) row('CRAWLSPACE.Item.Check', Handlebars.helpers.crawlSigned(system.checkBonus))
-          row('CRAWLSPACE.Item.Cooldown', system.cooldown)
+          row('CRAWLSPACE.Item.Cooldown', system.cooldownAtRank ?? system.cooldown)
           if (item.type === 'spell') {
             row('CRAWLSPACE.Stat.Mana', system.mana)
             row('CRAWLSPACE.Item.Range', system.range)
@@ -368,7 +370,22 @@ export class CrawlItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     for (const name of linked) if (!candidates.some((entry) => lower(entry) === lower(name))) candidates.push(name)
     this.#effectCandidates = candidates
     const settings = damageEffectSettings({ name: this.item.name, addRank: source.addRank, mode: source.mode })
+    const damageMode = damageModeOf(source.damageMode)
+    const condition = { type: String(source.condition?.type ?? ''), value: String(source.condition?.value ?? '') }
+    // What the Rank-scaled values come to at the item's current Rank.
+    const rank = Number(this.item.system.rank?.total) || 0
+    const atRank = [
+      ...(damageMode !== 'add' ? [game.i18n.format(`CRAWLSPACE.DamageEffect.${damageMode === 'multiplyDice' ? 'DiceTimes' : 'TotalTimes'}`, { n: rankNumber(source.multiplier, rank, 1) })] : []),
+      ...(condition.type ? [game.i18n.format('CRAWLSPACE.DamageEffect.Condition.HealthMet', { threshold: rankNumber(condition.value, rank, 0) })] : []),
+    ]
     return {
+      damageMode,
+      damageModes: Object.fromEntries(DAMAGE_MODES.map((mode) => [mode, `CRAWLSPACE.DamageEffect.DamageModes.${mode}`])),
+      multiplies: damageMode !== 'add',
+      multiplier: String(source.multiplier ?? ''),
+      condition,
+      conditions: Object.fromEntries([['', 'CRAWLSPACE.DamageEffect.Conditions.none'], ...CONDITION_TYPES.map((type) => [type, `CRAWLSPACE.DamageEffect.Conditions.${type}`])]),
+      atRank: atRank.length ? game.i18n.format('CRAWLSPACE.DamageEffect.AtRank', { rank, values: atRank.join(', ') }) : '',
       enabled: !!source.enabled,
       links: candidates.map((name, index) => ({ index, name, checked: linked.some((entry) => lower(entry) === lower(name)) })),
       suggestions: [...new Set([...owned.map((other: any) => other.name), ...compendiumSkills])].sort(),
