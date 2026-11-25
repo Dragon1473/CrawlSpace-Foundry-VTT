@@ -214,6 +214,8 @@ export function resolveAttack(actor: any, row: AttackRow): AttackSource & { toHi
     sources: [...(weapon ? ['Weapon'] : []), row.name, ...(source ? [source.name] : []), ...(skill ? [skill.name] : []), ...(row.id === UNARMED_ID ? ['Unarmed'] : [])],
     ranged,
     skills: skill ? [{ name: skill.name, rank: Number(skill.system?.rank?.total) || 0 }] : [],
+    // The weapon, spell or consumable used (or the skill for an unarmed attack): animation modules key on its name.
+    item: source ?? skill ?? null,
     damage: withEffectBonuses(
       actor,
       {

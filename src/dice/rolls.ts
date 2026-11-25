@@ -244,6 +244,32 @@ export type AttackSource = {
   details?: string
   /** The skill or spell the attack is made with, and its Rank, for the card's tags. */
   skills?: { name: string; rank: number }[]
+  /** The item the attack is made with, recorded on the card (see itemMessageFlags). */
+  item?: any
+}
+
+/**
+ * The speaker for an actor's card, with its token: the actor's own (unlinked) token, the one the user controls,
+ * or its first on the scene. Modules that act from the card (Automated Animations) need the token.
+ */
+export function speakerFor(actor: any) {
+  const token =
+    actor?.token ??
+    canvas?.tokens?.controlled?.find((placeable: any) => placeable.actor === actor)?.document ??
+    actor?.getActiveTokens?.(false, true)?.[0] ??
+    (game.scenes?.viewed ?? game.scenes?.active)?.tokens?.find((token: any) => token.actorLink && token.actorId === actor?.id) ??
+    null
+  return ChatMessage.getSpeaker(token ? { actor, token } : { actor })
+}
+
+/**
+ * The item a card was made with, in the flags modules read without system support (Automated Animations looks for
+ * flags[systemId].itemUuid / itemId / actorId / tokenUuid on new chat messages).
+ */
+export function itemMessageFlags(item: any, speaker: { token?: string | null; scene?: string | null } = {}) {
+  if (!item) return {}
+  const token = speaker.token && speaker.scene ? `Scene.${speaker.scene}.Token.${speaker.token}` : ''
+  return { itemUuid: item.uuid, itemId: item.id, actorId: item.actor?.id ?? '', ...(token ? { tokenUuid: token } : {}) }
 }
 
 /** Target defense used against an attack: Evade for everyone in CrawlSpace, 5 up or down for a Mob with Advantage or Disadvantage. */
@@ -314,12 +340,14 @@ export async function rollAttack(actor: any, attack: AttackSource, options: { fa
     tags: [...skillTags, ...damageTags(attack.damage)],
     details: attack.details ?? '',
   })
+  const speaker = speakerFor(actor)
   await roll.toMessage(
     {
-      speaker: ChatMessage.getSpeaker({ actor }),
+      speaker,
       flavor,
       flags: {
         crawlspace: {
+          ...itemMessageFlags(attack.item, speaker),
           kind: 'attack',
           damage: { ...attack.damage, formula, floor },
           label: attack.label,

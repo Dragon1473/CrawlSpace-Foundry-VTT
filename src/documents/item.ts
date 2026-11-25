@@ -5,7 +5,7 @@ import { buildEffect, effectDuration, stableId } from '../import/convert'
 import { BUILD_EFFECT_FIELDS } from '../data/items'
 import { isHandItem } from '../rules/hands'
 import { itemCooldown, withCooldowns } from '../effects/cooldowns'
-import { penaltyModifiers, rollAttack, rollCheck, rollDamage, type Modifier } from '../dice/rolls'
+import { itemMessageFlags, penaltyModifiers, rollAttack, rollCheck, rollDamage, speakerFor, type Modifier } from '../dice/rolls'
 import { STATS, statKeyFromCode } from '../config'
 import { attackWithRow, resolveAttack, rowForItem, withEffectBonuses } from '../actors/attacks'
 import { conditionRows, itemCardDetails } from '../effects/use-conditions'
@@ -221,7 +221,8 @@ export class CrawlItem extends Item {
       notes: this.system.notes,
       conditions: ranked ? await itemCardDetails(this) : options.ranked ? conditionRows(this) : '',
     })
-    return ChatMessage.create({ content, speaker: ChatMessage.getSpeaker({ actor: this.actor }), flags: { crawlspace: { kind: 'item', itemUuid: this.uuid } } })
+    const speaker = this.actor ? speakerFor(this.actor) : ChatMessage.getSpeaker()
+    return ChatMessage.create({ content, speaker, flags: { crawlspace: { ...itemMessageFlags(this, speaker), kind: 'item' } } })
   }
 
   /** Enforce one item per body slot and ten accessories when equipping (hands: rules/hands-upkeep.ts). */
