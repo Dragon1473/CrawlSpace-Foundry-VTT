@@ -99,10 +99,10 @@ function form(answers: SkillAnswers) {
       <div class="crawl-effect-only">
         <div class="form-group"><label>${esc(de('Modifies'))}</label><input type="text" name="effectSkills" value="${esc(answers.effectSkills)}" placeholder="${esc(t('EffectSkillsHint'))}"></div>
         <div class="form-group"><label>${esc(de('DamageMode'))}</label><select name="effectMode">${effectModes}</select></div>
-        <div class="form-group crawl-effect-multiplies"><label>${esc(de('Multiplier'))}</label><input type="text" name="effectMultiplier" value="${esc(answers.effectMultiplier)}" placeholder="@rank"></div>
+        <div class="form-group crawl-effect-multiplies"><label>${esc(de('Multiplier'))}</label><input type="text" name="effectMultiplier" value="${esc(answers.effectMultiplier)}" placeholder="2 / RANK"></div>
         <div class="form-group"><label>${esc(de('ConditionLabel'))}</label><select name="effectCondition">${conditions}</select></div>
-        <div class="form-group crawl-effect-conditional"><label>${esc(de('Threshold'))}</label><input type="text" name="effectThreshold" value="${esc(answers.effectThreshold)}" placeholder="1: 15, 5: 25, 10: 50, 15: 75"></div>
-        <p class="hint">${esc(de('ScalingHint'))}</p>
+        <div class="form-group crawl-effect-conditional"><label>${esc(de('Threshold'))}</label><input type="text" name="effectThreshold" value="${esc(answers.effectThreshold)}" placeholder="10"></div>
+        <p class="hint">${esc(t('EffectRanksHint'))}</p>
       </div>
     </fieldset>
     <fieldset><legend>${esc(t('Step.Limits'))}</legend>

@@ -135,7 +135,7 @@ function damageEffectModifiers(actor: any, attackSkill: string): Modifier[] {
         id: item.id,
         rank: Number(item.system.rank?.total) || 0,
         effect: item.system.damageEffect,
-        damage: { base: skillBase(item) ?? '', dice: item.system.damage?.atRank ? (item.system.damage.rankDice ?? '') : '' },
+        damage: { base: skillBase(item) ?? '', dice: item.system.damage?.atRank ? (item.system.damage.rankDice ?? '') : '', tier: item.system.damage?.tier ?? item.system.damage?.formula ?? '' },
         cooldown: running ? cooldownLabel(running) || game.i18n.localize('CRAWLSPACE.DamageEffect.Cooling') : null,
       }
     })

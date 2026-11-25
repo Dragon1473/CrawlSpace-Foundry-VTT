@@ -580,6 +580,7 @@
       "Effect": "This skill changes attacks made with other skills",
       "EffectHint": "A damage effect skill is an option on attacks made with the skills it names: it adds its damage, or multiplies the base dice or the total.",
       "EffectSkillsHint": "Skill names, separated by commas",
+      "EffectRanksHint": "A multiplier is a number or RANK (the skill's Rank). To change the multiplier or the health % at Rank 5, 10 or 15, fill in the Rank upgrades on the skill's sheet once it is made.",
       "IntentLabel": "Purpose",
       "Intent": {
         "fight": "Fight stuff",
@@ -653,6 +654,7 @@
         "Upgrades": "Core skills get something at Rank 5, 10 and 15.",
         "Unlimited": "Used against enemies with no cooldown or limitation, it may be worth giving it one.",
         "EffectNoSkills": "Name the attack skills this damage effect changes.",
+        "EffectAttack": "An attack skill can only add its damage as a damage effect; make it a utility skill to multiply.",
         "EffectUnlimited": "A multiplier with no condition or cooldown can be used on every attack; consider a cooldown or a condition."
       },
       "Credit": "Based on the Homebrew Skill Flow Chart by diffendice & Dungeon Anarchists: {link}.",
@@ -2061,13 +2063,17 @@
         "multiplyTotal": "Multiplies the total damage"
       },
       "Multiplier": "Multiplier",
+      "DamageModeHint": "Adds its damage to the attack, or multiplies the attack's base dice (then adds modifiers and buffs) or its total. A multiplier goes in the Damage section and the Rank upgrades.",
+      "MultiplierHint": "How many times, as a number or with RANK (RANK, RANK*2). The Rank upgrades can replace it from Rank 5, 10 and 15.",
+      "RankMultiplierHint": "The multiplier from this Rank on (blank keeps the one before)",
       "ConditionLabel": "Condition",
+      "ConditionHint": "With a condition, the option is ticked on its own when it is met and can't be ticked when it isn't. Its trigger goes in the Damage section and the Rank upgrades.",
+      "RankTriggerHint": "The health % that triggers it from this Rank on (blank keeps the one before)",
       "Conditions": {
         "none": "None (tick it by hand)",
         "targetHealthAtMost": "Target's health at or below"
       },
-      "Threshold": "Health %",
-      "ScalingHint": "Multiplier and health % can scale with Rank: a formula such as @rank or @rank*2, or steps such as 1: 15, 5: 25, 10: 50, 15: 75 (the value from the highest Rank reached). With a condition, the option is ticked on its own when it is met, and can't be ticked when it isn't.",
+      "Threshold": "Health % trigger",
       "AtRank": "At Rank {rank}: {values}",
       "DiceTimes": "base dice ×{n}",
       "TotalTimes": "total damage ×{n}",

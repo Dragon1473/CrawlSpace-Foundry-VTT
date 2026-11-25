@@ -1,32 +1,35 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { rankNumber, rankStep, rankSteps } from '../src/rules/rank-values.ts'
-import { conditionCheck, damageRollFormula, healthPercent, linkedDamageEffects, multiplyDice } from '../src/rules/damage-effects.ts'
+import { rankNumber, stepsToTiers, tierValue } from '../src/rules/rank-values.ts'
+import { conditionCheck, damageRollFormula, effectMultiplier, healthPercent, linkedDamageEffects, multiplyDice } from '../src/rules/damage-effects.ts'
 import { damageEffectData, defaultAnswers, skillItemData } from '../src/rules/skill-creator.ts'
 
-test('Rank-scaled values: step tables, @rank formulas and plain values, rounded down', () => {
-  const steps = '1: 15, 5: 25, 10: 50, 15: 75'
-  assert.deepEqual(rankSteps(steps)?.map((step) => step.rank), [1, 5, 10, 15])
-  assert.equal(rankNumber(steps, 1), 15)
-  assert.equal(rankNumber(steps, 4), 15)
-  assert.equal(rankNumber(steps, 5), 25)
-  assert.equal(rankNumber(steps, 12), 50)
-  assert.equal(rankNumber(steps, 20), 75)
-  // Below the first step, the first step.
-  assert.equal(rankNumber('3: 6, 10: 9', 1), 6)
-  assert.equal(rankNumber('@rank', 7), 7)
+test('Rank tiers: the highest Rank upgrade reached that has a value, else the base', () => {
+  const tiers = { base: '15', rank5: '25', rank10: '', rank15: '75' }
+  assert.equal(tierValue(1, tiers), '15')
+  assert.equal(tierValue(4, tiers), '15')
+  assert.equal(tierValue(5, tiers), '25')
+  assert.equal(tierValue(12, tiers), '25', 'a blank Rank 10 keeps the Rank 5 value')
+  assert.equal(tierValue(15, tiers), '75')
+  assert.equal(tierValue(20, {}), '')
+})
+
+test('rankNumber: a number or a RANK formula, rounded down', () => {
+  assert.equal(rankNumber('RANK', 7), 7)
   assert.equal(rankNumber('@rank*2', 7), 14)
   assert.equal(rankNumber('RANK / 2', 7), 3)
-  assert.equal(rankNumber('×3', 1), 0, 'a bare operator is not a value')
   assert.equal(rankNumber('3', 9), 3)
+  assert.equal(rankNumber('×3', 1), 0, 'a bare operator is not a value')
   assert.equal(rankNumber('', 9, 1), 1)
   assert.equal(rankNumber('lots', 9, 1), 1)
   assert.equal(rankNumber('process.exit()', 9, 1), 1)
-  // Steps can hold formulas, and any text (a cooldown).
-  assert.equal(rankNumber('1: 2, 10: @rank', 12), 12)
-  assert.equal(rankStep('1: 24 hours; 5: 12 hours; 10: 6 hours; 15: 3 hours', 6), '12 hours')
-  assert.equal(rankStep('24 hours', 6), '24 hours')
-  assert.equal(rankSteps('1 hour'), null)
+})
+
+test('0.9.8.43 step text becomes Rank tiers', () => {
+  assert.deepEqual(stepsToTiers('1: 15, 5: 25, 10: 50, 15: 75'), { base: '15', rank5: '25', rank10: '50', rank15: '75' })
+  assert.deepEqual(stepsToTiers('1: 2, 10: RANK'), { base: '2', rank5: '', rank10: 'RANK', rank15: '' })
+  assert.equal(stepsToTiers('RANK'), null)
+  assert.equal(stepsToTiers('1 hour'), null)
 })
 
 test('multiplyDice wraps only the dice, then adds the rest', () => {
@@ -61,8 +64,8 @@ test('healthPercent reads a crawler\'s health or a mob\'s Health Bar', () => {
   assert.equal(healthPercent({}), null)
 })
 
-test('conditionCheck: target health at or below a Rank-scaled threshold', () => {
-  const condition = { type: 'targetHealthAtMost', value: '1: 15, 5: 25, 10: 50, 15: 75' }
+test('conditionCheck: target health at or below the trigger for the Rank tier', () => {
+  const condition = { type: 'targetHealthAtMost', value: '15', rank5: '25', rank10: '50', rank15: '75' }
   assert.equal(conditionCheck(condition, 1, [{ name: 'Goblin', health: 15 }]).met, true)
   assert.equal(conditionCheck(condition, 1, [{ name: 'Goblin', health: 16 }]).met, false)
   assert.equal(conditionCheck(condition, 5, [{ name: 'Goblin', health: 25 }]).met, true)
@@ -77,21 +80,22 @@ test('conditionCheck: target health at or below a Rank-scaled threshold', () => 
   assert.equal(conditionCheck(null, 1, []).met, true, 'no condition is always met')
 })
 
-// Made-up skills in the shape of a conditional total multiplier and a Rank dice multiplier.
+// Made-up skills in the shape of a conditional total multiplier and a Rank dice multiplier. The multiplier is the
+// damage formula for the Rank tier (data/items.ts damage.tier), as the item's Rank upgrades set it.
 const squeeze = (rank, extra = {}) => ({
   name: 'Sleeper Hold',
   id: 'squeeze',
   rank,
-  effect: { enabled: true, skills: ["Wrasslin'"], damageMode: 'multiplyTotal', multiplier: '1: 2, 10: 3, 15: 5', condition: { type: 'targetHealthAtMost', value: '1: 15, 5: 25, 10: 50, 15: 75' } },
-  damage: { base: '', dice: '' },
+  effect: { enabled: true, skills: ["Wrasslin'"], damageMode: 'multiplyTotal', condition: { type: 'targetHealthAtMost', value: '15', rank5: '25', rank10: '50', rank15: '75' } },
+  damage: { base: '', dice: '', tier: tierValue(rank, { base: '2', rank10: '3', rank15: '5' }) },
   ...extra,
 })
 const heavyBlow = (rank, extra = {}) => ({
   name: 'Heavy Blow',
   id: 'blow',
   rank,
-  effect: { enabled: true, skills: ['Pugilism'], damageMode: 'multiplyDice', multiplier: '@rank', condition: { type: '', value: '' } },
-  damage: { base: '1d4', dice: '' },
+  effect: { enabled: true, skills: ['Pugilism'], damageMode: 'multiplyDice', condition: { type: '', value: '' } },
+  damage: { base: '1d4', dice: '', tier: 'RANK' },
   ...extra,
 })
 
@@ -121,26 +125,31 @@ test('A multiplying effect with no condition is offered unticked; a cooling one 
   const [cooling] = linkedDamageEffects([heavyBlow(6, { cooldown: '4 hours' })], 'Pugilism')
   assert.deepEqual(cooling.unavailable, { key: 'OnCooldown', data: { remaining: '4 hours' } })
   assert.equal(cooling.enabled, false)
+  assert.equal(effectMultiplier({ damageEffect: { enabled: true, damageMode: 'multiplyDice' }, damage: { tier: 'RANK' }, rank: { total: 6 } }), 6)
+  assert.equal(effectMultiplier({ damageEffect: { enabled: true, damageMode: '' }, damage: { tier: '1d4' }, rank: { total: 6 } }), null)
   // An adding effect keeps adding its damage.
   const [adds] = linkedDamageEffects([{ ...heavyBlow(2), effect: { enabled: true, skills: ['Pugilism'] } }], 'Pugilism')
   assert.equal(adds.damage, '1d4')
   assert.equal(adds.diceMultiplier, undefined)
 })
 
-test('Skill Creator: damage effect settings', () => {
-  const answers = { ...defaultAnswers(), name: 'Big Squeeze', effect: true, effectSkills: "Wrasslin', Grapple Artist", effectMode: 'multiplyTotal', effectMultiplier: '1: 2, 10: 3', effectCondition: 'targetHealthAtMost', effectThreshold: '1: 15, 10: 30' }
+test('Skill Creator: damage effect settings; a multiplier is the damage formula', () => {
+  const answers = { ...defaultAnswers(), name: 'Big Squeeze', effect: true, effectSkills: "Wrasslin', Grapple Artist", effectMode: 'multiplyTotal', effectMultiplier: 'RANK', effectCondition: 'targetHealthAtMost', effectThreshold: '15' }
   assert.deepEqual(damageEffectData(answers), {
     enabled: true,
     skills: ["Wrasslin'", 'Grapple Artist'],
     addRank: null,
     mode: '',
     damageMode: 'multiplyTotal',
-    multiplier: '1: 2, 10: 3',
-    condition: { type: 'targetHealthAtMost', value: '1: 15, 10: 30' },
+    condition: { type: 'targetHealthAtMost', value: '15' },
   })
   const labels = { range: 'Melee', targets: 'Targets: Enemies', limitations: 'Limitations:', note: 'Made with the Skill Creator.' }
-  assert.equal(skillItemData(answers, labels).system.damageEffect.damageMode, 'multiplyTotal')
+  const item = skillItemData(answers, labels)
+  assert.equal(item.system.damageEffect.damageMode, 'multiplyTotal')
+  assert.equal(item.system.damage.formula, 'RANK')
   assert.equal(skillItemData(defaultAnswers(), labels).system.damageEffect, undefined, 'not a damage effect: left at its defaults')
   assert.deepEqual(damageEffectData({ ...answers, effectMode: 'add', effectCondition: '' }).condition, { type: '', value: '' })
-  assert.equal(damageEffectData({ ...answers, effectMode: 'add' }).multiplier, '')
+  // An attack skill only adds.
+  assert.equal(damageEffectData({ ...answers, kind: 'attack' }).damageMode, '')
+  assert.notEqual(skillItemData({ ...answers, kind: 'attack' }, labels).system.damage.formula, 'RANK')
 })

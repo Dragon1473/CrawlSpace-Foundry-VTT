@@ -5,7 +5,7 @@
  * Pure, so tests can import it.
  */
 import { doubleDice, resolveFormulaTokens } from './core.ts'
-import { rankNumber } from './rank-values.ts'
+import { rankNumber, tierValue } from './rank-values.ts'
 
 export type RollModeName = 'normal' | 'advantage' | 'disadvantage'
 
@@ -97,11 +97,13 @@ export type DamageEffectSkill = {
     addRank?: boolean | null
     mode?: string | null
     damageMode?: string | null
-    multiplier?: string | null
-    condition?: { type?: string | null; value?: string | null } | null
+    condition?: { type?: string | null; value?: string | null; rank5?: string | null; rank10?: string | null; rank15?: string | null } | null
   }
-  /** Damage at the skill's Rank: the part a Critical Hit doubles, and its Rank dice (added once). */
-  damage: { base: string; dice: string }
+  /**
+   * Damage at the skill's Rank: the part a Critical Hit doubles, and its Rank dice (added once); `tier`, the formula as
+   * written for its Rank tier, is a multiplying effect's multiplier.
+   */
+  damage: { base: string; dice: string; tier?: string }
   /** Time left on the skill's running cooldown: it can't be ticked until then. */
   cooldown?: string | null
 }
@@ -128,7 +130,7 @@ export function healthPercent(system: any): number | null {
 export function conditionCheck(condition: DamageEffectSkill['effect']['condition'], rank: number, targets: EffectTarget[]): { met: boolean; note?: EffectNote } {
   const type = String(condition?.type ?? '')
   if (type === 'targetHealthAtMost') {
-    const threshold = rankNumber(condition?.value, rank, 0)
+    const threshold = rankNumber(tierValue(rank, { base: condition?.value, rank5: condition?.rank5, rank10: condition?.rank10, rank15: condition?.rank15 }), rank, 0)
     if (!targets.length) return { met: false, note: { key: 'Condition.NoTarget', data: { threshold } } }
     const above = targets.find((target) => target.health === null || target.health > threshold)
     if (above) return { met: false, note: { key: 'Condition.HealthAbove', data: { name: above.name, health: above.health ?? '?', threshold } } }
@@ -196,6 +198,12 @@ export function damageRollFormula(
   return formula
 }
 
+/** A multiplying damage effect skill's multiplier at its Rank (its damage formula for that Rank tier); null otherwise. */
+export function effectMultiplier(system: any): number | null {
+  if (!system?.damageEffect?.enabled || damageModeOf(system.damageEffect.damageMode) === 'add') return null
+  return Math.max(0, rankNumber(system.damage?.tier ?? system.damage?.formula, Number(system.rank?.total) || 0, 1))
+}
+
 /** The attack roll toggles for an attack made with `attackSkill` at these targets. */
 export function linkedDamageEffects(skills: DamageEffectSkill[], attackSkill: string, targets: EffectTarget[] = []) {
   const target = normalize(attackSkill)
@@ -205,7 +213,7 @@ export function linkedDamageEffects(skills: DamageEffectSkill[], attackSkill: st
     if (!(skill.rank > 0)) return []
     const settings = damageEffectSettings({ name: skill.name, addRank: skill.effect.addRank, mode: skill.effect.mode })
     const damageMode = damageModeOf(skill.effect.damageMode)
-    const multiplier = damageMode === 'add' ? 1 : Math.max(0, rankNumber(skill.effect.multiplier, skill.rank, 1))
+    const multiplier = damageMode === 'add' ? 1 : Math.max(0, rankNumber(skill.damage.tier, skill.rank, 1))
     // A multiplying effect changes the damage; it adds none of its own.
     const damage = damageMode === 'add' ? String(skill.damage.base ?? '').trim() : ''
     const undoubled = damageMode === 'add' ? String(skill.damage.dice ?? '').trim() : ''

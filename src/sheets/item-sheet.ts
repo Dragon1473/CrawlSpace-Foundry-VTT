@@ -18,8 +18,8 @@ import { unitValue } from '../rules/item-value'
 const { HandlebarsApplicationMixin } = foundry.applications.api
 const { ItemSheetV2 } = foundry.applications.sheets
 
-import { CONDITION_TYPES, DAMAGE_MODES, damageEffectSettings, damageModeOf } from '../rules/damage-effects'
-import { rankNumber } from '../rules/rank-values'
+import { CONDITION_TYPES, DAMAGE_MODES, damageEffectSettings, damageModeOf, effectMultiplier } from '../rules/damage-effects'
+import { rankNumber, tierValue } from '../rules/rank-values'
 
 const PHYSICAL = ['weapon', 'equipment', 'consumable', 'tattoo', 'loot', 'material', 'craftingTable']
 
@@ -171,6 +171,7 @@ export class CrawlItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
         text: item._source.system.upgrades?.[key] ?? '',
         damage: item._source.system.upgrades?.[`${key}Damage`] ?? '',
         cooldown: item._source.system.upgrades?.[`${key}Cooldown`] ?? '',
+        trigger: item._source.system.damageEffect?.condition?.[key] ?? '',
       })),
       damageTypeChoices: Object.fromEntries(DAMAGE_TYPES.map((type) => [type, type])),
       statChoicesLower: Object.fromEntries(Object.values(STATS).map((stat) => [stat.code.toLowerCase(), stat.label])),
@@ -256,7 +257,9 @@ export class CrawlItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
             row('CRAWLSPACE.Item.Duration', system.duration)
           }
         }
-        if (system.damage?.formula || system.damage?.atRank) row(context.damageLegend, system.damage.atRank || system.damage.formula)
+        const multiplier = effectMultiplier(system)
+        if (multiplier !== null) row('CRAWLSPACE.DamageEffect.Multiplier', `×${multiplier}`)
+        else if (system.damage?.formula || system.damage?.atRank) row(context.damageLegend, system.damage.atRank || system.damage.formula)
         if (context.isRanked) row('CRAWLSPACE.Item.Healing', system.healing?.atRank)
         if (item.type === 'consumable') {
           row('CRAWLSPACE.Item.Healing', system.healing?.formula)
@@ -372,21 +375,25 @@ export class CrawlItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     const settings = damageEffectSettings({ name: this.item.name, addRank: source.addRank, mode: source.mode })
     const damageMode = damageModeOf(source.damageMode)
     const condition = { type: String(source.condition?.type ?? ''), value: String(source.condition?.value ?? '') }
-    // What the Rank-scaled values come to at the item's current Rank.
+    // A multiplier is written in the Damage section and the Rank upgrades' damage; a condition's trigger beside them.
+    const enabled = !!source.enabled
+    const multiplies = enabled && damageMode !== 'add'
+    const trigger = enabled && !!condition.type
+    // What they come to at the item's current Rank, shown in the Damage section's title.
     const rank = Number(this.item.system.rank?.total) || 0
     const atRank = [
-      ...(damageMode !== 'add' ? [game.i18n.format(`CRAWLSPACE.DamageEffect.${damageMode === 'multiplyDice' ? 'DiceTimes' : 'TotalTimes'}`, { n: rankNumber(source.multiplier, rank, 1) })] : []),
-      ...(condition.type ? [game.i18n.format('CRAWLSPACE.DamageEffect.Condition.HealthMet', { threshold: rankNumber(condition.value, rank, 0) })] : []),
+      ...(multiplies ? [game.i18n.format(`CRAWLSPACE.DamageEffect.${damageMode === 'multiplyDice' ? 'DiceTimes' : 'TotalTimes'}`, { n: rankNumber(this.item.system.damage?.tier, rank, 1) })] : []),
+      ...(trigger ? [game.i18n.format('CRAWLSPACE.DamageEffect.Condition.HealthMet', { threshold: rankNumber(tierValue(rank, { base: condition.value, ...source.condition }), rank, 0) })] : []),
     ]
     return {
       damageMode,
       damageModes: Object.fromEntries(DAMAGE_MODES.map((mode) => [mode, `CRAWLSPACE.DamageEffect.DamageModes.${mode}`])),
-      multiplies: damageMode !== 'add',
-      multiplier: String(source.multiplier ?? ''),
+      multiplies,
+      trigger,
       condition,
       conditions: Object.fromEntries([['', 'CRAWLSPACE.DamageEffect.Conditions.none'], ...CONDITION_TYPES.map((type) => [type, `CRAWLSPACE.DamageEffect.Conditions.${type}`])]),
       atRank: atRank.length ? game.i18n.format('CRAWLSPACE.DamageEffect.AtRank', { rank, values: atRank.join(', ') }) : '',
-      enabled: !!source.enabled,
+      enabled,
       links: candidates.map((name, index) => ({ index, name, checked: linked.some((entry) => lower(entry) === lower(name)) })),
       suggestions: [...new Set([...owned.map((other: any) => other.name), ...compendiumSkills])].sort(),
       addRank: settings.addRank,

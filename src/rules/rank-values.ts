@@ -1,33 +1,21 @@
 /**
- * Values a GM enters that scale with Rank: a step table ("1: 15, 5: 25, 10: 50, 15: 75", the value from the highest
- * Rank reached), a formula with @rank (or RANK) such as "@rank" or "@rank*2", or a plain value. Numbers round down.
+ * Values set per Rank tier, the way an item's Rank upgrades work: the base value, replaced from Rank 5, 10 and 15 by
+ * that row's value when it has one. A value can use RANK (or @rank) as a damage formula does: "RANK", "RANK*2".
  * Pure, so tests can import it.
  */
 
-const STEP = /^\s*(\d+)\s*:\s*(.*?)\s*$/
+export type RankTiers = { base?: unknown; rank5?: unknown; rank10?: unknown; rank15?: unknown }
 
-/** The steps of a step table, lowest Rank first; null when the text isn't one. */
-export function rankSteps(text: unknown): { rank: number; value: string }[] | null {
-  const source = String(text ?? '').trim()
-  if (!STEP.test(source)) return null
-  const parts = source.split(/[,;\n]+/).map((part) => part.trim()).filter(Boolean)
-  const steps = parts.map((part) => STEP.exec(part))
-  if (steps.some((step) => !step || !step[2])) return null
-  return steps.map((step) => ({ rank: Number(step![1]), value: step![2] })).sort((a, b) => a.rank - b.rank)
+const filled = (value: unknown) => String(value ?? '').trim()
+
+/** The value for this Rank: the highest Rank upgrade reached that has one, else the base. */
+export function tierValue(rank: number, tiers: RankTiers): string {
+  return (rank >= 15 && filled(tiers.rank15)) || (rank >= 10 && filled(tiers.rank10)) || (rank >= 5 && filled(tiers.rank5)) || filled(tiers.base)
 }
 
-/** The text that applies at this Rank: a step table's step (its lowest below the first step), else the text itself. */
-export function rankStep(text: unknown, rank: number): string {
-  const steps = rankSteps(text)
-  if (!steps) return String(text ?? '').trim()
-  let value = steps[0].value
-  for (const step of steps) if (rank >= step.rank) value = step.value
-  return value
-}
-
-/** A number at this Rank (rounded down), or `fallback` when the text is blank or can't be worked out. */
+/** A whole number from a value at this Rank (rounded down), or `fallback` when it is blank or not plain arithmetic. */
 export function rankNumber(text: unknown, rank: number, fallback = 0): number {
-  const expression = rankStep(text, rank)
+  const expression = filled(text)
     .replace(/@rank\b/gi, String(rank))
     .replace(/\bRANK\b/gi, String(rank))
     .replace(/[×x]/gi, '*')
@@ -41,4 +29,21 @@ export function rankNumber(text: unknown, rank: number, fallback = 0): number {
   } catch {
     return fallback
   }
+}
+
+/**
+ * Step text from 0.9.8.43 ("1: 10, 5: 20, 10: 40") as Rank tiers, for migrating it; null when the text isn't steps.
+ * A step below Rank 5 is the base; a step at another Rank goes to the tier it falls in.
+ */
+export function stepsToTiers(text: unknown): { base: string; rank5: string; rank10: string; rank15: string } | null {
+  const source = filled(text)
+  if (!/^\d+\s*:/.test(source)) return null
+  const tiers = { base: '', rank5: '', rank10: '', rank15: '' }
+  for (const part of source.split(/[,;\n]+/)) {
+    const step = /^\s*(\d+)\s*:\s*(.+?)\s*$/.exec(part)
+    if (!step) return null
+    const rank = Number(step[1])
+    tiers[rank >= 15 ? 'rank15' : rank >= 10 ? 'rank10' : rank >= 5 ? 'rank5' : 'base'] = step[2]
+  }
+  return tiers
 }

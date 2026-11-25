@@ -26,6 +26,7 @@ import { KillsApp } from '../apps/kills'
 import { CraftingApp } from '../apps/crafting'
 import { chooseSampleVehicle, ramWith } from '../actors/vehicles'
 import { moveInOrder } from '../rules/row-order'
+import { effectMultiplier } from '../rules/damage-effects'
 import { applyBackground, applyBuildItem, openBuildPacks, pickBackground } from '../apps/build-drop'
 import { ActionsConfig, actionRowsOf, addActionRow, addToHotlist, HotlistConfig, hotlistOf, openActionPack, postAction, runAction } from '../apps/actions-config'
 
@@ -232,7 +233,9 @@ class CrawlActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       }
     }
     const damage = system.damage?.atRank || system.damage?.formula
-    if (damage) add(item.type === 'weapon' ? 'CRAWLSPACE.Item.DamageBonus' : 'CRAWLSPACE.Item.Damage', `${damage} ${(system.damage.types ?? []).join(', ')}`)
+    const multiplier = effectMultiplier(system)
+    if (multiplier !== null) add('CRAWLSPACE.DamageEffect.Multiplier', `×${multiplier}`)
+    else if (damage) add(item.type === 'weapon' ? 'CRAWLSPACE.Item.DamageBonus' : 'CRAWLSPACE.Item.Damage', `${damage} ${(system.damage.types ?? []).join(', ')}`)
     add('CRAWLSPACE.Item.Healing', system.healing?.atRank || system.healing?.formula || '')
     if (item.type === 'consumable') add('CRAWLSPACE.Item.ManaRestore', system.manaRestore)
     if (item.type === 'equipment') add('CRAWLSPACE.Item.ArmorDr', system.armorDr || '')

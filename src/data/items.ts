@@ -1,7 +1,7 @@
 import { rankCap } from '../effects/rank-cap'
 import { GEAR_SLOTS } from '../config'
 import { rankDie, splitRankDice } from '../rules/core'
-import { rankStep } from '../rules/rank-values.ts'
+import { stepsToTiers, tierValue } from '../rules/rank-values.ts'
 
 const f = () => foundry.data.fields
 const text = (initial = '') => new (f().StringField)({ required: true, blank: true, initial })
@@ -96,14 +96,10 @@ function prepareRanked(model: any, kind: 'skill' | 'spell') {
   model.rank.total = Math.max(0, Math.floor(Math.min(model.rank.cap, model.rank.override ?? model.rank.base + bonus)))
   model.rank.mod = Math.floor(model.rank.modOverride ?? (actor?.system?.statMod?.(model.stat) ?? 0))
   const rank = model.rank.total
-  const upgraded =
-    rank >= 15 && model.upgrades.rank15Damage
-      ? model.upgrades.rank15Damage
-      : rank >= 10 && model.upgrades.rank10Damage
-        ? model.upgrades.rank10Damage
-        : rank >= 5 && model.upgrades.rank5Damage
-          ? model.upgrades.rank5Damage
-          : model.damage.formula
+  const up = model.upgrades ?? {}
+  const upgraded = tierValue(rank, { base: model.damage.formula, rank5: up.rank5Damage, rank10: up.rank10Damage, rank15: up.rank15Damage })
+  // The formula as written for this Rank tier (a multiplying damage effect reads its multiplier from it).
+  model.damage.tier = upgraded
   model.damage.atRank = withRank(upgraded, rank)
   const split = splitRankDice(upgraded, rank)
   model.damage.baseAtRank = withRank(split.base, rank)
@@ -112,10 +108,8 @@ function prepareRanked(model: any, kind: 'skill' | 'spell') {
   const healing = (rank >= 15 && heal.rank15) || (rank >= 10 && heal.rank10) || (rank >= 5 && heal.rank5) || heal.formula || ''
   model.healing.atRank = withRank(String(healing).trim(), rank)
   model.checkBonus = rank + model.rank.mod
-  // The cooldown at this Rank: a Rank upgrade's, else the item's (which may be a step table, "1: 24 hours, 5: 12 hours").
-  const up = model.upgrades ?? {}
-  const cooldown = (rank >= 15 && up.rank15Cooldown) || (rank >= 10 && up.rank10Cooldown) || (rank >= 5 && up.rank5Cooldown) || model.cooldown || ''
-  model.cooldownAtRank = rankStep(String(cooldown).trim(), rank)
+  // The cooldown at this Rank: a Rank upgrade's, else the item's.
+  model.cooldownAtRank = tierValue(rank, { base: model.cooldown, rank5: up.rank5Cooldown, rank10: up.rank10Cooldown, rank15: up.rank15Cooldown })
   // An Attack check is an attack, flagged or not (compendium attack spells and skills often aren't), so its rolls
   // carry damage and hotlisted attack spells join the Attacks table.
   if (String(model.checkType ?? '').trim().toLowerCase() === 'attack') model.isAttack = true
@@ -131,9 +125,10 @@ export class SkillData extends foundry.abstract.TypeDataModel {
        * A damage effect skill (damageEffectSkills.ts): an optional toggle on attacks made with the skills it names,
        * adding its damage at its Rank, and its Rank to the attack roll or a roll mode. Null/blank use the defaults
        * (Aiming: its Rank, keep lower). `damageMode` says how it changes the damage (rules/damage-effects.ts): add its
-       * damage (blank), multiply the base dice (Powerful Strike) or the total (Choke Out) by `multiplier`. A
-       * `condition` (the target's health at or below `value`%) ticks it on its own when met and makes it unavailable
-       * when not. Multiplier and condition values can scale with Rank (rules/rank-values.ts: "@rank", "1: 2, 10: 4").
+       * damage (blank), or multiply the base dice (Powerful Strike) or the total (Choke Out); a multiplier is written
+       * in the skill's damage formula and its Rank upgrades' damage. A `condition` (the target's health at or below
+       * `value`%, replaced from Rank 5, 10 and 15 by `rank5`… like the upgrades) ticks it on its own when met and makes
+       * it unavailable when not.
        */
       damageEffect: new fields.SchemaField({
         enabled: new fields.BooleanField(),
@@ -141,13 +136,34 @@ export class SkillData extends foundry.abstract.TypeDataModel {
         addRank: new fields.BooleanField({ required: false, nullable: true, initial: null }),
         mode: new fields.StringField({ required: true, blank: true, initial: '', choices: ['', 'normal', 'advantage', 'disadvantage'] }),
         damageMode: new fields.StringField({ required: true, blank: true, initial: '', choices: ['', 'add', 'multiplyDice', 'multiplyTotal'] }),
-        multiplier: text(),
         condition: new fields.SchemaField({
           type: new fields.StringField({ required: true, blank: true, initial: '', choices: ['', 'targetHealthAtMost'] }),
           value: text(),
+          rank5: text(),
+          rank10: text(),
+          rank15: text(),
         }),
       }),
     }
+  }
+  /**
+   * 0.9.8.43 kept a multiplier and threshold apart, as step text ("1: 2, 10: 4"): the multiplier moves into the damage
+   * formula and its Rank upgrades, the threshold into the condition's Rank tiers.
+   */
+  static migrateData(source: any) {
+    const effect = source?.damageEffect
+    if (effect && 'multiplier' in effect) {
+      const multiplier = String(effect.multiplier ?? '').trim()
+      if (multiplier && ['multiplyDice', 'multiplyTotal'].includes(effect.damageMode)) {
+        const tiers = stepsToTiers(multiplier) ?? { base: multiplier, rank5: '', rank10: '', rank15: '' }
+        source.damage = { ...(source.damage ?? {}), formula: tiers.base }
+        source.upgrades = { ...(source.upgrades ?? {}), rank5Damage: tiers.rank5, rank10Damage: tiers.rank10, rank15Damage: tiers.rank15 }
+      }
+      delete effect.multiplier
+    }
+    const steps = stepsToTiers(effect?.condition?.value)
+    if (steps) effect.condition = { ...effect.condition, value: steps.base, rank5: steps.rank5, rank10: steps.rank10, rank15: steps.rank15 }
+    return super.migrateData(source)
   }
   prepareDerivedData() {
     prepareRanked(this, 'skill')

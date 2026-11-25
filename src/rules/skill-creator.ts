@@ -58,8 +58,9 @@ export type SkillAnswers = {
   hobby?: string
   /**
    * A damage effect skill (rules/damage-effects.ts): it changes attacks made with `effectSkills` (comma list), adding
-   * its damage or multiplying the base dice or the total by `effectMultiplier`, ticked by hand or when its condition
-   * is met. Multiplier and threshold can scale with Rank (rules/rank-values.ts).
+   * its damage or multiplying the base dice or the total by `effectMultiplier` (a number, or RANK), ticked by hand or
+   * when its condition (the target's health at or below `effectThreshold`%) is met. Only a utility skill multiplies:
+   * the multiplier is its damage formula. The item sheet's Rank upgrades can change both from Rank 5, 10 and 15.
    */
   effect: boolean
   effectSkills: string
@@ -76,9 +77,9 @@ export function defaultAnswers(): SkillAnswers {
   }
 }
 
-/** The damage effect settings of a skill from the Creator (data/items.ts damageEffect). */
-export function damageEffectData(answers: Pick<SkillAnswers, 'effect' | 'effectSkills' | 'effectMode' | 'effectMultiplier' | 'effectCondition' | 'effectThreshold'>) {
-  const mode = damageModeOf(answers.effectMode)
+/** The damage effect settings of a skill from the Creator (data/items.ts damageEffect); an attack skill only adds. */
+export function damageEffectData(answers: Pick<SkillAnswers, 'kind' | 'effect' | 'effectSkills' | 'effectMode' | 'effectCondition' | 'effectThreshold'>) {
+  const mode = answers.kind === 'attack' ? 'add' : damageModeOf(answers.effectMode)
   const condition = CONDITION_TYPES.includes(answers.effectCondition as ConditionType) ? answers.effectCondition : ''
   return {
     enabled: !!answers.effect,
@@ -86,7 +87,6 @@ export function damageEffectData(answers: Pick<SkillAnswers, 'effect' | 'effectS
     addRank: null,
     mode: '',
     damageMode: mode === 'add' ? '' : mode,
-    multiplier: mode === 'add' ? '' : String(answers.effectMultiplier ?? '').trim(),
     condition: { type: condition, value: condition ? String(answers.effectThreshold ?? '').trim() : '' },
   }
 }
@@ -141,7 +141,8 @@ export function balanceHints(answers: SkillAnswers): string[] {
   if (!answers.rank5.trim() || !answers.rank10.trim() || !answers.rank15.trim()) hints.push('Upgrades')
   if (answers.cooldown === 'none' && !answers.limitations.trim() && answers.kind === 'utility' && !answers.passive && answers.targets.includes('enemies')) hints.push('Unlimited')
   if (answers.effect && !answers.effectSkills.trim()) hints.push('EffectNoSkills')
-  if (answers.effect && answers.effectMode !== 'add' && !answers.effectCondition && answers.cooldown === 'none') hints.push('EffectUnlimited')
+  if (answers.effect && answers.effectMode !== 'add' && answers.kind === 'attack') hints.push('EffectAttack')
+  else if (answers.effect && answers.effectMode !== 'add' && !answers.effectCondition && answers.cooldown === 'none') hints.push('EffectUnlimited')
   return hints
 }
 
@@ -155,6 +156,7 @@ export function skillItemData(input: SkillAnswers, labels: { range: string; targ
   const [base, r5, r10, r15] = damageFormulas(answers)
   const die = clampDie(answers.die)
   const upgrade = (text: string) => text.trim() || (attack ? `Add 1d${die} base damage.` : '')
+  const multiplies = !attack && answers.effect && damageModeOf(answers.effectMode) !== 'add'
   const details = [
     ...paragraphs(answers.description),
     `<p><strong>${esc(labels.range)}</strong></p>`,
@@ -173,7 +175,8 @@ export function skillItemData(input: SkillAnswers, labels: { range: string; targ
       cooldown: cooldownText(answers.cooldown, answers.cooldownAmount),
       isAttack: attack,
       isUnarmed: attack && answers.unarmed,
-      damage: { formula: attack ? base : '', types: attack ? [answers.damageType] : [], armorPiercing: false, magic: false, area: false },
+      // A multiplying damage effect's multiplier is its damage formula.
+      damage: { formula: attack ? base : multiplies ? String(answers.effectMultiplier ?? '').trim() || '2' : '', types: attack ? [answers.damageType] : [], armorPiercing: false, magic: false, area: false },
       upgrades: { rank5: upgrade(answers.rank5), rank10: upgrade(answers.rank10), rank15: upgrade(answers.rank15), rank5Damage: attack ? r5 : '', rank10Damage: attack ? r10 : '', rank15Damage: attack ? r15 : '' },
       ...(answers.effect ? { damageEffect: damageEffectData(answers) } : {}),
       source: { database: 'homebrew', id: null, book: '', pages: '' },
