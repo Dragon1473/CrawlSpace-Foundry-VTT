@@ -60,6 +60,7 @@ import { PersonalSpaceData, SpaceUpgradeData } from './data/personal-space'
 import { registerItemValues, registerItemValueSettings } from './actors/item-value'
 import { registerGearSets, registerGearSetSetting } from './actors/gear-sets'
 import { registerTooltipDelay } from './settings/tooltips'
+import { registerAnimationDefaults, syncAnimationDefaults } from './tokens/animation-defaults'
 import { PersonalSpaceSheet } from './sheets/personal-space-sheet'
 import { hideSpaceTypes, migrateLegacySpaces, registerPersonalSpaces, registerPersonalSpaceSetting } from './actors/personal-space'
 import { actionRowsOf, runAction } from './apps/actions-config'
@@ -130,6 +131,7 @@ Hooks.once('init', () => {
   registerItemValueSettings()
   registerGearSetSetting()
   registerTooltipDelay()
+  registerAnimationDefaults()
   registerSettingsLayout()
   registerVehicleExplosions()
   registerRace()
@@ -303,6 +305,7 @@ Hooks.once('ready', () => {
     for (const actor of unlinked) actor.update({ 'prototypeToken.actorLink': true })
     void migrateShieldLoss().catch((error) => console.error('CrawlSpace | shield DR migration', error))
     void migrateLegacySpaces().catch((error) => console.error('CrawlSpace | personal space migration', error))
+    void syncAnimationDefaults()
   }
   registerSocket()
   registerTime()

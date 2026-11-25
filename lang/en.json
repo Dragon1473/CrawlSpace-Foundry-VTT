@@ -856,6 +856,8 @@
     "Settings": {
       "TooltipDelay": "Tooltip delay (milliseconds)",
       "TooltipDelayHint": "How long the cursor rests on something before its tooltip appears. Tooltips hide as soon as you move away. Foundry's own default is 500.",
+      "AnimationDefaults": "Automated Animations defaults",
+      "AnimationDefaultsHint": "With Automated Animations installed, add animations for CrawlSpace's weapons, attack skills and spells to its recognition menus (free JB2A animations). Entries you already have, or edit later, are left alone. Turning this back on adds any you have deleted.",
       "Group": {
         "frames": "Crawler Frames",
         "combat": "Combat",
