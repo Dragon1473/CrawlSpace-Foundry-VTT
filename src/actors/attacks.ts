@@ -159,9 +159,9 @@ function damageEffectModifiers(actor: any, attackSkill: string): Modifier[] {
 }
 
 /** Turn a row into what the dice code needs: modifiers, damage, and how to pay (mana, ammunition, uses). */
-export function resolveAttack(actor: any, row: AttackRow): AttackSource & { toHit: number; img: string } {
+export function resolveAttack(actor: any, row: AttackRow, sourceItem?: any): AttackSource & { toHit: number; img: string } {
   const items = actor.items
-  const source = row.sourceId ? items.get(row.sourceId) : null
+  const source = sourceItem ?? (row.sourceId ? items.get(row.sourceId) : null)
   const linkedSkill = row.skillId ? items.get(row.skillId) : null
   const skill =
     linkedSkill ??

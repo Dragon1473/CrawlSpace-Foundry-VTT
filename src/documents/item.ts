@@ -123,7 +123,7 @@ export class CrawlItem extends Item {
     if (system.isAttack) {
       // The same attack the attacks table makes (its saved row, if any): modifiers, damage effect options, ranks.
       const saved = (this.actor.system.attacks ?? []).find((row: any) => row.sourceId === this.id)
-      const attack = resolveAttack(this.actor, saved ?? rowForItem(this))
+      const attack = resolveAttack(this.actor, saved ?? rowForItem(this), this)
       const attacked = await rollAttack(
         this.actor,
         { ...attack, sources: [...new Set([...attack.sources, ...(this.type === 'spell' ? ['Spells'] : [])])], details },
@@ -277,6 +277,10 @@ export async function markForAdvancement(items: any[]) {
   for (const item of items) {
     const actor = item?.actor
     if (!actor || actor.type !== 'crawler' || !actor.isOwner || !['skill', 'spell'].includes(item.type) || item.system.marked) continue
+
+    // Temporary granted spells are not embedded Items.
+    if (!actor.items.get(item.id)) continue
+
     byActor.set(actor, [...(byActor.get(actor) ?? []), item.id])
   }
   for (const [actor, ids] of byActor) await actor.updateEmbeddedDocuments('Item', [...new Set(ids)].map((_id) => ({ _id, 'system.marked': true })))
@@ -291,7 +295,7 @@ export async function markAttackAdvancement(actor: any, attackItems: any[], effe
   if (!effects.length) return markForAdvancement(attackItems)
   if (actor.type !== 'crawler' || !actor.isOwner) return
   const entry = (item: any) => ({ id: item.id, marked: !!item.system.marked, item })
-  const ranked = attackItems.filter((item) => item && ['skill', 'spell'].includes(item.type))
+  const ranked = attackItems.filter((item) => item && ['skill', 'spell'].includes(item.type) && actor.items.get(item.id))
   const { mark, choose } = advancementPick(ranked.map(entry), effects.map(entry))
   if (mark.length) return markForAdvancement(mark.map((candidate) => candidate.item))
   if (!choose.length) return
