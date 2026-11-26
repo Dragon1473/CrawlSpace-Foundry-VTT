@@ -13,10 +13,14 @@ const system = {
   download: '',
 }
 
-test('a release points Foundry at the latest manifest and at its own zip', () => {
-  const manifest = releaseManifest(system, { repo: 'mythaell/CrawlSpace-Foundry-VTT', tag: 'v0.1.0' })
-  assert.equal(manifest.manifest, 'https://github.com/mythaell/CrawlSpace-Foundry-VTT/releases/latest/download/system.json')
-  assert.equal(manifest.download, 'https://github.com/mythaell/CrawlSpace-Foundry-VTT/releases/download/v0.1.0/system.zip')
+test('a test release points Foundry at its own manifest and zip', () => {
+  const manifest = releaseManifest(system, {
+    repo: 'Dragon1473/CrawlSpace-Foundry-VTT',
+    tag: 'v0.1.0',
+  })
+
+  assert.equal(manifest.manifest, 'https://github.com/Dragon1473/CrawlSpace-Foundry-VTT/releases/download/v0.1.0/system.json')
+  assert.equal(manifest.download, 'https://github.com/Dragon1473/CrawlSpace-Foundry-VTT/releases/download/v0.1.0/system.zip')
   assert.equal(system.download, '', 'the source manifest is left alone')
 })
 

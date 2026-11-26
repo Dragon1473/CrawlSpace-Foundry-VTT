@@ -10,7 +10,7 @@ export function releaseManifest(system, { repo, tag }) {
   const base = `https://github.com/${repo}/releases`
   return {
     ...system,
-    manifest: `${base}/latest/download/system.json`,
+    manifest: `${base}/download/${tag}/system.json`,
     download: `${base}/download/${tag}/system.zip`,
   }
 }

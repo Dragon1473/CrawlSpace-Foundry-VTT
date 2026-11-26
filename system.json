@@ -1,8 +1,8 @@
 {
   "id": "crawlspace",
-  "title": "CrawlSpace",
+  "title": "CrawlSpace (DanKoz Test Build)",
   "description": "Rules, character sheets and combat automation for dungeon-crawling LitRPG play: health slots, ranked skills and spells, typed damage, debuffs, and five-phase Mob/Crawler combat.",
-  "version": "0.9.8.49",
+  "version": "0.9.8.49.1",
   "compatibility": {
     "minimum": "14",
     "verified": "14.370",
