@@ -26,9 +26,14 @@ export async function addStack(effect: any) {
   return effect.update({ 'system.stacks': Math.min(max, stacksOf(effect) + 1) })
 }
 
-/** Take a stack off a condition; the last stack removes it. */
-export async function removeStack(effect: any) {
-  if (isStackable(effect) && stacksOf(effect) > 1) return effect.update({ 'system.stacks': stacksOf(effect) - 1 })
+
+/** Take one or more stacks off a condition; the last stack removes it. */
+export async function removeStack(effect: any, amount = 1) {
+  const count = Math.floor(Number(amount))
+  if (!Number.isFinite(count) || count <= 0) return
+  const remaining = stacksOf(effect) - count
+  if (isStackable(effect) && remaining > 0)
+    return effect.update({ 'system.stacks': remaining })
   return effect.delete()
 }
 
@@ -45,6 +50,24 @@ export async function reduceStatus(actor: any, statusId: string, all = false) {
   if (!effects.length) return
   if (all) return actor.deleteEmbeddedDocuments('ActiveEffect', effects.map((effect: any) => effect.id))
   return removeStack(effects[0])
+}
+
+/** Remove a specified number of stacks across an actor's matching active conditions. */
+export async function reduceConditionStacks(actor: any, statusId: string, amount = 1) {
+  let remaining = Math.floor(Number(amount))
+  if (!Number.isFinite(remaining) || remaining <= 0) return
+
+  const effects = withStatus(actor, statusId).filter(
+    (effect: any) => !effect.disabled && !effect.duration?.expired
+  )
+
+  for (const effect of effects) {
+    if (remaining <= 0) break
+    const available = isStackable(effect) ? stacksOf(effect) : 1
+    const count = Math.min(remaining, available)
+    await removeStack(effect, count)
+    remaining -= count
+  }
 }
 
 /** The click model on a condition icon. */

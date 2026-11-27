@@ -11,6 +11,8 @@ import { STATS, statKeyFromCode } from '../config'
 import { attackWithRow, resolveAttack, rowForItem, withEffectBonuses } from '../actors/attacks'
 import { conditionRows, itemCardDetails } from '../effects/use-conditions'
 import { advancementPick } from '../rules/damage-effects'
+import { prepareConsumableReductions, executeConsumableReductions, requestConsumableUse } from '../effects/triggers'
+import { unwrapTriggered } from '../effects/trigger-events'
 
 /** Targeted tokens, or the user themself when nothing is targeted. */
 const healTargets = (actor: any): string[] => {
@@ -19,6 +21,7 @@ const healTargets = (actor: any): string[] => {
 }
 
 export class CrawlItem extends Item {
+  #consuming = false
   get isRanked() {
     return this.type === 'skill' || this.type === 'spell'
   }
@@ -72,17 +75,17 @@ export class CrawlItem extends Item {
 
   /** Spend one unit of a consumable or linked ammunition; false (and a warning) when none are left. */
   async spendOne(): Promise<boolean> {
-    const quantity = Number(this.system.quantity) || 0
-    if (quantity <= 0) {
-      ui.notifications.warn(game.i18n.format('CRAWLSPACE.Warn.NoneLeft', { name: this.name }))
+    const quantity = Number(this.system.quantity)
+    if (!Number.isFinite(quantity) || quantity < 1) {
+       ui.notifications.warn(game.i18n.format('CRAWLSPACE.Warn.NoneLeft', { name: this.name }))
       return false
     }
     await this.update({ 'system.quantity': quantity - 1 })
-    return true
+    return Number(this.system.quantity) === quantity - 1
   }
 
   /** Main "use" action from sheets, hotbar macros and the hotlist. */
-  async use(options: { fast?: boolean } = {}) {
+  async use(options: { fast?: boolean; consumableTarget?: any } = {}) {
     const actor = this.actor
     if (!actor) return ui.notifications.warn(game.i18n.localize('CRAWLSPACE.Warn.NoActor'))
     // Broken gear can't be used until it is repaired.
@@ -101,12 +104,26 @@ export class CrawlItem extends Item {
         })
       case 'weapon':
         return this.#useWeapon(options)
-      case 'consumable':
-        if (this.system.consumableType === 'explosives') return attackWithRow(actor, rowForItem(this), options)
-        return this.#useConsumable().then((result) => {
+      case 'consumable': {
+        // Only the active GM may override the selected consumable target.
+        if (options.consumableTarget !== undefined && !game.user.isActiveGM) return null
+        if (this.system.consumableType === 'explosives')
+          return attackWithRow(actor, rowForItem(this), options)
+        // Prevent overlapping consumption of the same item.
+        if (this.#consuming) return null
+        this.#consuming = true
+        try {
+          const result = await this.#useConsumable(
+            options.consumableTarget !== undefined
+              ? [options.consumableTarget]
+              : undefined
+          )
           if (result) playItemAnimation(actor, this)
           return result
-        })
+        } finally {
+          this.#consuming = false
+        }
+      }
       case 'lootBox':
         return this.#openBox()
       default:
@@ -167,12 +184,46 @@ export class CrawlItem extends Item {
     return attackWithRow(this.actor, saved ?? rowForItem(this), options)
   }
 
-  async #useConsumable() {
+  async #useConsumable(targets: any[] = [...game.user.targets].map((token: any) => token.actor)) {
     const system = this.system
+    const actor = this.actor
+    // Validate condition reduction targets before spending the item.
+    const plan = prepareConsumableReductions(
+      this,
+      targets,
+      !!game.users.activeGM
+    )
+    if (!plan.ok) {
+      ui.notifications.warn(
+        game.i18n.localize(
+          plan.reason === 'needGM'
+            ? 'CRAWLSPACE.Warn.NeedGM'
+            : 'CRAWLSPACE.Warn.ReduceConditionSingleTarget'
+        )
+      )
+      return null
+    }
+    // An unowned recipient requires the GM to perform the entire use.
+    if (plan.other && !plan.other.isOwner) {
+      const quantity = Number(system.quantity)
+
+      if (!Number.isFinite(quantity) || quantity <= 0) {
+        ui.notifications.warn(
+          game.i18n.format('CRAWLSPACE.Warn.NoneLeft', {
+            name: this.name,
+          })
+        )
+        return null
+      }
+      requestConsumableUse(this, plan.other)
+      return null
+    }
+
     // Counted before it's spent: the last one is gone afterwards.
     if ((Number(system.quantity) || 0) > 0) await recordUse(this)
     if (!(await this.spendOne())) return null
-    const actor = this.actor
+    await executeConsumableReductions(actor, plan)
+
     if (system.manaRestore) {
       const max = Number(actor.system.mana?.max) || 0
       const text = String(system.manaRestore).trim()
@@ -184,19 +235,52 @@ export class CrawlItem extends Item {
     if (system.healing?.formula)
       await rollDamage(actor, { formula: system.healing.formula, types: [] }, { label: `${this.name}: ${game.i18n.localize('CRAWLSPACE.Damage.Healing')}`, img: this.img, healing: true, targets: [actor.uuid] })
     if (system.damage?.formula) await rollDamage(actor, { ...system.damage, types: system.damage.types }, { label: this.name })
-    // Conditions the item gives when used (a potion's Good Mana Refill) go on the user, timed by core durations.
-    const conditions = this.effects.filter((effect: any) => !effect.transfer)
+    // Conditions the item gives when used go on the user,
+    // excluding one-time consumption rules.
+    const conditions = this.effects
+      .filter((effect: any) => !effect.transfer)
+      .flatMap((effect: any) => {
+        const data = effect.toObject()
+        const changes = data.system?.changes ?? []
+        const remainingChanges = changes.filter((change: any) => {
+          const triggered = unwrapTriggered(change)
+          return !(
+            triggered?.when === 'onConsume' &&
+            triggered.change.key === 'reduceCondition' &&
+            triggered.change.type === 'crawlspace.special'
+          )
+        })
+        // A consumption-only effect should not persist on the actor.
+        if (
+          remainingChanges.length !== changes.length &&
+          remainingChanges.length === 0 &&
+          !data.statuses?.length
+        ) return []
+        // Preserve any other rules belonging to the effect.
+        if (remainingChanges.length !== changes.length) {
+          data.system.changes = remainingChanges
+        }
+        delete data._id
+        delete data.start
+        data.duration = {
+          ...data.duration,
+          ...(effectDuration(data.system?.durationText)
+            ? {
+                expiry: null,
+                ...effectDuration(data.system.durationText),
+              }
+            : {}),
+          expired: false,
+        }
+        return [{
+          ...data,
+          transfer: true,
+          disabled: false,
+          origin: this.uuid,
+        }]
+      })
     if (conditions.length)
-      await actor.createEmbeddedDocuments(
-        'ActiveEffect',
-        conditions.map((effect: any) => {
-          const data = effect.toObject()
-          delete data._id
-          delete data.start
-          data.duration = { ...data.duration, ...(effectDuration(data.system?.durationText) ? { expiry: null, ...effectDuration(data.system.durationText) } : {}), expired: false }
-          return { ...data, transfer: true, disabled: false, origin: this.uuid }
-        }),
-      )
+      await actor.createEmbeddedDocuments('ActiveEffect', conditions)
     return this.toMessage()
   }
 
