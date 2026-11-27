@@ -1,7 +1,7 @@
 import { gmAllowsAutomation, performUpkeep, postUpkeepRequest, upkeepAutomated } from './apps/upkeep'
 import { createBuiltCrawler, type Draft } from './apps/builder'
 import { giveCondition, mayGive } from './effects/use-conditions'
-import { triggerRequest } from './effects/triggers'
+import { triggerRequest, consumableRequest } from './effects/triggers'
 /**
  * GM relay. Players can't update actors or combats they don't own, so those requests travel over the system
  * socket and the active GM's client performs them. Only whitelisted methods can be called this way.
@@ -20,6 +20,7 @@ type Request =
   | { type: 'condition'; effectUuid: string; targetUuid: string; userId: string }
   | { type: 'upkeepRequest'; uuids: string[]; kind: string; hours: number; userId: string; manual?: boolean }
   | { type: 'trigger'; actorUuid: string; events: string[]; timing: string; afterPhase: boolean; otherUuid: string; sources: string[]; messageId: string }
+  | { type: 'consume'; itemUuid: string; targetUuid: string; userId: string }
 
 async function perform(request: Request) {
   if (request.type === 'buildCrawler') {
@@ -42,6 +43,7 @@ async function perform(request: Request) {
     return
   }
   if (request.type === 'trigger') return triggerRequest(request)
+  if (request.type === 'consume') return consumableRequest(request)
   if (request.type === 'upkeepRequest') {
     // A player's ask: the GMs see a card to approve or decline it.
     const user = game.users.get(request.userId)
@@ -81,7 +83,16 @@ export function registerSocket() {
       if (request.userId === game.user.id) ui.notifications.error(request.error)
       return
     }
-    if (game.user.isActiveGM) queue = queue.then(() => perform(request)).catch((error) => { console.error('CrawlSpace | socket', error); ui.notifications.error(error.message) })
+    if (game.user.isActiveGM) {
+      queue = queue
+        .then(() => perform(request))
+        .catch((error) => {
+          console.error('CrawlSpace | socket', error)
+          ui.notifications.error(error.message)
+        })
+
+      return queue
+    }
   })
 }
 

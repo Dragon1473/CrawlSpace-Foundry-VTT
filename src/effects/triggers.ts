@@ -6,7 +6,8 @@
  */
 import { debuffByName } from '../rules/debuffs'
 import { giveCondition } from './use-conditions'
-import { defenseEvents, matchTriggers, rollEvents, TIER_OUTCOME, type Timing, type TriggerEntry } from './trigger-events'
+import { reduceConditionStacks } from './stacks'
+import { defenseEvents, matchTriggers, rollEvents, TIER_OUTCOME, unwrapTriggered, type Timing, type TriggerEntry } from './trigger-events'
 
 const CHANNEL = 'system.crawlspace'
 
@@ -37,11 +38,179 @@ function sourceEffect(actor: any, entry: TriggerEntry) {
   return item?.effects.get(entry.effectId) ?? actor.effects.get(entry.effectId) ?? null
 }
 
+/** Collect condition reduction rules that execute when this consumable is used. */
+export function consumableReductionEntries(item: any): TriggerEntry[] {
+  if (item?.type !== 'consumable') return []
+
+  const entries: TriggerEntry[] = []
+
+  for (const effect of item.effects ?? []) {
+    if (effect.disabled) continue
+
+    const changes = effect.system?.changes ?? []
+
+    for (const [index, change] of changes.entries()) {
+      const triggered = unwrapTriggered(change)
+
+      if (
+        !triggered ||
+        triggered.when !== 'onConsume' ||
+        triggered.change.key !== 'reduceCondition' ||
+        triggered.change.type !== 'crawlspace.special'
+      ) continue
+
+      entries.push({
+        ...triggered,
+        source: effect.name ?? item.name ?? '',
+        effectId: effect.id ?? '',
+        itemId: item.id ?? '',
+        itemName: item.name ?? '',
+        itemType: item.type,
+        index,
+      })
+    }
+  }
+
+  return entries
+}
+
+type ConsumableReductionPlan =
+  | { ok: true; entries: TriggerEntry[]; other: any | null }
+  | { ok: false; reason: 'singleTarget' | 'needGM' }
+
+/** Validate consumption targets before spending the item. */
+export function prepareConsumableReductions(
+  item: any,
+  targets: any[],
+  hasActiveGM: boolean
+): ConsumableReductionPlan {
+  const entries = consumableReductionEntries(item)
+
+  const needsOther = entries.some(
+    (entry) => json(entry.change.value)?.target === 'other'
+  )
+
+  if (!needsOther) {
+    return { ok: true, entries, other: null }
+  }
+
+  if (targets.length !== 1) {
+    return { ok: false, reason: 'singleTarget' }
+  }
+
+  const other = targets[0]
+
+  if (other?.documentName !== 'Actor' || !other.uuid) {
+    return { ok: false, reason: 'singleTarget' }
+  }
+
+  if (!other.isOwner && !hasActiveGM) {
+    return { ok: false, reason: 'needGM' }
+  }
+
+  return { ok: true, entries, other }
+}
+
+/** Execute the reduction rules of a validated, spent consumable. */
+export async function executeConsumableReductions(
+  actor: any,
+  plan: Extract<ConsumableReductionPlan, { ok: true }>
+) {
+  for (const entry of plan.entries) {
+    await reduceTriggeredCondition(
+      actor,
+      entry,
+      json(entry.change.value),
+      {
+        timing: 'before',
+        afterPhase: false,
+        other: plan.other,
+      }
+    )
+  }
+}
+
+/** Ask the active GM to consume an item on an unowned target. */
+export function requestConsumableUse(item: any, target: any) {
+  if (!game.users.activeGM) {
+    ui.notifications.warn(
+      game.i18n.localize('CRAWLSPACE.Warn.NeedGM')
+    )
+    return
+  }
+
+  game.socket.emit(CHANNEL, {
+    type: 'consume',
+    itemUuid: item.uuid,
+    targetUuid: target.uuid,
+    userId: game.user.id,
+  })
+}
+
+/** Execute a player's consumable request on the active GM's client. */
+export async function consumableRequest(request: {
+  itemUuid: string
+  targetUuid: string
+  userId: string
+}) {
+  if (!game.user.isActiveGM) return
+
+  if (
+    typeof request.itemUuid !== 'string' ||
+    typeof request.targetUuid !== 'string' ||
+    typeof request.userId !== 'string' ||
+    !request.itemUuid ||
+    !request.targetUuid ||
+    !request.userId
+  ) return
+
+  const user = game.users.get(request.userId)
+
+  // Only active, known players should submit relayed requests.
+  if (!user || !user.active || user.isGM) return
+
+  const item: any = await fromUuid(request.itemUuid)
+  const target: any = await fromUuid(request.targetUuid)
+
+  if (item?.documentName !== 'Item') return
+  if (item.type !== 'consumable') return
+  if (target?.documentName !== 'Actor') return
+
+  // The explosive attack pathway does not support this operation.
+  if (item.system?.consumableType === 'explosives') return
+  if (item.system?.broken) return
+
+  const actor = item.actor
+
+  // Verify that the item actually belongs to the player's actor.
+  if (!actor || actor.items?.get(item.id) !== item) return
+  if (!actor.testUserPermission(user, 'OWNER')) return
+
+  const quantity = Number(item.system?.quantity)
+
+  if (!Number.isFinite(quantity) || quantity <= 0) return
+
+  // Rebuild the plan using the actual item's current configuration.
+  const plan = prepareConsumableReductions(
+    item,
+    [target],
+    true
+  )
+
+  // Only items with an Other-targeted reduction require this relay.
+  if (!plan.ok || plan.other !== target) return
+
+  // Execute the complete item-use operation as the GM.
+  return item.use({ consumableTarget: target })
+}
+
 /**
  * Carry out the actor's rules for these events. Runs on the active GM, who may write to every actor; other
  * clients send it there.
  */
 export async function fireTriggers(actor: any, events: string[], context: TriggerContext) {
+  // Consumption rules execute only through the dedicated item-use pathway.
+  events = events.filter((event) => event !== 'onConsume')
   if (!actor || !events.length) return
   const entries = matchTriggers(actor.system?.triggers ?? [], events, context)
   if (!entries.length) return
@@ -66,6 +235,7 @@ export async function fireTriggers(actor: any, events: string[], context: Trigge
       if (entry.change.key === 'note') {
         if (String(data.text ?? '').trim()) notes.push(`<p><i class="fa-solid fa-note-sticky"></i> <strong>${esc(entry.source)}:</strong> ${esc(data.text)}</p>`)
       } else if (entry.change.key === 'applyCondition') await applyTriggeredCondition(actor, entry, data, context)
+      else if (entry.change.key === 'reduceCondition') await reduceTriggeredCondition(actor, entry, data, context)
       else await grantTriggeredRule(actor, entry)
     } catch (error) {
       console.error('CrawlSpace | trigger', entry, error)
@@ -88,6 +258,20 @@ async function applyTriggeredCondition(actor: any, entry: TriggerEntry, data: an
   const effect: any = await fromUuid(name)
   if (effect?.documentName === 'ActiveEffect') return giveCondition(effect, target)
   console.warn(`CrawlSpace | ${entry.source}: no condition named "${name}"`)
+}
+
+/** Reduce a standard condition on the actor or the other side of the roll. */
+async function reduceTriggeredCondition(actor: any, entry: TriggerEntry, data: any, context: TriggerContext) {
+  const target = data.target === 'other' ? context.other : actor
+  const name = String(data.condition ?? '').trim()
+  if (!target || !name) return
+  const debuff = debuffByName(name)
+  if (!debuff) {
+    console.warn(`CrawlSpace | ${entry.source}: no condition named "${name}"`)
+    return
+  }
+  const stacks = Number(data.stacks ?? 1)
+  return reduceConditionStacks(target, debuff.id, stacks)
 }
 
 /** Any other rule: the actor gets it as a condition of its own. Firing again refreshes it. */

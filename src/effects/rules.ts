@@ -161,12 +161,27 @@ const SPLIT_SPECIALS: RuleType[] = [
     (d) => ({ condition: d.condition ?? '', stacks: d.stacks ?? 1, target: d.target === 'other' ? 'other' : 'self' }),
     (v) => ({ condition: String(v.condition ?? '').trim(), stacks: Math.max(1, Math.floor(num(v.stacks) || 1)), target: v.target === 'other' ? 'other' : 'self' }),
   ),
+  // Always triggered: remove condition stacks from yourself or the other actor.
+  specialRule(
+    'reduceCondition',
+    [field('condition', 'condition', 'debuff'), field('stacks', 'stacks', 'number'), field('target', 'appliesTo', 'applyTarget')],
+    (d) => ({
+      condition: d.condition ?? '',
+      stacks: d.stacks ?? 1,
+      target: d.target === 'other' ? 'other' : 'self',
+    }),
+    (v) => ({
+      condition: String(v.condition ?? '').trim(),
+      stacks: Math.max(1, Math.floor(num(v.stacks) || 1)),
+      target: v.target === 'other' ? 'other' : 'self',
+    }),
+  ),
   // Always triggered: its text goes on the chat card.
   specialRule('note', [field('text', 'text', 'textarea')], (d) => ({ text: d.text ?? '' }), (v) => ({ text: String(v.text ?? '') })),
 ]
 
 /** Rules that only make sense with a trigger. */
-const ALWAYS_TRIGGERED: Record<string, string> = { applyCondition: 'rollAmazing', note: 'hitCrit' }
+const ALWAYS_TRIGGERED: Record<string, string> = { applyCondition: 'rollAmazing', reduceCondition: 'onConsume', note: 'hitCrit' }
 
 /** Rule categories, in the order the New Rule list shows them. */
 const CATEGORIES: { id: string; rules: string[] }[] = [
@@ -176,7 +191,7 @@ const CATEGORIES: { id: string; rules: string[] }[] = [
   { id: 'damageResponse', rules: ['dr', 'resistance', 'vulnerability', 'immunity', 'conditionImmunity', 'magicDamageCap', 'areaDamageHalf'] },
   { id: 'health', rules: ['healthBonus', 'conditionShield', 'regenPerRound'] },
   { id: 'mana', rules: ['mana', 'manaPerRound'] },
-  { id: 'special', rules: ['applyCondition', 'note', 'hotlist', 'extraActions', 'cleanupDamage', 'lightOrb', 'raiseMinion', 'custom'] },
+  { id: 'special', rules: ['applyCondition', 'reduceCondition', 'note', 'hotlist', 'extraActions', 'cleanupDamage', 'lightOrb', 'raiseMinion', 'custom'] },
 ]
 
 export const RULE_TYPES: RuleType[] = [
@@ -350,6 +365,7 @@ function defaults(rule: RuleType): Values {
   }
   if (rule.id === 'special') values.special = 'damageBonus'
   if (rule.id === 'applyCondition') Object.assign(values, { condition: DEBUFFS[0]?.name ?? '', stacks: 1, target: 'other' })
+  if (rule.id === 'reduceCondition') Object.assign(values, { condition: DEBUFFS[0]?.name ?? '', stacks: 1, target: 'self' })
   if (rule.id === 'damageBonus') Object.assign(values, { target: 'Weapon', value: '1', pierce: 'no' })
   if (rule.id === 'rankCap') values.value = 20
   if (rule.id === 'manaPerRound' || rule.id === 'regenPerRound') Object.assign(values, { value: '1', interval: '1 round' })
@@ -421,15 +437,33 @@ export function rulesContext(effect: any) {
   })
 }
 
-/** The When dropdown, grouped: always (not for rules that only work triggered), your roll, attacks on you, other events. */
+/** The When dropdown, grouped by event. */
 function triggerField(ruleId: string, when: string) {
-  const option = (value: string) => ({ value, label: game.i18n.localize(`CRAWLSPACE.Rules.Trigger.${value}`), selected: value === when })
-  const groups = TRIGGER_GROUPS.map((group) => ({ label: game.i18n.localize(`CRAWLSPACE.Rules.TriggerGroup.${group.id}`), options: group.triggers.map(option) }))
+  const option = (value: string) => ({
+    value,
+    label: game.i18n.localize(`CRAWLSPACE.Rules.Trigger.${value}`),
+    selected: value === when,
+  })
+
+  const groups = TRIGGER_GROUPS.map((group) => ({
+    label: game.i18n.localize(`CRAWLSPACE.Rules.TriggerGroup.${group.id}`),
+    options: group.triggers.map(option),
+  }))
+
+  if (ruleId === 'reduceCondition') {
+    groups.unshift({
+      label: game.i18n.localize('CRAWLSPACE.Rules.TriggerGroup.itemUse'),
+      options: [option('onConsume')],
+    })
+  }
+
   return {
     name: 'when',
     label: game.i18n.localize('CRAWLSPACE.Rules.Field.when'),
     value: when,
-    groups: ALWAYS_TRIGGERED[ruleId] ? groups : [{ label: '', options: [option('always')] }, ...groups],
+    groups: ALWAYS_TRIGGERED[ruleId]
+      ? groups
+      : [{ label: '', options: [option('always')] }, ...groups],
   }
 }
 

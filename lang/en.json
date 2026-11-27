@@ -934,7 +934,8 @@
       "NoPack": "No matching compendium is installed.",
       "SpellNotFound": "Could not find a spell named {name}.",
       "RowGone": "That attack or action is no longer on the sheet.",
-      "NoBuildContent": "No compendium has any {kind} entries yet."
+      "NoBuildContent": "No compendium has any {kind} entries yet.",
+      "ReduceConditionSingleTarget": "Select exactly one target before using this consumable."
     },
     "Actions": {
       "action": "Action",
@@ -1376,6 +1377,7 @@
         "regenPerRound": "Health Regeneration",
         "rankCap": "Rank Cap",
         "applyCondition": "Apply Condition",
+        "reduceCondition": "Reduce Condition",
         "note": "Note"
       },
       "LossScope": {
@@ -1417,6 +1419,7 @@
       "TriggerGroup": {
         "roll": "Your roll",
         "defense": "An attack against you",
+        "itemUse": "Item Use",
         "other": "Other"
       },
       "Trigger": {
@@ -1441,7 +1444,8 @@
         "damaged": "You take health slot damage",
         "healed": "You are healed",
         "dying": "You start Dying",
-        "cleanUp": "Each Clean Up"
+        "cleanUp": "Each Clean Up",
+        "onConsume": "On Consumable Use"
       },
       "Timing": {
         "before": "Before it resolves (at the roll)",
