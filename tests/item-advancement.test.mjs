@@ -5,6 +5,19 @@ import { extname } from 'node:path'
 
 // Isolate item advancement from Foundry runtime dependencies.
 const stubs = {
+  '../effects/triggers': `
+    export function prepareConsumableReductions() {
+      throw new Error('Unexpected consumable operation')
+    }
+
+    export async function executeConsumableReductions() {
+      throw new Error('Unexpected consumable operation')
+    }
+
+    export function requestConsumableUse() {
+      throw new Error('Unexpected consumable operation')
+    }
+  `,
   '../effects/use-conditions': `
     export function applyCastEffects() {}
     export function conditionRows() {}
